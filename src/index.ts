@@ -224,6 +224,18 @@ export interface SpendRequest {
   idempotencyKey: string;
 }
 
+export interface PayQuotedX402TestnetRequest {
+  grantId: string;
+  resourceUrl: string;
+  category: string;
+  purpose: string;
+  idempotencyKey: string;
+  currency?: string;
+  method?: "GET" | "POST";
+  headers?: Record<string, string>;
+  body?: string;
+}
+
 export interface AgentCapabilityClientOptions {
   apiKey?: string;
   fetch?: typeof fetch;
@@ -274,6 +286,10 @@ export class AgentCapabilityClient {
 
   requestSpend(request: SpendRequest): Promise<Record<string, unknown>> {
     return this.post("/v1/spend/request", request);
+  }
+
+  payQuotedX402Testnet(request: PayQuotedX402TestnetRequest): Promise<Record<string, unknown>> {
+    return this.post("/v1/pay/x402/testnet/quoted", request);
   }
 
   approveApproval(approvalId: string): Promise<Record<string, unknown>> {

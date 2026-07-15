@@ -1,6 +1,6 @@
 {
   "name": "@agent-capability-middleware/sdk",
-  "version": "0.1.0-preview.3",
+  "version": "0.1.0-preview.4",
   "description": "TypeScript SDK for scoped agent permissions, user-controlled memory, and x402 policy flows",
   "type": "module",
   "license": "Apache-2.0",
@@ -42,6 +42,7 @@
     "test": "npm run build && node --test tests/*.test.mjs",
     "package:smoke": "npm run build && node scripts/smoke-package.mjs",
     "quickstart": "npm run build && node scripts/run-quickstart.mjs",
+    "example:omni-x402": "npm run build && node examples/omni-x402.mjs",
     "verify": "npm run typecheck && npm run typecheck:consumer && npm test && npm run package:smoke && npm run quickstart && npm pack --dry-run",
     "prepack": "npm run build",
     "prepare": "npm run build"

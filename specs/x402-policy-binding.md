@@ -1,6 +1,6 @@
 # x402 Policy Binding Implementation Profile
 
-Status: public draft; not implemented by the reference server
+Status: public draft; the reference server does not settle payments, while compatible protected ACM gateways have completed the profile on Base Sepolia testnet
 
 Version: 0.1
 

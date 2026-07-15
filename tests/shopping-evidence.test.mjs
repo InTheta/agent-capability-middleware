@@ -53,3 +53,28 @@ test("client applies the configured workload credential", async () => {
   await client.listAgents();
   assert.equal(authorization, "Bearer test_api_key");
 });
+
+test("quoted x402 payment delegates exact policy metadata to the gateway", async () => {
+  let captured;
+  const client = new AgentCapabilityClient("https://gateway.example.com", {
+    fetch: async (input, init) => {
+      captured = { url: String(input), method: init?.method, body: JSON.parse(String(init?.body)) };
+      return Response.json({ decision: "allow", settlement: { transaction: "0xtest" } });
+    },
+  });
+  const request = {
+    grantId: "grant_test",
+    resourceUrl: "https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5",
+    category: "market_intelligence",
+    purpose: "test_news",
+    idempotencyKey: "pay_test_001",
+  };
+
+  await client.payQuotedX402Testnet(request);
+
+  assert.deepEqual(captured, {
+    url: "https://gateway.example.com/v1/pay/x402/testnet/quoted",
+    method: "POST",
+    body: request,
+  });
+});

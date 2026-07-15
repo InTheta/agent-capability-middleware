@@ -19,3 +19,10 @@ void client.registerAgent(registration);
 void client.listAgents();
 void client.importShoppingEvidence(createShoppingEvidenceImportRequest("user_typescript_example", preview));
 void client.getConfirmedAttribute("grant_example", "preferences.shopping.brands", "typed_example");
+void client.payQuotedX402Testnet({
+  grantId: "grant_example",
+  resourceUrl: "https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5",
+  category: "market_intelligence",
+  purpose: "typed_example",
+  idempotencyKey: "typed_example_001",
+});

@@ -47,8 +47,21 @@ Vector search is an optional gateway feature. Sensitive namespaces should be exc
 | `getTestnetFundingInstructions` | Read the public payer address and funding metadata. |
 | `listPublicX402Resources` | Discover public x402 resources through a gateway. |
 | `inspectPublicX402Challenge` | Inspect a payment challenge without paying. |
+| `payQuotedX402Testnet` | Ask a protected ACM gateway to quote, authorize, sign, settle, and retry an exact testnet resource. |
 
-The preview SDK does not expose a method that accepts a private key.
+`payQuotedX402Testnet` accepts grant and policy metadata, never a private key:
+
+```ts
+await client.payQuotedX402Testnet({
+  grantId,
+  resourceUrl: "https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5",
+  category: "market_intelligence",
+  purpose: "summarize_current_btc_news",
+  idempotencyKey: crypto.randomUUID(),
+});
+```
+
+The configured gateway owns payer custody, challenge validation, budget reservation, and reconciliation. Keep live payment examples opt-in and outside CI.
 
 ## Errors
 

@@ -93,6 +93,14 @@ The parser does not read cookies. It does not include order IDs, addresses, paym
 
 The SDK can inspect x402 resources and call a compatible gateway's bounded payment endpoints. It never accepts or stores a private key. A production gateway must bind payment approval to the exact resource, amount, network, recipient, purpose and idempotency key before a separately configured wallet signs.
 
+Omni Terminal is the first real external-service example. Its compact AI News Pulse and Trader Profile products were purchased through ACM on Base Sepolia testnet. Run the opt-in example only against a protected, funded ACM gateway:
+
+```bash
+ACM_GATEWAY_URL=http://127.0.0.1:8787 npm run example:omni-x402
+```
+
+This command is intentionally excluded from `npm run verify` and CI because it may spend test USDC. The stable Omni URL also requires its path-scoped Cloudflare Access application; see [x402 integration](docs/x402-integration.md).
+
 ## Repository map
 
 - `src/` — dependency-light TypeScript SDK and local evidence parser.
