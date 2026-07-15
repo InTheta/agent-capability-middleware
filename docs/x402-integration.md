@@ -52,30 +52,28 @@ The SDK method `payQuotedX402Testnet` calls such a gateway. It does not sign loc
 
 ## Real Omni example
 
-Omni Terminal exposes two compact Base Sepolia products:
+Omni Terminal currently exposes one compact Base Sepolia product:
 
 | Product | Resource | Price |
 |---|---|---:|
 | AI News Pulse | `/api/x402/v1/news/{symbol}?limit=5` | `0.001` test USDC |
-| Trader Profile | `/api/x402/v1/trader-profile/{address}?range=30d` | `0.002` test USDC |
 
-Create a grant that allows only `x402.pay`, category `market_intelligence`, domain `dev.omniterminal.app`, and a small USDC cap. Then run:
+Create a grant that allows only `x402.pay`, category `market_intelligence`, domain `omniterminal.app`, and a small USDC cap. Then run:
 
 ```bash
 ACM_GATEWAY_URL=http://127.0.0.1:8787 \
 ACM_CONFIRM_TESTNET_SPEND=yes \
-OMNI_X402_RESOURCE_URL='https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5' \
+OMNI_X402_RESOURCE_URL='https://omniterminal.app/api/x402/v1/news/BTC?limit=5' \
 npm run example:omni-x402
 ```
 
 Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the example performs only the public CDP merchant lookup. `ACM_GATEWAY_URL` identifies the protected buyer gateway. `OMNI_X402_RESOURCE_URL` identifies the seller. Never set either variable to a wallet private key.
 
-On 15 July 2026, the funded ACM payer completed both purchases. The Base Sepolia receipts have status `1`:
+On 15 July 2026, the funded ACM payer completed the News Pulse purchase. The Base Sepolia receipt has status `1`:
 
 - AI News Pulse: [`0x160b…fe1d`](https://sepolia.basescan.org/tx/0x160b9fc0216a3dbb1eb1582acf45603b308bfe217690ce26f5aebc265b4efe1d)
-- Trader Profile: [`0x845c…ab59`](https://sepolia.basescan.org/tx/0x845ca7f06792bf82ffd85b45bc1bb2a6fe7939c7e51e9cdffe4a0618a9f2ab59)
 
-The current stable dev hostname is otherwise protected by Cloudflare Access. External clients will not see the seller's `402` until the operator creates a separate path-scoped Access application for `dev.omniterminal.app/api/x402/*`. Do not use a temporary tunnel URL as a public default.
+The main and dev seller paths are public through a dedicated Cloudflare Access application scoped only to `/api/x402/*`; neither parent site is bypassed. Use the main domain as the public default and the dev domain for staging tests.
 
 ## Client safety checklist
 

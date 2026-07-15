@@ -63,7 +63,7 @@ These calls are read-only and send no API key or wallet material.
 ```ts
 await client.payQuotedX402Testnet({
   grantId,
-  resourceUrl: "https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5",
+  resourceUrl: "https://omniterminal.app/api/x402/v1/news/BTC?limit=5",
   category: "market_intelligence",
   purpose: "summarize_current_btc_news",
   idempotencyKey: crypto.randomUUID(),

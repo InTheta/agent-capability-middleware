@@ -66,7 +66,7 @@ test("quoted x402 payment delegates exact policy metadata to the gateway", async
   });
   const request = {
     grantId: "grant_test",
-    resourceUrl: "https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5",
+    resourceUrl: "https://omniterminal.app/api/x402/v1/news/BTC?limit=5",
     category: "market_intelligence",
     purpose: "test_news",
     idempotencyKey: "pay_test_001",

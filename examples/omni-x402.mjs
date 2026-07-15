@@ -20,7 +20,7 @@ if (!gatewayUrl) {
 }
 
 const resourceUrl = process.env.OMNI_X402_RESOURCE_URL
-  ?? "https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5";
+  ?? "https://omniterminal.app/api/x402/v1/news/BTC?limit=5";
 const apiKey = process.env.ACM_API_KEY;
 const client = new AgentCapabilityClient(gatewayUrl, apiKey ? { apiKey } : {});
 const agent = await client.registerAgent({
