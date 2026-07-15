@@ -46,6 +46,8 @@ Budget should be reserved transactionally before signing. Ambiguous settlement n
 
 Public resource discovery and challenge inspection are read-only. The public reference server does not sign or settle payments. Funded testnet execution belongs in a protected gateway deployment and must never require placing a private key in this SDK repository.
 
+The standalone `searchCdpX402Bazaar` and `listCdpX402MerchantResources` helpers call Coinbase's public discovery API without credentials. A seller appears only after it declares valid Bazaar metadata and settles through the CDP facilitator; an x402.org test settlement is not a CDP listing.
+
 The SDK method `payQuotedX402Testnet` calls such a gateway. It does not sign locally.
 
 ## Real Omni example
@@ -61,11 +63,12 @@ Create a grant that allows only `x402.pay`, category `market_intelligence`, doma
 
 ```bash
 ACM_GATEWAY_URL=http://127.0.0.1:8787 \
+ACM_CONFIRM_TESTNET_SPEND=yes \
 OMNI_X402_RESOURCE_URL='https://dev.omniterminal.app/api/x402/v1/news/BTC?limit=5' \
 npm run example:omni-x402
 ```
 
-`ACM_GATEWAY_URL` identifies the protected buyer gateway. `OMNI_X402_RESOURCE_URL` identifies the seller. Never set either variable to a wallet private key.
+Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the example performs only the public CDP merchant lookup. `ACM_GATEWAY_URL` identifies the protected buyer gateway. `OMNI_X402_RESOURCE_URL` identifies the seller. Never set either variable to a wallet private key.
 
 On 15 July 2026, the funded ACM payer completed both purchases. The Base Sepolia receipts have status `1`:
 

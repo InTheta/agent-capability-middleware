@@ -49,6 +49,15 @@ Vector search is an optional gateway feature. Sensitive namespaces should be exc
 | `inspectPublicX402Challenge` | Inspect a payment challenge without paying. |
 | `payQuotedX402Testnet` | Ask a protected ACM gateway to quote, authorize, sign, settle, and retry an exact testnet resource. |
 
+Standalone, keyless discovery helpers do not use the configured ACM gateway:
+
+| Function | Purpose |
+|---|---|
+| `searchCdpX402Bazaar` | Semantically search the public CDP x402 Bazaar with network, asset, recipient, price, and extension filters. |
+| `listCdpX402MerchantResources` | List cataloged services for a receiving wallet. |
+
+These calls are read-only and send no API key or wallet material.
+
 `payQuotedX402Testnet` accepts grant and policy metadata, never a private key:
 
 ```ts

@@ -1,6 +1,6 @@
 {
   "name": "@agent-capability-middleware/sdk",
-  "version": "0.1.0-preview.4",
+  "version": "0.1.0-preview.5",
   "description": "TypeScript SDK for scoped agent permissions, user-controlled memory, and x402 policy flows",
   "type": "module",
   "license": "Apache-2.0",

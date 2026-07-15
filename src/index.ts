@@ -191,6 +191,87 @@ export interface BazaarResource {
   quality?: { l30DaysTotalCalls?: number; l30DaysUniquePayers?: number; lastCalledAt?: string };
 }
 
+export interface CdpBazaarMerchantResponse {
+  x402Version: number;
+  payTo: string;
+  resources: BazaarResource[];
+  pagination: { limit: number; offset: number; total: number };
+}
+
+export interface CdpBazaarSearchResponse {
+  x402Version: number;
+  resources: BazaarResource[];
+  partialResults: boolean;
+  searchMethod?: string;
+}
+
+export interface CdpBazaarSearchRequest {
+  query?: string;
+  network?: string;
+  asset?: string;
+  scheme?: string;
+  payTo?: string;
+  maxUsdPrice?: string;
+  extensions?: string[];
+  limit?: number;
+}
+
+export const CDP_X402_BAZAAR_ORIGIN = "https://api.cdp.coinbase.com/platform/v2/x402/discovery";
+
+function requireBazaarLimit(value: number, maximum: number): number {
+  if (!Number.isInteger(value) || value < 1 || value > maximum) {
+    throw new RangeError(`Bazaar limit must be an integer from 1 to ${maximum}`);
+  }
+  return value;
+}
+
+async function publicJson<T>(url: URL, fetchImplementation: typeof fetch): Promise<T> {
+  const response = await fetchImplementation(url, { headers: { accept: "application/json" } });
+  const body = (await response.json()) as T;
+  if (!response.ok) throw new AgentCapabilityApiError(response.status, body);
+  return body;
+}
+
+export function searchCdpX402Bazaar(
+  request: CdpBazaarSearchRequest = {},
+  fetchImplementation: typeof fetch = globalThis.fetch,
+): Promise<CdpBazaarSearchResponse> {
+  const url = new URL(`${CDP_X402_BAZAAR_ORIGIN}/search`);
+  const scalar: Array<[keyof CdpBazaarSearchRequest, string]> = [
+    ["query", "query"],
+    ["network", "network"],
+    ["asset", "asset"],
+    ["scheme", "scheme"],
+    ["payTo", "payTo"],
+    ["maxUsdPrice", "maxUsdPrice"],
+  ];
+  for (const [key, parameter] of scalar) {
+    const value = request[key];
+    if (typeof value === "string" && value) url.searchParams.set(parameter, value);
+  }
+  for (const extension of request.extensions ?? []) url.searchParams.append("extensions", extension);
+  if (request.limit !== undefined) url.searchParams.set("limit", String(requireBazaarLimit(request.limit, 20)));
+  return publicJson(url, fetchImplementation);
+}
+
+export function listCdpX402MerchantResources(
+  payTo: string,
+  options: { limit?: number; offset?: number } = {},
+  fetchImplementation: typeof fetch = globalThis.fetch,
+): Promise<CdpBazaarMerchantResponse> {
+  if (!/^0x[0-9a-fA-F]{40}$/.test(payTo)) throw new TypeError("payTo must be an EVM address");
+  const url = new URL(`${CDP_X402_BAZAAR_ORIGIN}/merchant`);
+  url.searchParams.set("payTo", payTo);
+  if (options.limit !== undefined) url.searchParams.set("limit", String(requireBazaarLimit(options.limit, 100)));
+  if (options.offset !== undefined) {
+    if (!Number.isInteger(options.offset) || options.offset < 0) {
+      throw new RangeError("Bazaar offset must be a non-negative integer");
+    }
+    url.searchParams.set("offset", String(options.offset));
+  }
+  return publicJson(url, fetchImplementation);
+}
+
 export interface PublicX402Challenge {
   id: string;
   name: string;

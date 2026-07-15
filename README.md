@@ -42,10 +42,10 @@ The quickstart:
 
 ## Install the SDK
 
-Until the first npm release, install the tagged GitHub package:
+Until the first npm release, install the current GitHub package:
 
 ```bash
-npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.3
+npm install github:InTheta/agent-capability-middleware#main
 ```
 
 ```ts
@@ -96,10 +96,12 @@ The SDK can inspect x402 resources and call a compatible gateway's bounded payme
 Omni Terminal is the first real external-service example. Its compact AI News Pulse and Trader Profile products were purchased through ACM on Base Sepolia testnet. Run the opt-in example only against a protected, funded ACM gateway:
 
 ```bash
-ACM_GATEWAY_URL=http://127.0.0.1:8787 npm run example:omni-x402
+ACM_GATEWAY_URL=http://127.0.0.1:8787 \
+ACM_CONFIRM_TESTNET_SPEND=yes \
+npm run example:omni-x402
 ```
 
-This command is intentionally excluded from `npm run verify` and CI because it may spend test USDC. The stable Omni URL also requires its path-scoped Cloudflare Access application; see [x402 integration](docs/x402-integration.md).
+Without the explicit confirmation variable, the example performs only a keyless lookup of Omni's receiving address in CDP Bazaar. Developers can also call `searchCdpX402Bazaar` or `listCdpX402MerchantResources` directly. The funded path is intentionally excluded from `npm run verify` and CI because it may spend test USDC. The stable Omni URL also requires its path-scoped Cloudflare Access application; see [x402 integration](docs/x402-integration.md).
 
 ## Repository map
 

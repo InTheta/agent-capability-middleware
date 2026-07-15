@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import {
   AgentCapabilityClient,
   createShoppingEvidenceImportRequest,
+  listCdpX402MerchantResources,
   parseShoppingOrderCsv,
+  searchCdpX402Bazaar,
 } from "@agent-capability-middleware/sdk";
 
 test("shopping evidence is minimized locally", () => {
@@ -77,4 +79,30 @@ test("quoted x402 payment delegates exact policy metadata to the gateway", async
     method: "POST",
     body: request,
   });
+});
+
+test("CDP Bazaar helpers use public discovery endpoints without credentials", async () => {
+  const requests = [];
+  const mockFetch = async (input, init) => {
+    requests.push({ url: String(input), authorization: new Headers(init?.headers).get("authorization") });
+    return Response.json({ x402Version: 2, resources: [], partialResults: false, pagination: { limit: 25, offset: 0, total: 0 }, payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457" });
+  };
+
+  await searchCdpX402Bazaar({
+    query: "crypto market news",
+    network: "eip155:84532",
+    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+    limit: 5,
+  }, mockFetch);
+  await listCdpX402MerchantResources(
+    "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+    { limit: 100 },
+    mockFetch,
+  );
+
+  assert.match(requests[0].url, /\/discovery\/search\?/);
+  assert.match(requests[0].url, /query=crypto\+market\+news/);
+  assert.match(requests[1].url, /\/discovery\/merchant\?/);
+  assert.equal(requests[0].authorization, null);
+  assert.equal(requests[1].authorization, null);
 });

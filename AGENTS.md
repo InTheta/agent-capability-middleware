@@ -18,6 +18,7 @@
 - Public client methods send grant and policy metadata to a configured gateway; the gateway owns signing and reconciliation.
 - Bind exact HTTPS resource, method, network, asset, amount, recipient, purpose, category, grant, and idempotency.
 - Preserve the distinction between read-only challenge inspection and funded execution.
+- CDP Bazaar search/merchant helpers are public and keyless. Do not attach ACM bearer tokens, payer keys, or CDP seller credentials to discovery calls, and do not claim a seller is indexed until the catalog returns it after CDP settlement.
 - The reference server remains non-production and does not implement payer custody.
 
 ## Verification and documentation

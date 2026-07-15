@@ -1,7 +1,9 @@
 import {
   AgentCapabilityClient,
   createShoppingEvidenceImportRequest,
+  listCdpX402MerchantResources,
   parseShoppingOrderCsv,
+  searchCdpX402Bazaar,
   type RegisterAgentRequest,
 } from "@agent-capability-middleware/sdk";
 
@@ -26,3 +28,6 @@ void client.payQuotedX402Testnet({
   purpose: "typed_example",
   idempotencyKey: "typed_example_001",
 });
+
+void searchCdpX402Bazaar({ query: "market news", network: "eip155:84532", limit: 5 });
+void listCdpX402MerchantResources("0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457");
