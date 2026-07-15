@@ -1,0 +1,59 @@
+{
+  "name": "@agent-capability-middleware/sdk",
+  "version": "0.1.0-preview.3",
+  "description": "TypeScript SDK for scoped agent permissions, user-controlled memory, and x402 policy flows",
+  "type": "module",
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "keywords": [
+    "ai-agents",
+    "capabilities",
+    "mcp",
+    "permissions",
+    "privacy",
+    "x402"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InTheta/agent-capability-middleware.git"
+  },
+  "bugs": {
+    "url": "https://github.com/InTheta/agent-capability-middleware/issues"
+  },
+  "homepage": "https://github.com/InTheta/agent-capability-middleware#readme",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck:consumer": "npm run build && tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext examples/typecheck.ts",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "package:smoke": "npm run build && node scripts/smoke-package.mjs",
+    "quickstart": "npm run build && node scripts/run-quickstart.mjs",
+    "verify": "npm run typecheck && npm run typecheck:consumer && npm test && npm run package:smoke && npm run quickstart && npm pack --dry-run",
+    "prepack": "npm run build",
+    "prepare": "npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}
