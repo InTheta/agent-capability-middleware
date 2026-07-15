@@ -5,6 +5,12 @@ export interface CreateGrantRequest {
   deniedScopes?: string[];
   spendPolicy?: { currency: string; perRequestMax: number; dailyMax: number; approvalRequiredAbove: number };
   resourcePolicy?: { allowedCategories?: string[]; allowedDomains?: string[]; deniedCategories?: string[]; deniedDomains?: string[] };
+  settlementPolicy?: {
+    allowedNetworks?: string[];
+    allowedAssets?: Array<{ network: string; asset: string; symbol: string; decimals: number }>;
+    allowedPayees?: string[];
+    requireApprovalForMainnet?: boolean;
+  };
   expiresInSeconds?: number;
 }
 
@@ -124,6 +130,31 @@ export interface DemoWalletBalanceReport {
     readyForExactX402: boolean;
     hasNativeGas: boolean;
   }>;
+}
+
+export interface MainnetWalletStatus {
+  configured: boolean;
+  enabled: boolean;
+  address?: string;
+  custody: "server_mainnet_key_file" | "server_mainnet_key_env" | "not_configured";
+  network: "eip155:8453";
+  chain: "Base";
+  asset: "USDC";
+  assetContract: string;
+  fundingRequired: boolean;
+  humanGates: string[];
+}
+
+export interface MainnetWalletBalanceReport {
+  configured: boolean;
+  payerAddress?: string;
+  checkedAt: string;
+  network: "eip155:8453";
+  chain: "Base";
+  nativeBalance: string;
+  usdcBalance: string;
+  usdcContract: string;
+  funded: boolean;
 }
 
 export interface TestnetFundingInstructions {
@@ -317,6 +348,10 @@ export interface PayQuotedX402TestnetRequest {
   body?: string;
 }
 
+export interface PayQuotedX402Request extends PayQuotedX402TestnetRequest {
+  approvalId?: string;
+}
+
 export interface AgentCapabilityClientOptions {
   apiKey?: string;
   fetch?: typeof fetch;
@@ -373,6 +408,10 @@ export class AgentCapabilityClient {
     return this.post("/v1/pay/x402/testnet/quoted", request);
   }
 
+  payQuotedX402(request: PayQuotedX402Request): Promise<Record<string, unknown>> {
+    return this.post("/v1/pay/x402/quoted", request);
+  }
+
   approveApproval(approvalId: string): Promise<Record<string, unknown>> {
     return this.post(`/v1/approvals/${encodeURIComponent(approvalId)}/approve`, {});
   }
@@ -418,6 +457,14 @@ export class AgentCapabilityClient {
 
   getWalletBalances(): Promise<DemoWalletBalanceReport> {
     return this.get("/v1/wallet/balances");
+  }
+
+  getMainnetWalletStatus(): Promise<MainnetWalletStatus> {
+    return this.get("/v1/wallet/mainnet-status");
+  }
+
+  getMainnetWalletBalances(): Promise<MainnetWalletBalanceReport> {
+    return this.get("/v1/wallet/mainnet-balances");
   }
 
   getTestnetFundingInstructions(): Promise<TestnetFundingInstructions> {

@@ -81,6 +81,34 @@ test("quoted x402 payment delegates exact policy metadata to the gateway", async
   });
 });
 
+test("generic quoted x402 and mainnet status use protected gateway routes", async () => {
+  const requests = [];
+  const client = new AgentCapabilityClient("https://gateway.example.com", {
+    fetch: async (input, init) => {
+      requests.push({ url: String(input), method: init?.method, body: init?.body ? JSON.parse(String(init.body)) : undefined });
+      return Response.json({ configured: true, enabled: false });
+    },
+  });
+  const payment = {
+    grantId: "grant_mainnet_test",
+    resourceUrl: "https://seller.example.com/paid",
+    category: "market_intelligence",
+    purpose: "bounded_test",
+    idempotencyKey: "mainnet_test_001",
+    approvalId: "appr_test",
+  };
+
+  await client.payQuotedX402(payment);
+  await client.getMainnetWalletStatus();
+  await client.getMainnetWalletBalances();
+
+  assert.deepEqual(requests, [
+    { url: "https://gateway.example.com/v1/pay/x402/quoted", method: "POST", body: payment },
+    { url: "https://gateway.example.com/v1/wallet/mainnet-status", method: undefined, body: undefined },
+    { url: "https://gateway.example.com/v1/wallet/mainnet-balances", method: undefined, body: undefined },
+  ]);
+});
+
 test("CDP Bazaar helpers use public discovery endpoints without credentials", async () => {
   const requests = [];
   const mockFetch = async (input, init) => {

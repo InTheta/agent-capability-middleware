@@ -9,7 +9,7 @@
 - confirmed-attribute access;
 - optional semantic-memory gateway methods;
 - spend-policy and x402 gateway methods;
-- keyless quoted-testnet payment method plus a real Omni external-service example;
+- keyless quoted testnet/general payment methods, mainnet readiness checks, and a real six-product Omni external-service example;
 - public implementation profiles;
 - clean local reference flow on Node.js 20 and 22.
 
@@ -29,7 +29,7 @@
 - OpenID4VC-compatible claim exchange;
 - additional user-approved importers;
 - multi-agent delegation with attenuation and audit-chain verification;
-- production x402 settlement adapters, durable budget reservation/reconciliation, and additional supported rails;
+- hosted production settlement operations, additional supported rails, and reconciliation tooling;
 - policy simulation and enterprise controls.
 
 Roadmap items are directional, not claims of current implementation.

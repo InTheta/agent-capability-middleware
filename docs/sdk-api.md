@@ -45,9 +45,12 @@ Vector search is an optional gateway feature. Sensitive namespaces should be exc
 | `getWalletStatus` | Read configured testnet wallet status without secrets. |
 | `getWalletBalances` | Read supported testnet balances. |
 | `getTestnetFundingInstructions` | Read the public payer address and funding metadata. |
+| `getMainnetWalletStatus` | Read the separate payer address, disabled/enabled state, asset and human gates. |
+| `getMainnetWalletBalances` | Read Base mainnet USDC/ETH balances without exposing the key. |
 | `listPublicX402Resources` | Discover public x402 resources through a gateway. |
 | `inspectPublicX402Challenge` | Inspect a payment challenge without paying. |
 | `payQuotedX402Testnet` | Ask a protected ACM gateway to quote, authorize, sign, settle, and retry an exact testnet resource. |
+| `payQuotedX402` | Ask a protected gateway to quote any allowed x402 resource; mainnet requires a separate payer, explicit settlement policy and approval. |
 
 Standalone, keyless discovery helpers do not use the configured ACM gateway:
 
@@ -71,6 +74,11 @@ await client.payQuotedX402Testnet({
 ```
 
 The configured gateway owns payer custody, challenge validation, budget reservation, and reconciliation. Keep live payment examples opt-in and outside CI.
+
+For mainnet-capable gateways, grants must explicitly allow the network, canonical asset contract
+and payee. The first call may return `needs_user_approval`; approve that request, then repeat with
+its `approvalId`. The gateway re-quotes and denies any changed resource, network, asset, payee,
+currency or increased amount.
 
 ## Errors
 

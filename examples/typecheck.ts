@@ -28,6 +28,15 @@ void client.payQuotedX402Testnet({
   purpose: "typed_example",
   idempotencyKey: "typed_example_001",
 });
+void client.payQuotedX402({
+  grantId: "grant_example",
+  resourceUrl: "https://seller.example.com/paid",
+  category: "market_intelligence",
+  purpose: "typed_mainnet_example",
+  idempotencyKey: "typed_mainnet_example_001",
+});
+void client.getMainnetWalletStatus();
+void client.getMainnetWalletBalances();
 
 void searchCdpX402Bazaar({ query: "market news", network: "eip155:84532", limit: 5 });
 void listCdpX402MerchantResources("0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457");

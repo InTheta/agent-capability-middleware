@@ -33,9 +33,9 @@ const grant = await client.createGrant({
   scopes: ["x402.pay"],
   spendPolicy: {
     currency: "USDC",
-    perRequestMax: 0.002,
-    dailyMax: 0.02,
-    approvalRequiredAbove: 0.002,
+    perRequestMax: 0.003,
+    dailyMax: 0.05,
+    approvalRequiredAbove: 0.003,
   },
   resourcePolicy: {
     allowedDomains: [new URL(resourceUrl).hostname],
