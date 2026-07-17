@@ -1,6 +1,22 @@
 # Getting Started
 
-## Choose a development mode
+## Start with the narrow MVP
+
+The supported developer-preview proof is one paid, fresh market-intelligence result through a
+protected ACM gateway. Do not begin by integrating identity claims, personal attributes or an
+importer.
+
+First inspect the catalog without spending:
+
+```bash
+npm ci
+npm run example:omni-x402
+```
+
+Then obtain controlled gateway access, create one `x402.pay` grant and run the same example with
+`ACM_CONFIRM_TESTNET_SPEND=yes`. The payer key remains at the gateway; it is never SDK input.
+
+## Development modes
 
 ### Local reference mode
 
@@ -27,7 +43,7 @@ const acm = new AgentCapabilityClient(process.env.ACM_GATEWAY_URL!, {
 
 Keep gateway credentials on a server or in a protected workload environment. Do not embed a privileged API key in a public browser bundle.
 
-## Minimum integration
+## Secondary capability lifecycle
 
 1. Register the agent identity.
 2. Ask the user to create or approve a narrow grant.
@@ -51,7 +67,7 @@ const result = await acm.getConfirmedAttribute(
 );
 ```
 
-## Pay a protected x402 resource
+## Canonical integration: pay a protected x402 resource
 
 The public SDK delegates signing and settlement to the protected gateway. For a Base Sepolia integration test, create a narrow grant and pass the exact resource URL:
 
@@ -73,16 +89,26 @@ const marketGrant = await acm.createGrant({
   expiresInSeconds: 900,
 });
 
-const paid = await acm.payQuotedX402Testnet({
+const paid = await acm.consumeX402Testnet<{
+  schema: "market_risk_snapshot.v1";
+  freshness: { status: "fresh" | "stale" | "unknown" };
+}>({
   grantId: marketGrant.id,
   resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
   category: "market_intelligence",
   purpose: "evaluate_btc_market_risk",
   idempotencyKey: crypto.randomUUID(),
 });
+
+if (paid.decision !== "paid" || paid.resourceBody?.freshness.status !== "fresh") {
+  throw new Error("No fresh paid market-risk result was returned");
+}
 ```
 
-The live Omni catalog also exposes enriched news, exact news windows, liquidation maps, trader rankings and individual trader profiles. Run the deliberately spend-gated 14-call example only against a funded Base Sepolia payer:
+The live Omni catalog also exposes enriched news, exact news windows, liquidation maps, trader
+rankings and individual trader profiles. These are proof coverage, not additional MVP integration
+requirements. Run the deliberately spend-gated catalog smoke only against a funded Base Sepolia
+payer:
 
 ```bash
 ACM_GATEWAY_URL=https://your-protected-gateway.example \

@@ -1,6 +1,6 @@
 # Agent Capability Middleware
 
-The open TypeScript SDK and reference profiles for adding user-controlled permissions, private context and payment policy to AI-agent interactions.
+The open TypeScript SDK for letting an agent buy one exact x402 resource under a bounded user grant, without receiving a wallet private key or unrestricted spending authority.
 
 > Developer preview. The SDK is usable today; the included server is an in-memory reference implementation and must not be used with real personal data or funds.
 
@@ -19,7 +19,31 @@ flowchart LR
     P -. "identity or claims" .-> I["OAuth, OIDC and verifiable credentials"]
 ```
 
-## Run the real local lifecycle
+## Current MVP path
+
+The first supported workflow is intentionally narrow:
+
+```text
+Agent -> bounded ACM grant -> protected testnet payer -> paid Omni resource
+      -> fresh typed response + settlement receipt + policy audit
+```
+
+The canonical product is Omni Terminal's composite BTC market-risk snapshot at `0.003` Base
+Sepolia USDC. It combines live Hyperliquid market state with current enriched news. The SDK pins
+the expected amount, network, asset and payee and delegates signing to a protected ACM gateway.
+
+Run the public example without a gateway to inspect Omni's CDP Bazaar catalog without spending:
+
+```bash
+git clone https://github.com/InTheta/agent-capability-middleware.git
+cd agent-capability-middleware
+npm ci
+npm run example:omni-x402
+```
+
+The funded path is opt-in and documented under [x402 integration](docs/x402-integration.md).
+
+## Run the secondary local reference lifecycle
 
 Requirements: Node.js 20 or 22.
 
@@ -30,7 +54,8 @@ npm ci
 npm run quickstart
 ```
 
-The quickstart:
+This synthetic, in-memory quickstart demonstrates the broader capability lifecycle. It is not the
+MVP release gate. It:
 
 1. parses an Amazon-shaped order CSV locally;
 2. uploads aggregate shopping signals, not raw rows;
@@ -69,7 +94,7 @@ const grant = await acm.createGrant({
 });
 ```
 
-## Privacy-safe shopping learning
+## Secondary experiment: privacy-safe shopping learning
 
 ```ts
 import {
@@ -95,7 +120,7 @@ The SDK can inspect x402 resources and call a compatible gateway's bounded payme
 
 Omni Terminal is the first real external-service example. Six canonical paid route forms now cover
 enriched news, public trader profiles, liquidation maps, trader rankings and composite market
-risk. All are settled on Base Sepolia and cataloged in CDP Bazaar. Run the opt-in example only
+risk. All have completed Base Sepolia settlement and are cataloged in CDP Bazaar. Run the opt-in example only
 against a protected, funded ACM gateway:
 
 ```bash
