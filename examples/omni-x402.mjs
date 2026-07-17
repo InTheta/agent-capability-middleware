@@ -7,10 +7,38 @@ import {
 const omniReceiver = process.env.OMNI_X402_PAY_TO
   ?? "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457";
 const discovery = await listCdpX402MerchantResources(omniReceiver, { limit: 100 });
-console.log(JSON.stringify({ discovery: "cdp_bazaar", omniReceiver, resources: discovery.resources }, null, 2));
+const marketRiskListing = discovery.resources.find((resource) =>
+  resource.resource === "https://omniterminal.app/api/x402/v1/market-risk/:symbol"
+);
+if (!marketRiskListing) throw new Error("Canonical Omni market-risk route is not present in CDP Bazaar");
+const marketRiskQuote = marketRiskListing.accepts.find((accept) => accept.network === "eip155:84532");
+if (!marketRiskQuote) throw new Error("Canonical Omni market-risk route has no Base Sepolia quote");
+if (marketRiskQuote.amount !== "3000") throw new Error(`Expected 3000 atomic USDC, received ${marketRiskQuote.amount}`);
+if (marketRiskQuote.asset.toLowerCase() !== "0x036cbd53842c5426634e7929541ec2318f3dcf7e") {
+  throw new Error("Canonical Omni market-risk quote uses an unexpected asset");
+}
+if (marketRiskQuote.payTo.toLowerCase() !== omniReceiver.toLowerCase()) {
+  throw new Error("Canonical Omni market-risk quote uses an unexpected receiver");
+}
+
+console.log(JSON.stringify({
+  ready: true,
+  mode: "no_spend",
+  discovery: "cdp_bazaar",
+  omniReceiver,
+  listedRoutes: discovery.resources.length,
+  canonicalMarketRisk: {
+    route: marketRiskListing.resource,
+    amountUsdc: 0.003,
+    network: marketRiskQuote.network,
+    asset: marketRiskQuote.asset,
+    payTo: marketRiskQuote.payTo,
+  },
+}, null, 2));
 
 if (process.env.ACM_CONFIRM_TESTNET_SPEND !== "yes") {
-  console.log("Discovery is read-only. Set ACM_CONFIRM_TESTNET_SPEND=yes to run the funded testnet call.");
+  console.log("OMNI_X402_NO_SPEND_READY");
+  console.log("Set ACM_CONFIRM_TESTNET_SPEND=yes only when a protected funded gateway and explicit grant are intended.");
   process.exit(0);
 }
 

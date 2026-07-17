@@ -176,6 +176,7 @@ Not included:
 - [Privacy-safe learning](docs/privacy-safe-learning.md)
 - [SDK API](docs/sdk-api.md)
 - [x402 integration](docs/x402-integration.md)
+- [Controlled design-partner checklist](docs/design-partner-checklist.md)
 - [Public roadmap](docs/roadmap.md)
 - [Security policy](SECURITY.md)
 
