@@ -10,6 +10,10 @@ MCP lets agents call tools. OAuth/OIDC can identify clients and users. Verifiabl
 
 Agent Capability Middleware composes those existing standards behind a capability and policy layer. It does not replace them or introduce a new transport protocol.
 
+In short: **x402 moves money; ACM governs authority.** The SDK describes the intended purchase and
+grant context, while the protected gateway owns challenge validation, budget reservation, signing,
+settlement reconciliation, audit, and revocation.
+
 ```mermaid
 flowchart LR
     U["User vault"] --> P["Permission and policy gateway"]

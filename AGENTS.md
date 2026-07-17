@@ -2,9 +2,14 @@
 
 ## Public boundary
 
+- Product doctrine: x402 moves money; ACM governs authority. Lead public claims with exact
+  paid-resource authorization and protected payer custody. Two-way data licensing and auctions are
+  future product hypotheses, not SDK release claims.
 - This repository contains the dependency-light public SDK, local evidence minimizers, examples, and draft implementation profiles. It does not contain hosted vault, payer custody, provider secrets, or production policy state.
 - The SDK may request a paid call from a protected ACM gateway. It must never accept, store, derive, print, or transmit a wallet private key or seed phrase.
 - Keep live/funded examples opt-in. Do not run them from `test`, `verify`, package lifecycle scripts, or CI.
+- Label features as implemented, verified live, prepared, planned, or hypothesis; do not turn
+  testnet proof into mainnet or customer-traction language.
 
 ## Data learning
 
