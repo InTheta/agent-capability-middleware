@@ -81,6 +81,43 @@ test("quoted x402 payment delegates exact policy metadata to the gateway", async
   });
 });
 
+test("typed x402 consumption uses the keyless quoted-payment route", async () => {
+  let captured;
+  const client = new AgentCapabilityClient("https://gateway.example.com", {
+    fetch: async (input, init) => {
+      captured = { url: String(input), method: init?.method, body: JSON.parse(String(init?.body)) };
+      return Response.json({
+        decision: "paid",
+        receiptId: "0xreceipt",
+        resourceBody: { service: "omni.market_risk_snapshot", freshness: { status: "fresh" } },
+      });
+    },
+  });
+  const request = {
+    grantId: "grant_live_agent",
+    resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
+    category: "market_intelligence",
+    purpose: "build_current_risk_brief",
+    idempotencyKey: "consume_test_001",
+    expectedPayment: {
+      amount: 0.003,
+      network: "eip155:84532",
+      asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+    },
+  };
+
+  const result = await client.consumeX402Testnet(request);
+
+  assert.equal(result.decision, "paid");
+  assert.equal(result.resourceBody.freshness.status, "fresh");
+  assert.deepEqual(captured, {
+    url: "https://gateway.example.com/v1/pay/x402/testnet/quoted",
+    method: "POST",
+    body: request,
+  });
+});
+
 test("generic quoted x402 and mainnet status use protected gateway routes", async () => {
   const requests = [];
   const client = new AgentCapabilityClient("https://gateway.example.com", {

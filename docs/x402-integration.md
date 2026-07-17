@@ -48,7 +48,7 @@ Public resource discovery and challenge inspection are read-only. The public ref
 
 The standalone `searchCdpX402Bazaar` and `listCdpX402MerchantResources` helpers call Coinbase's public discovery API without credentials. A seller appears only after it declares valid Bazaar metadata and settles through the CDP facilitator; an x402.org test settlement is not a CDP listing.
 
-The SDK methods `payQuotedX402Testnet` and `payQuotedX402` call such a gateway. They do not sign locally.
+The SDK methods `payQuotedX402Testnet`, typed `consumeX402Testnet<T>`, and `payQuotedX402` call such a gateway. They do not sign locally.
 
 ## Real Omni example
 
@@ -63,6 +63,11 @@ Omni Terminal currently exposes six canonical Base Sepolia paid route forms:
 | Trader Leaderboard | `/api/x402/v1/traders/{symbol}` | `0.002` test USDC |
 | Market Risk Snapshot | `/api/x402/v1/market-risk/{symbol}` | `0.003` test USDC |
 
+Successful Omni responses expose `schema`, `generated_at`, `data_as_of`, and `freshness`. Consumers
+using a current route should fail closed unless `freshness.status` is `fresh`; an exact historical
+news window may deliberately report `historical`. The composite market-risk response includes
+component freshness for both its live Hyperliquid projection and news context.
+
 Create a grant that allows only `x402.pay`, category `market_intelligence`, domain `omniterminal.app`, and a small USDC cap. Then run:
 
 ```bash
@@ -71,6 +76,10 @@ ACM_CONFIRM_TESTNET_SPEND=yes \
 OMNI_X402_RESOURCE_URL='https://omniterminal.app/api/x402/v1/news/BTC?limit=5' \
 npm run example:omni-x402
 ```
+
+Use `consumeX402Testnet<T>()` when the agent needs a typed paid body and must validate that data
+before acting. `payQuotedX402Testnet()` remains supported for compatibility; both call the same
+protected quoted-payment endpoint.
 
 Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the example performs only the public CDP merchant lookup. `ACM_GATEWAY_URL` identifies the protected buyer gateway. `OMNI_X402_RESOURCE_URL` identifies the seller. Never set either variable to a wallet private key.
 

@@ -20,7 +20,7 @@ if (!gatewayUrl) {
 }
 
 const resourceUrl = process.env.OMNI_X402_RESOURCE_URL
-  ?? "https://omniterminal.app/api/x402/v1/news/BTC?limit=5";
+  ?? "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current";
 const apiKey = process.env.ACM_API_KEY;
 const client = new AgentCapabilityClient(gatewayUrl, apiKey ? { apiKey } : {});
 const agent = await client.registerAgent({
@@ -41,15 +41,37 @@ const grant = await client.createGrant({
     allowedDomains: [new URL(resourceUrl).hostname],
     allowedCategories: ["market_intelligence"],
   },
+  settlementPolicy: {
+    allowedNetworks: ["eip155:84532"],
+    allowedAssets: [{
+      network: "eip155:84532",
+      asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      symbol: "USDC",
+      decimals: 6,
+    }],
+    allowedPayees: [omniReceiver],
+    requireApprovalForMainnet: true,
+  },
   expiresInSeconds: 900,
 });
 
-const result = await client.payQuotedX402Testnet({
+const result = await client.consumeX402Testnet({
   grantId: grant.id,
   resourceUrl,
   category: "market_intelligence",
   purpose: "summarize_current_market_intelligence",
   idempotencyKey: randomUUID(),
+  expectedPayment: {
+    amount: 0.003,
+    network: "eip155:84532",
+    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    payTo: omniReceiver,
+  },
 });
+
+if (result.decision !== "paid") throw new Error(`Payment failed: ${result.reason ?? result.decision}`);
+if (result.resourceBody?.freshness?.status !== "fresh") {
+  throw new Error(`Paid resource is not fresh: ${result.resourceBody?.freshness?.status ?? "missing"}`);
+}
 
 console.log(JSON.stringify({ resourceUrl, agentId: agent.id, grantId: grant.id, result }, null, 2));

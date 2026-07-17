@@ -91,7 +91,7 @@ The parser does not read cookies. It does not include order IDs, addresses, paym
 
 ## x402 boundary
 
-The SDK can inspect x402 resources and call a compatible gateway's bounded payment endpoints. It never accepts or stores a private key. A production gateway must bind payment approval to the exact resource, amount, network, recipient, purpose and idempotency key before a separately configured wallet signs.
+The SDK can inspect x402 resources and call a compatible gateway's bounded payment endpoints. Its typed `consumeX402Testnet<T>()` method returns the paid body, receipt, and policy result so an agent can validate the seller's schema and freshness before acting. It never accepts or stores a private key. A production gateway must bind payment approval to the exact resource, amount, network, recipient, purpose and idempotency key before a separately configured wallet signs.
 
 Omni Terminal is the first real external-service example. Six canonical paid route forms now cover
 enriched news, public trader profiles, liquidation maps, trader rankings and composite market

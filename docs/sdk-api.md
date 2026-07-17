@@ -50,6 +50,7 @@ Vector search is an optional gateway feature. Sensitive namespaces should be exc
 | `listPublicX402Resources` | Discover public x402 resources through a gateway. |
 | `inspectPublicX402Challenge` | Inspect a payment challenge without paying. |
 | `payQuotedX402Testnet` | Ask a protected ACM gateway to quote, authorize, sign, settle, and retry an exact testnet resource. |
+| `consumeX402Testnet<T>` | Typed alias for the same keyless flow; returns the paid response as `resourceBody: T` with its receipt and policy result. |
 | `payQuotedX402` | Ask a protected gateway to quote any allowed x402 resource; mainnet requires a separate payer, explicit settlement policy and approval. |
 
 Standalone, keyless discovery helpers do not use the configured ACM gateway:
@@ -71,6 +72,31 @@ await client.payQuotedX402Testnet({
   purpose: "summarize_current_btc_news",
   idempotencyKey: crypto.randomUUID(),
 });
+```
+
+For agent code that consumes the returned data directly, use the typed form:
+
+```ts
+const paid = await client.consumeX402Testnet<{
+  service: "omni.market_risk_snapshot";
+  freshness: { status: "fresh" | "stale" | "unknown" };
+}>({
+  grantId: grant.id,
+  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
+  category: "market_intelligence",
+  purpose: "build_current_risk_brief",
+  idempotencyKey: crypto.randomUUID(),
+  expectedPayment: {
+    amount: 0.003,
+    network: "eip155:84532",
+    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+  },
+});
+
+if (paid.decision !== "paid" || paid.resourceBody?.freshness.status !== "fresh") {
+  throw new Error("No fresh paid market data was returned");
+}
 ```
 
 The configured gateway owns payer custody, challenge validation, budget reservation, and reconciliation. Keep live payment examples opt-in and outside CI.
