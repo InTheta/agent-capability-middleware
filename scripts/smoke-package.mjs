@@ -30,6 +30,7 @@ try {
       typeof client.registerAgent !== "function"
       || typeof client.createGrant !== "function"
       || typeof client.consumeX402Testnet !== "function"
+      || typeof client.consumeX402 !== "function"
       || typeof listCdpX402MerchantResources !== "function"
     ) {
       throw new Error("Expected x402 public methods are missing");

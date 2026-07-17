@@ -48,7 +48,8 @@ Public resource discovery and challenge inspection are read-only. The public ref
 
 The standalone `searchCdpX402Bazaar` and `listCdpX402MerchantResources` helpers call Coinbase's public discovery API without credentials. A seller appears only after it declares valid Bazaar metadata and settles through the CDP facilitator; an x402.org test settlement is not a CDP listing.
 
-The SDK methods `payQuotedX402Testnet`, typed `consumeX402Testnet<T>`, and `payQuotedX402` call such a gateway. They do not sign locally.
+The SDK methods `payQuotedX402Testnet`, typed `consumeX402Testnet<T>`, `payQuotedX402<T>`, and
+typed `consumeX402<T>` call such a gateway. They do not sign locally.
 
 ## Real Omni example
 
@@ -97,10 +98,12 @@ currently returns all six canonical route forms.
 
 ## Mainnet boundary
 
-`payQuotedX402` can target a mainnet challenge only when the protected gateway has a separate
+`consumeX402<T>` (or its `payQuotedX402<T>` alias) can target a mainnet challenge only when the protected gateway has a separate
 mainnet payer, explicit network/asset/payee allowlists, durable budget/idempotency state and human
 approval. Use `getMainnetWalletStatus` and `getMainnetWalletBalances` for public readiness checks.
 Funding or enabling that payer remains a human action; the SDK never automates either one.
+Always provide `expectedPayment` so a dual-network challenge cannot silently choose a different
+chain, token or receiver.
 
 The main and dev seller paths are public through a dedicated Cloudflare Access application scoped only to `/api/x402/*`; neither parent site is bypassed. Use the main domain as the public default and the dev domain for staging tests.
 

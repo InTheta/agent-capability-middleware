@@ -118,7 +118,7 @@ test("typed x402 consumption uses the keyless quoted-payment route", async () =>
   });
 });
 
-test("generic quoted x402 and mainnet status use protected gateway routes", async () => {
+test("generic typed x402 consumption and mainnet status use protected gateway routes", async () => {
   const requests = [];
   const client = new AgentCapabilityClient("https://gateway.example.com", {
     fetch: async (input, init) => {
@@ -135,9 +135,11 @@ test("generic quoted x402 and mainnet status use protected gateway routes", asyn
     approvalId: "appr_test",
   };
 
-  await client.payQuotedX402(payment);
+  const paid = await client.consumeX402(payment);
   await client.getMainnetWalletStatus();
   await client.getMainnetWalletBalances();
+
+  assert.equal(paid.configured, true);
 
   assert.deepEqual(requests, [
     { url: "https://gateway.example.com/v1/pay/x402/quoted", method: "POST", body: payment },

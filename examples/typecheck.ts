@@ -35,6 +35,19 @@ void client.payQuotedX402({
   purpose: "typed_mainnet_example",
   idempotencyKey: "typed_mainnet_example_001",
 });
+void client.consumeX402<{ schema: string; freshness: { status: string } }>({
+  grantId: "grant_example",
+  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
+  category: "market_intelligence",
+  purpose: "typed_mainnet_consumption",
+  idempotencyKey: "typed_mainnet_consumption_001",
+  expectedPayment: {
+    amount: 0.003,
+    network: "eip155:8453",
+    asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+  },
+});
 void client.getMainnetWalletStatus();
 void client.getMainnetWalletBalances();
 

@@ -1,6 +1,6 @@
 {
   "name": "@agent-capability-middleware/sdk",
-  "version": "0.1.0-preview.7",
+  "version": "0.1.0-preview.8",
   "description": "TypeScript SDK for bounded, keyless agent consumption of x402 resources",
   "type": "module",
   "license": "Apache-2.0",

@@ -52,6 +52,7 @@ Vector search is an optional gateway feature. Sensitive namespaces should be exc
 | `payQuotedX402Testnet` | Ask a protected ACM gateway to quote, authorize, sign, settle, and retry an exact testnet resource. |
 | `consumeX402Testnet<T>` | Typed alias for the same keyless flow; returns the paid response as `resourceBody: T` with its receipt and policy result. |
 | `payQuotedX402` | Ask a protected gateway to quote any allowed x402 resource; mainnet requires a separate payer, explicit settlement policy and approval. |
+| `consumeX402<T>` | Typed generic x402 consumption; pins `expectedPayment` and returns the protected response, receipt and approval state. |
 
 Standalone, keyless discovery helpers do not use the configured ACM gateway:
 

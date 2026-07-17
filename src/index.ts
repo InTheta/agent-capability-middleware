@@ -343,6 +343,7 @@ export interface PayQuotedX402TestnetRequest {
   purpose: string;
   idempotencyKey: string;
   currency?: string;
+  expectedPayment?: { amount: number; network: string; asset: string; payTo: string };
   method?: "GET" | "POST";
   headers?: Record<string, string>;
   body?: string;
@@ -353,10 +354,13 @@ export interface PayQuotedX402Request extends PayQuotedX402TestnetRequest {
 }
 
 export interface X402ConsumptionResult<T = unknown> {
-  decision: "paid" | "allow" | "deny" | "requires_approval";
+  decision: "paid" | "allow" | "deny" | "requires_approval" | "needs_user_approval";
   reason?: string;
   auditEventId?: string;
   receiptId?: string;
+  approvalId?: string;
+  approvalUrl?: string;
+  expiresAt?: string;
   status?: number;
   resourceBody?: T;
   quote?: {
@@ -429,7 +433,11 @@ export class AgentCapabilityClient {
     return this.post("/v1/pay/x402/testnet/quoted", request);
   }
 
-  payQuotedX402(request: PayQuotedX402Request): Promise<Record<string, unknown>> {
+  payQuotedX402<T = unknown>(request: PayQuotedX402Request): Promise<X402ConsumptionResult<T>> {
+    return this.post("/v1/pay/x402/quoted", request);
+  }
+
+  consumeX402<T = unknown>(request: PayQuotedX402Request): Promise<X402ConsumptionResult<T>> {
     return this.post("/v1/pay/x402/quoted", request);
   }
 

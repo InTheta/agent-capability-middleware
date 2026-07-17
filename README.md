@@ -142,9 +142,11 @@ ACM_CONFIRM_CATALOG_TESTNET_SPEND=yes \
 npm run example:omni-catalog
 ```
 
-The generic `payQuotedX402` method also supports a compatible gateway's mainnet approval flow.
-It never receives a private key. Mainnet status and live read-only balances are available through
-`getMainnetWalletStatus()` and `getMainnetWalletBalances()`.
+The generic typed `consumeX402<T>()` method supports a compatible gateway's guarded mainnet
+approval flow while `payQuotedX402<T>()` remains an alias. The caller pins `expectedPayment`
+(network, asset, amount and receiver); the protected gateway re-quotes and fails if any term
+changes. Neither method receives a private key. Mainnet status and live read-only balances are
+available through `getMainnetWalletStatus()` and `getMainnetWalletBalances()`.
 
 ## Repository map
 
