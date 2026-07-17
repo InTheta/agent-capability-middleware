@@ -44,6 +44,7 @@
     "quickstart": "npm run build && node scripts/run-quickstart.mjs",
     "example:omni-x402": "npm run build && node examples/omni-x402.mjs",
     "example:omni-catalog": "npm run build && node examples/omni-catalog.mjs",
+    "partner:check": "node scripts/design-partner-run.mjs",
     "verify": "npm run typecheck && npm run typecheck:consumer && npm test && npm run package:smoke && npm run quickstart && npm pack --dry-run",
     "prepack": "npm run build",
     "prepare": "npm run build"

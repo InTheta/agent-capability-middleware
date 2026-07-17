@@ -32,16 +32,19 @@ The canonical product is Omni Terminal's composite BTC market-risk snapshot at `
 Sepolia USDC. It combines live Hyperliquid market state with current enriched news. The SDK pins
 the expected amount, network, asset and payee and delegates signing to a protected ACM gateway.
 
-Run the public example without a gateway to inspect Omni's CDP Bazaar catalog without spending:
+Run the complete partner preflight without a gateway or payment:
 
 ```bash
 git clone https://github.com/InTheta/agent-capability-middleware.git
 cd agent-capability-middleware
 npm ci
-npm run example:omni-x402
+npm run partner:check
 ```
 
-The funded path is opt-in and documented under [x402 integration](docs/x402-integration.md).
+This packs and installs the SDK into a temporary external project, verifies its x402 surface,
+checks the canonical Omni catalog entry and writes a redacted `.acm-design-partner-report.json`.
+The funded path uses the same command but remains explicitly opt-in and is documented under
+[x402 integration](docs/x402-integration.md).
 
 ## Run the secondary local reference lifecycle
 
@@ -126,7 +129,7 @@ against a protected, funded ACM gateway:
 ```bash
 ACM_GATEWAY_URL=http://127.0.0.1:8787 \
 ACM_CONFIRM_TESTNET_SPEND=yes \
-npm run example:omni-x402
+npm run partner:check
 ```
 
 Without the explicit confirmation variable, the example performs only a keyless lookup of Omni's receiving address in CDP Bazaar. Developers can also call `searchCdpX402Bazaar` or `listCdpX402MerchantResources` directly. The funded path is intentionally excluded from `npm run verify` and CI because it may spend test USDC. The stable Omni URL also requires its path-scoped Cloudflare Access application; see [x402 integration](docs/x402-integration.md).

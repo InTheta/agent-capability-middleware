@@ -1,8 +1,12 @@
 import { randomUUID } from "node:crypto";
+import { writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import {
   AgentCapabilityClient,
   listCdpX402MerchantResources,
 } from "@agent-capability-middleware/sdk";
+
+const startedAt = new Date(process.env.ACM_PARTNER_STARTED_AT ?? Date.now());
 
 const omniReceiver = process.env.OMNI_X402_PAY_TO
   ?? "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457";
@@ -23,7 +27,7 @@ if (marketRiskQuote.payTo.toLowerCase() !== omniReceiver.toLowerCase()) {
 
 console.log(JSON.stringify({
   ready: true,
-  mode: "no_spend",
+  mode: process.env.ACM_CONFIRM_TESTNET_SPEND === "yes" ? "paid_testnet_pending" : "no_spend",
   discovery: "cdp_bazaar",
   omniReceiver,
   listedRoutes: discovery.resources.length,
@@ -37,6 +41,22 @@ console.log(JSON.stringify({
 }, null, 2));
 
 if (process.env.ACM_CONFIRM_TESTNET_SPEND !== "yes") {
+  await writeReport({
+    reportVersion: "design_partner_check.v1",
+    ok: true,
+    mode: "no_spend",
+    externalPackageInstall: process.env.ACM_EXTERNAL_PACKAGE_SMOKE === "passed" ? "passed" : "not_run",
+    catalog: {
+      source: "cdp_bazaar",
+      listedRoutes: discovery.resources.length,
+      canonicalMarketRisk: {
+        amountUsdc: 0.003,
+        network: marketRiskQuote.network,
+        asset: marketRiskQuote.asset,
+        payTo: marketRiskQuote.payTo,
+      },
+    },
+  });
   console.log("OMNI_X402_NO_SPEND_READY");
   console.log("Set ACM_CONFIRM_TESTNET_SPEND=yes only when a protected funded gateway and explicit grant are intended.");
   process.exit(0);
@@ -47,8 +67,7 @@ if (!gatewayUrl) {
   throw new Error("Set ACM_GATEWAY_URL to a protected Agent Capability Middleware gateway");
 }
 
-const resourceUrl = process.env.OMNI_X402_RESOURCE_URL
-  ?? "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current";
+const resourceUrl = "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current";
 const apiKey = process.env.ACM_API_KEY;
 const client = new AgentCapabilityClient(gatewayUrl, apiKey ? { apiKey } : {});
 const agent = await client.registerAgent({
@@ -102,4 +121,47 @@ if (result.resourceBody?.freshness?.status !== "fresh") {
   throw new Error(`Paid resource is not fresh: ${result.resourceBody?.freshness?.status ?? "missing"}`);
 }
 
-console.log(JSON.stringify({ resourceUrl, agentId: agent.id, grantId: grant.id, result }, null, 2));
+const paidSummary = {
+  decision: result.decision,
+  status: result.status,
+  receiptId: result.receiptId,
+  auditEventId: result.auditEventId,
+  schema: result.resourceBody?.schema,
+  freshness: result.resourceBody?.freshness?.status,
+  symbol: result.resourceBody?.symbol,
+  newsItems: Array.isArray(result.resourceBody?.news?.items) ? result.resourceBody.news.items.length : undefined,
+  totalPositions: result.resourceBody?.liquidations?.summary?.total_positions,
+};
+await writeReport({
+  reportVersion: "design_partner_check.v1",
+  ok: true,
+  mode: "paid_testnet",
+  externalPackageInstall: process.env.ACM_EXTERNAL_PACKAGE_SMOKE === "passed" ? "passed" : "not_run",
+  catalog: {
+    source: "cdp_bazaar",
+    listedRoutes: discovery.resources.length,
+  },
+  payment: {
+    resource: resourceUrl,
+    amountUsdc: 0.003,
+    network: marketRiskQuote.network,
+    asset: marketRiskQuote.asset,
+    payTo: marketRiskQuote.payTo,
+  },
+  result: paidSummary,
+});
+console.log(JSON.stringify(paidSummary, null, 2));
+console.log("OMNI_X402_PAID_FRESH_OK");
+
+async function writeReport(report) {
+  const reportPath = process.env.ACM_PARTNER_REPORT_PATH;
+  if (!reportPath) return;
+  const completedAt = new Date();
+  await writeFile(resolve(reportPath), `${JSON.stringify({
+    ...report,
+    startedAt: startedAt.toISOString(),
+    completedAt: completedAt.toISOString(),
+    elapsedMs: completedAt.getTime() - startedAt.getTime(),
+    secretsIncluded: false,
+  }, null, 2)}\n`, { mode: 0o600 });
+}

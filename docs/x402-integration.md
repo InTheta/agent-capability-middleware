@@ -73,15 +73,18 @@ Create a grant that allows only `x402.pay`, category `market_intelligence`, doma
 ```bash
 ACM_GATEWAY_URL=http://127.0.0.1:8787 \
 ACM_CONFIRM_TESTNET_SPEND=yes \
-OMNI_X402_RESOURCE_URL='https://omniterminal.app/api/x402/v1/news/BTC?limit=5' \
-npm run example:omni-x402
+npm run partner:check
 ```
 
 Use `consumeX402Testnet<T>()` when the agent needs a typed paid body and must validate that data
 before acting. `payQuotedX402Testnet()` remains supported for compatibility; both call the same
 protected quoted-payment endpoint.
 
-Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the example performs only the public CDP merchant lookup. `ACM_GATEWAY_URL` identifies the protected buyer gateway. `OMNI_X402_RESOURCE_URL` identifies the seller. Never set either variable to a wallet private key.
+Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the partner check packs and externally installs the SDK,
+then performs only the public CDP merchant lookup. It writes a redacted acceptance report.
+`ACM_GATEWAY_URL` identifies the protected buyer gateway. The partner check intentionally pins the
+canonical market-risk resource and must not be repurposed for another priced route. Never set the
+gateway variable to a wallet private key.
 
 On 15 July 2026, the funded ACM payer completed the News Pulse purchase. The Base Sepolia receipt has status `1`:
 

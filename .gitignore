@@ -10,3 +10,4 @@ coverage/
 *.key
 *.p12
 *.pfx
+.acm-design-partner-report.json

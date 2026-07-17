@@ -14,7 +14,7 @@ Requirements: Node.js 20 or 22.
 git clone https://github.com/InTheta/agent-capability-middleware.git
 cd agent-capability-middleware
 npm ci
-npm run example:omni-x402
+npm run partner:check
 ```
 
 Expected final marker:
@@ -24,7 +24,11 @@ OMNI_X402_NO_SPEND_READY
 ```
 
 This confirms the canonical route is present in CDP Bazaar with the expected Base Sepolia USDC
-asset, `0.003` price and Omni receiver. It creates no payment and needs no key.
+asset, `0.003` price and Omni receiver. It also packs the SDK and installs it into a temporary
+external project. It creates no payment and needs no key.
+
+The command writes `.acm-design-partner-report.json`. The report contains timing, public catalog
+metadata and pass/fail status only; it does not contain keys, API credentials or response bodies.
 
 ## Part 2: controlled paid check
 
@@ -35,7 +39,7 @@ server-only API key. Never place the key in browser code or commit it.
 ACM_GATEWAY_URL='https://provided-private-gateway' \
 ACM_API_KEY='provided-server-only-key-if-required' \
 ACM_CONFIRM_TESTNET_SPEND=yes \
-npm run example:omni-x402
+npm run partner:check
 ```
 
 The example creates a 15-minute grant restricted to:
@@ -48,7 +52,11 @@ The example creates a 15-minute grant restricted to:
 - maximum `0.003` USDC per request.
 
 It fails unless settlement succeeds and the returned composite response reports
-`freshness.status = fresh`.
+`freshness.status = fresh`. Success prints `OMNI_X402_PAID_FRESH_OK` and updates the same redacted
+report with the public receipt/audit identifiers, schema, freshness, item count and position count.
+
+Never send `.env`, shell history or terminal output containing `ACM_API_KEY`. The report is the
+only artifact the tester should return.
 
 ## Report only these outcomes
 

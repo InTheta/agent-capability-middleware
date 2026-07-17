@@ -23,20 +23,16 @@ try {
   const smoke = spawnSync(process.execPath, ["--input-type=module", "-e", `
     import {
       AgentCapabilityClient,
-      createShoppingEvidenceImportRequest,
-      parseShoppingOrderCsv,
+      listCdpX402MerchantResources,
     } from "@agent-capability-middleware/sdk";
     const client = new AgentCapabilityClient("https://gateway.example.com");
-    if (typeof client.registerAgent !== "function" || typeof client.revokeGrant !== "function") {
-      throw new Error("Expected public methods are missing");
-    }
-    const preview = parseShoppingOrderCsv(
-      "Order Date,Product Name,Item Total\\n2026-07-01,Nike black trainer size 10,89.99",
-      { source: "amazon_order_history_export" },
-    );
-    const request = createShoppingEvidenceImportRequest("user_external", preview);
-    if (!request.signals.length || JSON.stringify(request).includes("black trainer")) {
-      throw new Error("Package privacy contract failed");
+    if (
+      typeof client.registerAgent !== "function"
+      || typeof client.createGrant !== "function"
+      || typeof client.consumeX402Testnet !== "function"
+      || typeof listCdpX402MerchantResources !== "function"
+    ) {
+      throw new Error("Expected x402 public methods are missing");
     }
     process.stdout.write("EXTERNAL_PACKAGE_SMOKE_OK\\n");
   `], { cwd: temporaryDirectory, encoding: "utf8" });

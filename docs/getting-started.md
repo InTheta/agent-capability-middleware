@@ -10,11 +10,12 @@ First inspect the catalog without spending:
 
 ```bash
 npm ci
-npm run example:omni-x402
+npm run partner:check
 ```
 
-Then obtain controlled gateway access, create one `x402.pay` grant and run the same example with
-`ACM_CONFIRM_TESTNET_SPEND=yes`. The payer key remains at the gateway; it is never SDK input.
+Then obtain controlled gateway access and run the same command with
+`ACM_CONFIRM_TESTNET_SPEND=yes`. The example creates the 15-minute `x402.pay` grant; the payer key
+remains at the gateway and is never SDK input. Return only the generated redacted partner report.
 
 ## Development modes
 
