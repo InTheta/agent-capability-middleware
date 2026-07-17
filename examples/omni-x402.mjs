@@ -125,18 +125,21 @@ const paidSummary = {
   decision: result.decision,
   status: result.status,
   receiptId: result.receiptId,
-  auditEventId: result.auditEventId,
+  auditEventId: result.auditEventId ?? result.policyResult?.auditEventId,
   schema: result.resourceBody?.schema,
   freshness: result.resourceBody?.freshness?.status,
   symbol: result.resourceBody?.symbol,
   newsItems: Array.isArray(result.resourceBody?.news?.items) ? result.resourceBody.news.items.length : undefined,
   totalPositions: result.resourceBody?.liquidations?.summary?.total_positions,
 };
+if (!paidSummary.receiptId) throw new Error("Paid result omitted the public settlement receipt");
+if (!paidSummary.auditEventId) throw new Error("Paid result omitted the ACM audit event id");
 await writeReport({
   reportVersion: "design_partner_check.v1",
   ok: true,
   mode: "paid_testnet",
   externalPackageInstall: process.env.ACM_EXTERNAL_PACKAGE_SMOKE === "passed" ? "passed" : "not_run",
+  grantProvisioning: "synthetic_demo_operator",
   catalog: {
     source: "cdp_bazaar",
     listedRoutes: discovery.resources.length,

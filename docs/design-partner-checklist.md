@@ -51,6 +51,9 @@ The example creates a 15-minute grant restricted to:
 - the Omni receiver;
 - maximum `0.003` USDC per request.
 
+The current private preview creates this as a synthetic demo-operator grant. It is not a claim of
+production end-user authentication or consent.
+
 It fails unless settlement succeeds and the returned composite response reports
 `freshness.status = fresh`. Success prints `OMNI_X402_PAID_FRESH_OK` and updates the same redacted
 report with the public receipt/audit identifiers, schema, freshness, item count and position count.
