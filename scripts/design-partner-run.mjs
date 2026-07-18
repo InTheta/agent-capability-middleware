@@ -51,7 +51,7 @@ function runNpm(arguments_, step) {
 async function writeFailure(failedStep, reason) {
   const completedAt = new Date();
   await writeFile(reportPath, `${JSON.stringify({
-    reportVersion: "design_partner_check.v1",
+    reportVersion: "design_partner_check.v2",
     ok: false,
     mode: process.env.ACM_CONFIRM_TESTNET_SPEND === "yes" ? "paid_testnet" : "no_spend",
     startedAt: startedAt.toISOString(),

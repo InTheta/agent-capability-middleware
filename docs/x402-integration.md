@@ -51,6 +51,10 @@ The standalone `searchCdpX402Bazaar` and `listCdpX402MerchantResources` helpers 
 The SDK methods `payQuotedX402Testnet`, typed `consumeX402Testnet<T>`, `payQuotedX402<T>`, and
 typed `consumeX402<T>` call such a gateway. They do not sign locally.
 
+Revocation is part of the paid acceptance contract, not merely a dashboard feature. The canonical
+runner revokes the grant after its successful purchase and proves a new request is rejected before
+quote or settlement. A revoked grant must never be reactivated by paying again.
+
 ## Real Omni example
 
 Omni Terminal currently exposes six canonical Base Sepolia paid route forms:
@@ -86,6 +90,10 @@ then performs only the public CDP merchant lookup. It writes a redacted acceptan
 `ACM_GATEWAY_URL` identifies the protected buyer gateway. The partner check intentionally pins the
 canonical market-risk resource and must not be repurposed for another priced route. Never set the
 gateway variable to a wallet private key.
+
+Paid success requires both `OMNI_X402_PAID_FRESH_OK` and `OMNI_X402_REVOKED_DENY_OK`. The generated
+`design_partner_check.v2` report records the paid receipt/audit identifiers and the post-revoke
+`grant_revoked` denial, but omits the paid body and all secrets.
 
 On 15 July 2026, the funded ACM payer completed the News Pulse purchase. The Base Sepolia receipt has status `1`:
 

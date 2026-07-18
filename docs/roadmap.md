@@ -9,6 +9,8 @@
 - typed paid-response consumption and freshness validation;
 - read-only CDP Bazaar discovery and a real six-product Omni external-service catalog;
 - one-command external package install, no-spend catalog preflight and redacted partner report;
+- one-command paid acceptance that validates freshness, revokes the grant and proves the next
+  request is denied before settlement;
 - user confirmation, revocation, privacy-safe shopping extraction and semantic-memory methods as secondary reference capabilities;
 - public implementation profiles;
 - clean local reference flow on Node.js 20 and 22;

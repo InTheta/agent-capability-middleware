@@ -42,7 +42,7 @@ console.log(JSON.stringify({
 
 if (process.env.ACM_CONFIRM_TESTNET_SPEND !== "yes") {
   await writeReport({
-    reportVersion: "design_partner_check.v1",
+    reportVersion: "design_partner_check.v2",
     ok: true,
     mode: "no_spend",
     externalPackageInstall: process.env.ACM_EXTERNAL_PACKAGE_SMOKE === "passed" ? "passed" : "not_run",
@@ -102,7 +102,7 @@ const grant = await client.createGrant({
   expiresInSeconds: 900,
 });
 
-const result = await client.consumeX402Testnet({
+const paymentRequest = {
   grantId: grant.id,
   resourceUrl,
   category: "market_intelligence",
@@ -114,7 +114,8 @@ const result = await client.consumeX402Testnet({
     asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     payTo: omniReceiver,
   },
-});
+};
+const result = await client.consumeX402Testnet(paymentRequest);
 
 if (result.decision !== "paid") throw new Error(`Payment failed: ${result.reason ?? result.decision}`);
 if (result.resourceBody?.freshness?.status !== "fresh") {
@@ -134,8 +135,24 @@ const paidSummary = {
 };
 if (!paidSummary.receiptId) throw new Error("Paid result omitted the public settlement receipt");
 if (!paidSummary.auditEventId) throw new Error("Paid result omitted the ACM audit event id");
+
+const revokedGrant = await client.revokeGrant(grant.id);
+if (!revokedGrant.revokedAt) throw new Error("Gateway did not confirm grant revocation");
+const deniedAfterRevocation = await client.consumeX402Testnet({
+  ...paymentRequest,
+  purpose: "prove_revoked_grant_cannot_spend",
+  idempotencyKey: randomUUID(),
+});
+if (deniedAfterRevocation.decision !== "deny" || deniedAfterRevocation.reason !== "grant_revoked") {
+  throw new Error(
+    `Expected grant_revoked denial after revocation, received ${deniedAfterRevocation.decision}:${deniedAfterRevocation.reason ?? "missing"}`,
+  );
+}
+if (deniedAfterRevocation.receiptId) {
+  throw new Error("Revoked-grant denial unexpectedly included a settlement receipt");
+}
 await writeReport({
-  reportVersion: "design_partner_check.v1",
+  reportVersion: "design_partner_check.v2",
   ok: true,
   mode: "paid_testnet",
   externalPackageInstall: process.env.ACM_EXTERNAL_PACKAGE_SMOKE === "passed" ? "passed" : "not_run",
@@ -152,9 +169,18 @@ await writeReport({
     payTo: marketRiskQuote.payTo,
   },
   result: paidSummary,
+  revocation: {
+    grantId: grant.id,
+    revokedAt: revokedGrant.revokedAt,
+    deniedDecision: deniedAfterRevocation.decision,
+    denialReason: deniedAfterRevocation.reason,
+    denialAuditEventId: deniedAfterRevocation.auditEventId,
+    settlementCreated: false,
+  },
 });
 console.log(JSON.stringify(paidSummary, null, 2));
 console.log("OMNI_X402_PAID_FRESH_OK");
+console.log("OMNI_X402_REVOKED_DENY_OK");
 
 async function writeReport(report) {
   const reportPath = process.env.ACM_PARTNER_REPORT_PATH;

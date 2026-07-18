@@ -48,7 +48,8 @@ npm run partner:check
 This packs and installs the SDK into a temporary external project, verifies its x402 surface,
 checks the canonical Omni catalog entry and writes a redacted `.acm-design-partner-report.json`.
 The funded path uses the same command but remains explicitly opt-in and is documented under
-[x402 integration](docs/x402-integration.md).
+[x402 integration](docs/x402-integration.md). After one successful paid response, the runner
+revokes its short-lived grant and proves a new request is denied before quote or settlement.
 
 ## Run the secondary local reference lifecycle
 
@@ -137,6 +138,16 @@ npm run partner:check
 ```
 
 Without the explicit confirmation variable, the example performs only a keyless lookup of Omni's receiving address in CDP Bazaar. Developers can also call `searchCdpX402Bazaar` or `listCdpX402MerchantResources` directly. The funded path is intentionally excluded from `npm run verify` and CI because it may spend test USDC. The stable Omni URL also requires its path-scoped Cloudflare Access application; see [x402 integration](docs/x402-integration.md).
+
+The paid acceptance run succeeds only after both markers are printed:
+
+```text
+OMNI_X402_PAID_FRESH_OK
+OMNI_X402_REVOKED_DENY_OK
+```
+
+The second check creates no payment. It proves the revoked grant is rejected as `grant_revoked`
+before ACM asks the seller for another quote.
 
 To smoke all live query shapes with an explicit `0.025` test-USDC budget:
 

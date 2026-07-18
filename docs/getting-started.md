@@ -104,6 +104,18 @@ const paid = await acm.consumeX402Testnet<{
 if (paid.decision !== "paid" || paid.resourceBody?.freshness.status !== "fresh") {
   throw new Error("No fresh paid market-risk result was returned");
 }
+
+await acm.revokeGrant(marketGrant.id);
+const denied = await acm.consumeX402Testnet({
+  grantId: marketGrant.id,
+  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
+  category: "market_intelligence",
+  purpose: "prove_revocation",
+  idempotencyKey: crypto.randomUUID(),
+});
+if (denied.decision !== "deny" || denied.reason !== "grant_revoked") {
+  throw new Error("Revoked grant was not denied before payment");
+}
 ```
 
 The live Omni catalog also exposes enriched news, exact news windows, liquidation maps, trader

@@ -1,6 +1,6 @@
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const npmCli = process.env.npm_execpath;
@@ -9,16 +9,24 @@ if (!npmCli) throw new Error("npm_execpath is required for the package smoke tes
 const temporaryDirectory = await mkdtemp(join(tmpdir(), "acm-sdk-package-"));
 try {
   const packed = runNpm(["pack", "--json", "--pack-destination", temporaryDirectory]);
-  const packageInfo = JSON.parse(packed).find((entry) => entry.filename);
+  const parsedPackageInfo = JSON.parse(packed);
+  const packageInfo = Array.isArray(parsedPackageInfo)
+    ? parsedPackageInfo.find((entry) => entry.filename)
+    : parsedPackageInfo;
   if (!packageInfo) throw new Error(`npm pack returned no package: ${packed}`);
-  const tarball = join(temporaryDirectory, packageInfo.filename);
+  const tarball = isAbsolute(packageInfo.filename)
+    ? packageInfo.filename
+    : join(temporaryDirectory, packageInfo.filename);
 
   await writeFile(join(temporaryDirectory, "package.json"), JSON.stringify({
     name: "acm-external-consumer",
     private: true,
     type: "module",
   }));
-  runNpm(["install", "--ignore-scripts", "--no-audit", "--no-fund", tarball], temporaryDirectory);
+  const installArguments = npmCli.includes("pnpm")
+    ? ["install", "--ignore-scripts", tarball]
+    : ["install", "--ignore-scripts", "--no-audit", "--no-fund", tarball];
+  runNpm(installArguments, temporaryDirectory);
 
   const smoke = spawnSync(process.execPath, ["--input-type=module", "-e", `
     import {

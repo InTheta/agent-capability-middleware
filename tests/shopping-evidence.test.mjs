@@ -118,6 +118,33 @@ test("typed x402 consumption uses the keyless quoted-payment route", async () =>
   });
 });
 
+test("grant revocation uses the protected lifecycle endpoint", async () => {
+  let captured;
+  const client = new AgentCapabilityClient("https://gateway.example.com", {
+    fetch: async (input, init) => {
+      captured = { url: String(input), method: init?.method, body: JSON.parse(String(init?.body)) };
+      return Response.json({
+        id: "grant_live_agent",
+        userId: "user_test",
+        agentId: "agent_test",
+        scopes: ["x402.pay"],
+        deniedScopes: [],
+        expiresAt: "2026-07-18T12:00:00.000Z",
+        revokedAt: "2026-07-18T11:00:00.000Z",
+      });
+    },
+  });
+
+  const revoked = await client.revokeGrant("grant_live_agent");
+
+  assert.equal(revoked.revokedAt, "2026-07-18T11:00:00.000Z");
+  assert.deepEqual(captured, {
+    url: "https://gateway.example.com/v1/grants/grant_live_agent/revoke",
+    method: "POST",
+    body: {},
+  });
+});
+
 test("generic typed x402 consumption and mainnet status use protected gateway routes", async () => {
   const requests = [];
   const client = new AgentCapabilityClient("https://gateway.example.com", {

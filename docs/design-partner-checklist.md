@@ -55,8 +55,10 @@ The current private preview creates this as a synthetic demo-operator grant. It 
 production end-user authentication or consent.
 
 It fails unless settlement succeeds and the returned composite response reports
-`freshness.status = fresh`. Success prints `OMNI_X402_PAID_FRESH_OK` and updates the same redacted
-report with the public receipt/audit identifiers, schema, freshness, item count and position count.
+`freshness.status = fresh`. The runner then revokes the grant and makes one new request, which must
+return `deny` with reason `grant_revoked` and no settlement receipt. Success prints both
+`OMNI_X402_PAID_FRESH_OK` and `OMNI_X402_REVOKED_DENY_OK`, and updates the same redacted report with
+the public receipt/audit identifiers plus the revocation-denial evidence.
 
 Never send `.env`, shell history or terminal output containing `ACM_API_KEY`. The report is the
 only artifact the tester should return.
@@ -82,3 +84,13 @@ event without exposing a key or credential.
 
 This proves that the runner is ready to hand to participants. It does not count as external
 developer validation; two unaided participants remain the acceptance gate.
+
+The current runner emits `design_partner_check.v2`. Version 2 adds the revocation and post-revoke
+denial result; no secret, paid response body, signature or private key is included.
+
+The v2 funded operator rehearsal completed on 18 July 2026 in 6.32 seconds. It returned fresh
+`market_risk_snapshot.v1`, Base Sepolia receipt
+[`0xcacf…39ca2`](https://sepolia.basescan.org/tx/0xcacffcfb1de09b17cc39cd7ed5a046d45c0895a0f0b65f973abd5f27fdb39ca2),
+payment audit event `evt_000062`, revocation-denial event `evt_000064`, and no second settlement.
+The chain receipt has status `1`. This remains operator repeatability evidence, not an external
+developer completion.
