@@ -71,3 +71,14 @@ only artifact the tester should return.
 
 Do not request more integrations during this test. Record them separately as evidence, not as MVP
 scope.
+
+## Operator rehearsal status
+
+On 18 July 2026 the checklist passed from a brand-new public-repository clone. The clean install,
+temporary external-package smoke, and live no-spend Bazaar check found all six Omni route forms and
+the pinned `0.003` Base Sepolia USDC market-risk quote. A separately authorized paid rehearsal then
+returned a fresh `market_risk_snapshot.v1`, a public settlement receipt, and a matching ACM audit
+event without exposing a key or credential.
+
+This proves that the runner is ready to hand to participants. It does not count as external
+developer validation; two unaided participants remain the acceptance gate.

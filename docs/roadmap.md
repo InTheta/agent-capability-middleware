@@ -11,7 +11,9 @@
 - one-command external package install, no-spend catalog preflight and redacted partner report;
 - user confirmation, revocation, privacy-safe shopping extraction and semantic-memory methods as secondary reference capabilities;
 - public implementation profiles;
-- clean local reference flow on Node.js 20 and 22.
+- clean local reference flow on Node.js 20 and 22;
+- clean-clone external-package and live Bazaar rehearsal, plus an independently gated funded
+  Base Sepolia run through the protected preview gateway.
 
 ## Next
 
