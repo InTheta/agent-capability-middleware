@@ -82,8 +82,10 @@ npm run partner:check
 ```
 
 Use `consumeX402Testnet<T>()` when the agent needs a typed paid body and must validate that data
-before acting. `payQuotedX402Testnet()` remains supported for compatibility; both call the same
-protected quoted-payment endpoint.
+before acting. Pass current-data responses to `requireFreshPaidResult()` with the expected schema
+to apply the SDK's standard paid, receipt, body, freshness, and schema checks. The helper does not
+replace protected-gateway settlement reconciliation. `payQuotedX402Testnet()` remains supported
+for compatibility; both call the same protected quoted-payment endpoint.
 
 Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the partner check packs and externally installs the SDK,
 then performs only the public CDP merchant lookup. It writes a redacted acceptance report.
@@ -103,6 +105,8 @@ A later opt-in catalog smoke paid 14 query variants: latest/context/window news,
 summary/buckets/clusters/flow, best/worst/largest/risk traders, a public trader profile and the
 composite market-risk snapshot. All 14 returned live protected results. The CDP receiver catalog
 currently returns all six canonical route forms.
+
+![Six Omni products returned by the CDP Bazaar-backed ACM interface](assets/omni-bazaar-six-routes.png)
 
 ## Mainnet boundary
 

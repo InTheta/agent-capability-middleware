@@ -5,6 +5,7 @@ import {
   createShoppingEvidenceImportRequest,
   listCdpX402MerchantResources,
   parseShoppingOrderCsv,
+  requireFreshPaidResult,
   searchCdpX402Bazaar,
 } from "@agent-capability-middleware/sdk";
 
@@ -200,3 +201,31 @@ test("CDP Bazaar helpers use public discovery endpoints without credentials", as
   assert.equal(requests[0].authorization, null);
   assert.equal(requests[1].authorization, null);
 });
+
+test("fresh paid result validator returns only a receipted fresh resource", () => {
+  const resource = requireFreshPaidResult({
+    decision: "paid",
+    receiptId: "0xreceipt",
+    resourceBody: {
+      schema: "market_risk_snapshot.v1",
+      freshness: { status: "fresh" },
+      symbol: "BTC",
+    },
+  }, { expectedSchema: "market_risk_snapshot.v1" });
+
+  assert.equal(resource.symbol, "BTC");
+});
+
+for (const [name, result, expectedCode] of [
+  ["denied", { decision: "deny", reason: "grant_revoked" }, "payment_not_completed"],
+  ["missing receipt", { decision: "paid", resourceBody: { freshness: { status: "fresh" } } }, "receipt_missing"],
+  ["stale", { decision: "paid", receiptId: "0xreceipt", resourceBody: { freshness: { status: "stale" } } }, "resource_not_fresh"],
+  ["wrong schema", { decision: "paid", receiptId: "0xreceipt", resourceBody: { schema: "other.v1", freshness: { status: "fresh" } } }, "schema_mismatch"],
+]) {
+  test(`fresh paid result validator rejects ${name}`, () => {
+    assert.throws(
+      () => requireFreshPaidResult(result, { expectedSchema: name === "wrong schema" ? "market_risk_snapshot.v1" : undefined }),
+      (error) => error?.name === "AgentCapabilityValidationError" && error.code === expectedCode,
+    );
+  });
+}

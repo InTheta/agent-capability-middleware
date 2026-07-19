@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import {
   AgentCapabilityClient,
   listCdpX402MerchantResources,
+  requireFreshPaidResult,
 } from "@agent-capability-middleware/sdk";
 
 const startedAt = new Date(process.env.ACM_PARTNER_STARTED_AT ?? Date.now());
@@ -116,22 +117,20 @@ const paymentRequest = {
   },
 };
 const result = await client.consumeX402Testnet(paymentRequest);
-
-if (result.decision !== "paid") throw new Error(`Payment failed: ${result.reason ?? result.decision}`);
-if (result.resourceBody?.freshness?.status !== "fresh") {
-  throw new Error(`Paid resource is not fresh: ${result.resourceBody?.freshness?.status ?? "missing"}`);
-}
+const resourceBody = requireFreshPaidResult(result, {
+  expectedSchema: "market_risk_snapshot.v1",
+});
 
 const paidSummary = {
   decision: result.decision,
   status: result.status,
   receiptId: result.receiptId,
   auditEventId: result.auditEventId ?? result.policyResult?.auditEventId,
-  schema: result.resourceBody?.schema,
-  freshness: result.resourceBody?.freshness?.status,
-  symbol: result.resourceBody?.symbol,
-  newsItems: Array.isArray(result.resourceBody?.news?.items) ? result.resourceBody.news.items.length : undefined,
-  totalPositions: result.resourceBody?.liquidations?.summary?.total_positions,
+  schema: resourceBody.schema,
+  freshness: resourceBody.freshness.status,
+  symbol: resourceBody.symbol,
+  newsItems: Array.isArray(resourceBody.news?.items) ? resourceBody.news.items.length : undefined,
+  totalPositions: resourceBody.liquidations?.summary?.total_positions,
 };
 if (!paidSummary.receiptId) throw new Error("Paid result omitted the public settlement receipt");
 if (!paidSummary.auditEventId) throw new Error("Paid result omitted the ACM audit event id");

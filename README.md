@@ -36,6 +36,24 @@ The canonical product is Omni Terminal's composite BTC market-risk snapshot at `
 Sepolia USDC. It combines live Hyperliquid market state with current enriched news. The SDK pins
 the expected amount, network, asset and payee and delegates signing to a protected ACM gateway.
 
+![Six Omni x402 routes returned through the ACM Bazaar interface](docs/assets/omni-bazaar-six-routes.png)
+
+## Fastest safe setup
+
+Run the entire SDK lifecycle in a brand-new temporary consumer project without credentials or a
+payment:
+
+```bash
+git clone https://github.com/InTheta/agent-capability-middleware.git
+cd agent-capability-middleware
+npm ci
+npm run example:fresh-dev
+```
+
+The command packs this SDK, installs the tarball into an empty project, creates a bounded grant,
+validates a simulated fresh paid result, revokes the grant and proves the next request is denied.
+It ends with `FRESH_DEV_MOCK_OK`; its `0xmock_…` receipt is deliberately synthetic.
+
 Run the complete partner preflight without a gateway or payment:
 
 ```bash
@@ -124,7 +142,7 @@ The parser does not read cookies. It does not include order IDs, addresses, paym
 
 ## x402 boundary
 
-The SDK can inspect x402 resources and call a compatible gateway's bounded payment endpoints. Its typed `consumeX402Testnet<T>()` method returns the paid body, receipt, and policy result so an agent can validate the seller's schema and freshness before acting. It never accepts or stores a private key. A production gateway must bind payment approval to the exact resource, amount, network, recipient, purpose and idempotency key before a separately configured wallet signs.
+The SDK can inspect x402 resources and call a compatible gateway's bounded payment endpoints. Its typed `consumeX402Testnet<T>()` method returns the paid body, receipt, and policy result. Pass that result to `requireFreshPaidResult()` to fail closed unless it is paid, receipted, fresh, and—when supplied—the expected schema. It never accepts or stores a private key. A production gateway must bind payment approval to the exact resource, amount, network, recipient, purpose and idempotency key before a separately configured wallet signs.
 
 Omni Terminal is the first real external-service example. Six canonical paid route forms now cover
 enriched news, public trader profiles, liquidation maps, trader rankings and composite market
@@ -192,6 +210,7 @@ Not included:
 ## Documentation
 
 - [Getting started](docs/getting-started.md)
+- [Runnable examples and screenshots](docs/examples.md)
 - [Architecture](docs/architecture.md)
 - [Privacy-safe learning](docs/privacy-safe-learning.md)
 - [SDK API](docs/sdk-api.md)

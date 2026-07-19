@@ -63,6 +63,21 @@ Standalone, keyless discovery helpers do not use the configured ACM gateway:
 
 These calls are read-only and send no API key or wallet material.
 
+### Validate a paid resource before acting
+
+`requireFreshPaidResult<T>(result, options)` returns `resourceBody` only when:
+
+- `decision` is `paid`;
+- a settlement `receiptId` exists;
+- a resource body exists;
+- `freshness.status` is exactly `fresh`; and
+- `schema` matches `options.expectedSchema` when one is supplied.
+
+It throws `AgentCapabilityValidationError` with a stable `code` otherwise. The codes are
+`payment_not_completed`, `receipt_missing`, `resource_body_missing`, `resource_not_fresh`, and
+`schema_mismatch`. The helper validates the ACM response contract; it is not an independent chain
+receipt verifier.
+
 `payQuotedX402Testnet` accepts grant and policy metadata, never a private key:
 
 ```ts
@@ -79,6 +94,7 @@ For agent code that consumes the returned data directly, use the typed form:
 
 ```ts
 const paid = await client.consumeX402Testnet<{
+  schema: "market_risk_snapshot.v1";
   service: "omni.market_risk_snapshot";
   freshness: { status: "fresh" | "stale" | "unknown" };
 }>({
@@ -95,9 +111,9 @@ const paid = await client.consumeX402Testnet<{
   },
 });
 
-if (paid.decision !== "paid" || paid.resourceBody?.freshness.status !== "fresh") {
-  throw new Error("No fresh paid market data was returned");
-}
+const marketRisk = requireFreshPaidResult(paid, {
+  expectedSchema: "market_risk_snapshot.v1",
+});
 ```
 
 The configured gateway owns payer custody, challenge validation, budget reservation, and reconciliation. Keep live payment examples opt-in and outside CI.

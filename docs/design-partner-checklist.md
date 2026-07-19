@@ -10,6 +10,10 @@ mainnet payments.
 
 Requirements: Node.js 20 or 22.
 
+Optional zero-network rehearsal: run `npm run example:fresh-dev` first. It installs the packed SDK
+into a brand-new temporary project and proves the grant/pay/validate/revoke lifecycle against a
+clearly labeled mock receipt. This is setup validation, not the external paid acceptance result.
+
 ```bash
 git clone https://github.com/InTheta/agent-capability-middleware.git
 cd agent-capability-middleware

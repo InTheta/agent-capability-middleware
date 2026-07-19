@@ -32,6 +32,7 @@ try {
     import {
       AgentCapabilityClient,
       listCdpX402MerchantResources,
+      requireFreshPaidResult,
     } from "@agent-capability-middleware/sdk";
     const client = new AgentCapabilityClient("https://gateway.example.com");
     if (
@@ -40,6 +41,7 @@ try {
       || typeof client.consumeX402Testnet !== "function"
       || typeof client.consumeX402 !== "function"
       || typeof listCdpX402MerchantResources !== "function"
+      || typeof requireFreshPaidResult !== "function"
     ) {
       throw new Error("Expected x402 public methods are missing");
     }

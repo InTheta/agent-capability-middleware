@@ -373,6 +373,75 @@ export interface X402ConsumptionResult<T = unknown> {
   policyResult?: Record<string, unknown>;
 }
 
+export interface FreshX402Resource {
+  schema?: string;
+  freshness: { status: "fresh" | "stale" | "unknown" | string };
+}
+
+export type X402ResultValidationCode =
+  | "payment_not_completed"
+  | "receipt_missing"
+  | "resource_body_missing"
+  | "resource_not_fresh"
+  | "schema_mismatch";
+
+export class AgentCapabilityValidationError extends Error {
+  constructor(
+    readonly code: X402ResultValidationCode,
+    message: string,
+    readonly result: X402ConsumptionResult<unknown>,
+  ) {
+    super(message);
+    this.name = "AgentCapabilityValidationError";
+  }
+}
+
+/**
+ * Require the canonical ACM paid-resource contract before agent code acts on a result.
+ * This validates gateway output; it does not verify a chain transaction independently.
+ */
+export function requireFreshPaidResult<T extends FreshX402Resource>(
+  result: X402ConsumptionResult<T>,
+  options: { expectedSchema?: string } = {},
+): T {
+  if (result.decision !== "paid") {
+    throw new AgentCapabilityValidationError(
+      "payment_not_completed",
+      `Expected a paid x402 result, received ${result.decision}${result.reason ? `:${result.reason}` : ""}`,
+      result,
+    );
+  }
+  if (!result.receiptId) {
+    throw new AgentCapabilityValidationError(
+      "receipt_missing",
+      "Paid x402 result did not include a settlement receipt",
+      result,
+    );
+  }
+  if (!result.resourceBody) {
+    throw new AgentCapabilityValidationError(
+      "resource_body_missing",
+      "Paid x402 result did not include a resource body",
+      result,
+    );
+  }
+  if (result.resourceBody.freshness?.status !== "fresh") {
+    throw new AgentCapabilityValidationError(
+      "resource_not_fresh",
+      `Expected fresh x402 data, received ${result.resourceBody.freshness?.status ?? "missing"}`,
+      result,
+    );
+  }
+  if (options.expectedSchema && result.resourceBody.schema !== options.expectedSchema) {
+    throw new AgentCapabilityValidationError(
+      "schema_mismatch",
+      `Expected schema ${options.expectedSchema}, received ${result.resourceBody.schema ?? "missing"}`,
+      result,
+    );
+  }
+  return result.resourceBody;
+}
+
 export interface AgentCapabilityClientOptions {
   apiKey?: string;
   fetch?: typeof fetch;

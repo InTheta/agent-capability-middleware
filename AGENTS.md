@@ -28,6 +28,9 @@
 
 ## Verification and documentation
 
-- Run `npm run verify` for source, consumer typecheck, tests, package smoke, quickstart, and dry-run pack.
+- Run `npm run verify` (or `pnpm run verify`) for source, consumer typecheck, tests, package smoke,
+  quickstart, and the clean-room packed install. Keep scripts package-manager neutral.
+- Keep the clean-room `example:fresh-dev` in `verify`; it must install the packed artifact into a
+  new temporary project, use an unmistakably mock receipt, and perform no external request or spend.
 - Add a focused request-shape test for every public client method.
 - Update `README.md`, `docs/sdk-api.md`, relevant integration docs, examples, specs/status claims, and these rules whenever the public contract changes.

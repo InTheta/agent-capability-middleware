@@ -13,6 +13,13 @@ npm ci
 npm run partner:check
 ```
 
+If you want to see the complete lifecycle before requesting gateway access, run the clean-room
+mock. It packs and installs the SDK into a new temporary project and needs no wallet:
+
+```bash
+npm run example:fresh-dev
+```
+
 Then obtain controlled gateway access and run the same command with
 `ACM_CONFIRM_TESTNET_SPEND=yes`. The example creates the 15-minute `x402.pay` grant; the payer key
 remains at the gateway and is never SDK input. Return only the generated redacted partner report.
@@ -35,7 +42,10 @@ The reference server keeps state in memory, has no authentication and is destroy
 Use the SDK against an Agent Capability Middleware-compatible gateway:
 
 ```ts
-import { AgentCapabilityClient } from "@agent-capability-middleware/sdk";
+import {
+  AgentCapabilityClient,
+  requireFreshPaidResult,
+} from "@agent-capability-middleware/sdk";
 
 const acm = new AgentCapabilityClient(process.env.ACM_GATEWAY_URL!, {
   apiKey: process.env.ACM_API_KEY,
@@ -101,9 +111,9 @@ const paid = await acm.consumeX402Testnet<{
   idempotencyKey: crypto.randomUUID(),
 });
 
-if (paid.decision !== "paid" || paid.resourceBody?.freshness.status !== "fresh") {
-  throw new Error("No fresh paid market-risk result was returned");
-}
+const marketRisk = requireFreshPaidResult(paid, {
+  expectedSchema: "market_risk_snapshot.v1",
+});
 
 await acm.revokeGrant(marketGrant.id);
 const denied = await acm.consumeX402Testnet({
@@ -131,6 +141,9 @@ npm run example:omni-catalog
 ```
 
 The example authorizes at most `0.025` test USDC and is not part of CI.
+
+See [Runnable examples](examples.md) for the no-spend Bazaar command, expected success markers,
+screenshots and the exact boundary between mock and funded runs.
 
 ## Mainnet boundary
 

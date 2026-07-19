@@ -3,6 +3,7 @@ import {
   createShoppingEvidenceImportRequest,
   listCdpX402MerchantResources,
   parseShoppingOrderCsv,
+  requireFreshPaidResult,
   searchCdpX402Bazaar,
   type RegisterAgentRequest,
 } from "@agent-capability-middleware/sdk";
@@ -35,7 +36,7 @@ void client.payQuotedX402({
   purpose: "typed_mainnet_example",
   idempotencyKey: "typed_mainnet_example_001",
 });
-void client.consumeX402<{ schema: string; freshness: { status: string } }>({
+const paidResult = client.consumeX402<{ schema: string; freshness: { status: string } }>({
   grantId: "grant_example",
   resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
   category: "market_intelligence",
@@ -48,6 +49,7 @@ void client.consumeX402<{ schema: string; freshness: { status: string } }>({
     payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
   },
 });
+void paidResult.then((result) => requireFreshPaidResult(result, { expectedSchema: "market_risk_snapshot.v1" }));
 void client.getMainnetWalletStatus();
 void client.getMainnetWalletBalances();
 
