@@ -98,3 +98,9 @@ The v2 funded operator rehearsal completed on 18 July 2026 in 6.32 seconds. It r
 payment audit event `evt_000062`, revocation-denial event `evt_000064`, and no second settlement.
 The chain receipt has status `1`. This remains operator repeatability evidence, not an external
 developer completion.
+
+On 19 July 2026, public commit `8ddc137` passed another clean-room portability check in a pristine
+Node 22 Debian container using npm 10: `npm ci`, `npm run example:fresh-dev`, the external tarball
+smoke and `npm run partner:check` all passed. The live read-only check returned six Omni routes and
+the pinned `0.003` quote. This proves npm setup repeatability; it still does not count as either
+external developer.
