@@ -29,7 +29,7 @@ The tester does not need to clone this repository. One command installs the pinn
 checks the live canonical Bazaar contract without spending:
 
 ```bash
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -37,16 +37,21 @@ The JSON report must contain `"ok": true`, `"mode": "no_spend"`, six listed Omni
 `0.003` Base Sepolia USDC quote, and `"secretsIncluded": false`.
 
 After ACM provides controlled gateway access, the same installed command performs the funded
-testnet acceptance. Enter the workload key through a hidden prompt so it is not written into shell
-history:
+testnet acceptance. If that deployment enforces a workload key, enter it through a hidden prompt so
+it is not written into shell history:
 
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
-printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
+```
+
+Only when the operator supplies a workload key, enter it before the command:
+
+```bash
+printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
 ```
 
 Only the redacted report should be returned. See the

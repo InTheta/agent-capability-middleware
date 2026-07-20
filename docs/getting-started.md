@@ -22,7 +22,7 @@ If you are evaluating ACM as an external design partner, skip the repository clo
 pinned acceptance command:
 
 ```bash
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check
 ```
 
 It validates the installed CLI and current public Bazaar contract without paying. Follow

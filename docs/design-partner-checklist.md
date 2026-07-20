@@ -22,7 +22,7 @@ No clone, account, environment file, or wallet is required:
 
 ```bash
 node --version
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -48,18 +48,26 @@ Record the minutes from opening this page to the successful report.
 Stop here until the ACM operator provides:
 
 - a protected gateway URL;
-- a server-only workload credential; and
 - confirmation that the dedicated testnet payer is ready.
+
+The operator may also provide a server-only workload credential if the assigned deployment
+enforces one. The current credential field is optional; private-network reachability remains a
+separate control.
 
 Enter the credential through a hidden prompt:
 
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
-printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
+```
+
+Only when the operator supplies a workload key, enter it before the command:
+
+```bash
+printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
 ```
 
 The command creates one 15-minute grant restricted to:
@@ -83,8 +91,9 @@ Success requires the paid report to contain:
 - `"secondSettlementCreated": false`; and
 - `"secretsIncluded": false`.
 
-The private payer key never enters the CLI or SDK. The provided API key authenticates the developer
-workload; it is not a wallet key and must still be kept server-side.
+The private payer key never enters the CLI or SDK. When supplied, the API key authenticates the
+developer workload; it is not a wallet key and must still be kept server-side. Do not describe an
+API key as enforced unless the assigned gateway deployment actually validates it.
 
 ## Step 3 — return evidence
 

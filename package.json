@@ -1,6 +1,6 @@
 {
   "name": "@agent-capability-middleware/sdk",
-  "version": "0.1.0-preview.13",
+  "version": "0.1.0-preview.14",
   "description": "TypeScript SDK for policy-bound x402 buying and experimental capability offers",
   "type": "module",
   "license": "Apache-2.0",
