@@ -1,8 +1,11 @@
 import {
   AgentCapabilityClient,
+  createDeveloperServiceOffer,
   createShoppingEvidenceImportRequest,
+  createUserCapabilityOffer,
   listCdpX402MerchantResources,
   parseShoppingOrderCsv,
+  LocalCapabilityDirectory,
   requireFreshPaidResult,
   searchCdpX402Bazaar,
   type RegisterAgentRequest,
@@ -55,3 +58,29 @@ void client.getMainnetWalletBalances();
 
 void searchCdpX402Bazaar({ query: "market news", network: "eip155:84532", limit: 5 });
 void listCdpX402MerchantResources("0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457");
+
+const directory = new LocalCapabilityDirectory();
+directory.publish(createDeveloperServiceOffer({
+  developerId: "developer_example",
+  name: "Typed API",
+  description: "Compile-time seller example",
+  capability: "api.example.current",
+  purpose: "typed_example",
+  endpoint: "https://example.com/x402/data",
+  terms: {
+    policy: "paid",
+    priceUsdc: 0.001,
+    payTo: "0x1111111111111111111111111111111111111111",
+    network: "eip155:84532",
+  },
+}));
+directory.publish(createUserCapabilityOffer({
+  userId: "user_example",
+  name: "Typed user intent",
+  description: "Compile-time minimum disclosure example",
+  capability: "commerce.intent.running_shoes",
+  purpose: "typed_example",
+  confirmedByUser: true,
+  projection: { category: "running_shoes" },
+  terms: { policy: "ask" },
+}));

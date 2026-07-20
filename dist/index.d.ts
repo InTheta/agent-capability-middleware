@@ -444,4 +444,5 @@ export { AgentCapabilityClient as AgentPermissionWalletClient };
 export { AgentCapabilityApiError as AgentPermissionWalletApiError };
 import type { ShoppingEvidenceImportRequest } from "./shopping-evidence.js";
 export * from "./shopping-evidence.js";
+export * from "./offers.js";
 //# sourceMappingURL=index.d.ts.map

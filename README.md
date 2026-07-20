@@ -1,239 +1,204 @@
 # Agent Capability Middleware
 
-The open TypeScript SDK for letting an agent buy one exact x402 resource under a bounded user grant, without receiving a wallet private key or unrestricted spending authority.
+One small SDK for agents to buy data safely, developers to sell APIs, and users to control whether a minimum-disclosure capability is **Free, Paid, Ask, or Deny**.
 
-> Developer preview. The SDK is usable today; the included server is an in-memory reference implementation and must not be used with real personal data or funds.
+> Developer preview. Buying through the protected ACM gateway is implemented. Seller and exchange helpers are an experimental, local fixed-price preview: they create and evaluate offers but do not custody keys, settle payments, or prove buyer demand.
 
-## Why this exists
+**x402 moves money; ACM governs authority.**
 
-MCP lets agents call tools. OAuth/OIDC can identify clients and users. Verifiable credentials can carry trusted claims. x402 can carry payment requirements and proofs. None of those standards alone decides what an agent may know, do, delegate or spend for a particular user.
+## Try it without cloning
 
-Agent Capability Middleware composes those existing standards behind a capability and policy layer. It does not replace them or introduce a new transport protocol.
+Requirements: Node.js 20 or newer. These commands use no wallet key and spend nothing.
 
-In short: **x402 moves money; ACM governs authority.** The SDK describes the intended purchase and
-grant context, while the protected gateway owns challenge validation, budget reservation, signing,
-settlement reconciliation, audit, and revocation.
-
-```mermaid
-flowchart LR
-    U["User vault"] --> P["Permission and policy gateway"]
-    A["Agent or MCP client"] --> P
-    P --> S["Agent, MCP tool or service"]
-    P -. "optional payment" .-> X["x402 rail"]
-    P -. "identity or claims" .-> I["OAuth, OIDC and verifiable credentials"]
+```bash
+npx github:InTheta/agent-capability-middleware#main demo buyer
+npx github:InTheta/agent-capability-middleware#main demo developer-seller
+npx github:InTheta/agent-capability-middleware#main demo user-seller
+npx github:InTheta/agent-capability-middleware#main demo exchange
 ```
 
-## Current MVP path
-
-The first supported workflow is intentionally narrow:
-
-```text
-Agent -> bounded ACM grant -> protected testnet payer -> paid Omni resource
-      -> fresh typed response + settlement receipt + policy audit
-```
-
-The canonical product is Omni Terminal's composite BTC market-risk snapshot at `0.003` Base
-Sepolia USDC. It combines live Hyperliquid market state with current enriched news. The SDK pins
-the expected amount, network, asset and payee and delegates signing to a protected ACM gateway.
-
-![Six Omni x402 routes returned through the ACM Bazaar interface](docs/assets/omni-bazaar-six-routes.png)
-
-## Fastest safe setup
-
-Inspect one live Bazaar-listed x402 resource with one read-only command. It creates no wallet,
-signature or payment:
+Inspect a real Bazaar-listed x402 service without paying:
 
 ```bash
 npx github:InTheta/agent-capability-middleware#main inspect
 ```
 
-The GitHub preview also works with pnpm:
+## Choose your job
 
-```bash
-pnpm dlx github:InTheta/agent-capability-middleware#main inspect
-```
+| I want to… | Start here | Status |
+|---|---|---|
+| Let my agent buy one exact x402 result under a budget | `acm demo buyer` then [buyer quickstart](docs/getting-started.md#1-agent-buys-safely) | Implemented; live payment is opt-in |
+| Charge agents for my API | `acm demo developer-seller` | Experimental offer helper; seller still provides an x402 server |
+| Let a user offer one confirmed capability | `acm demo user-seller` | Experimental local preview |
+| See both offer types in one directory | `acm demo exchange` | Experimental local fixed-price preview |
 
-Expected output includes `"spent": false` and `"privateKeyUsed": false`. This is the fastest way to
-prove that the package and public discovery path work; it is not the funded ACM lifecycle.
+## Install as a dependency
 
-Run the entire SDK lifecycle in a brand-new temporary consumer project without credentials or a
-payment:
-
-```bash
-git clone https://github.com/InTheta/agent-capability-middleware.git
-cd agent-capability-middleware
-npm ci
-npm run example:fresh-dev
-```
-
-The command packs this SDK, installs the tarball into an empty project, creates a bounded grant,
-validates a simulated fresh paid result, revokes the grant and proves the next request is denied.
-It ends with `FRESH_DEV_MOCK_OK`; its `0xmock_…` receipt is deliberately synthetic.
-
-Run the complete partner preflight without a gateway or payment:
-
-```bash
-git clone https://github.com/InTheta/agent-capability-middleware.git
-cd agent-capability-middleware
-npm ci
-npm run partner:check
-```
-
-This packs and installs the SDK into a temporary external project, verifies its x402 surface,
-checks the canonical Omni catalog entry and writes a redacted `.acm-design-partner-report.json`.
-The funded path uses the same command but remains explicitly opt-in and is documented under
-[x402 integration](docs/x402-integration.md). After one successful paid response, the runner
-revokes its short-lived grant and proves a new request is denied before quote or settlement.
-
-## Run the secondary local reference lifecycle
-
-Requirements: Node.js 20 or 22.
-
-```bash
-git clone https://github.com/InTheta/agent-capability-middleware.git
-cd agent-capability-middleware
-npm ci
-npm run quickstart
-```
-
-This synthetic, in-memory quickstart demonstrates the broader capability lifecycle. It is not the
-MVP release gate. It:
-
-1. parses an Amazon-shaped order CSV locally;
-2. uploads aggregate shopping signals, not raw rows;
-3. creates unconfirmed memory candidates;
-4. proves an agent cannot read an unconfirmed preference;
-5. confirms the candidate as the user;
-6. returns only the specifically granted attribute;
-7. revokes the grant and proves the next read is denied.
-
-## Install the SDK
-
-Until the first npm release, install the current GitHub package:
+Until the first npm release:
 
 ```bash
 npm install github:InTheta/agent-capability-middleware#main
 ```
 
-```ts
-import { AgentCapabilityClient } from "@agent-capability-middleware/sdk";
+### 1. Agent buys safely
 
-const acm = new AgentCapabilityClient("https://gateway.example.com", {
-  apiKey: process.env.ACM_API_KEY,
-});
-
-const agent = await acm.registerAgent({
-  name: "Shopping Assistant",
-  developerId: "developer_example",
-});
-
-const grant = await acm.createGrant({
-  userId: "user_example",
-  agentId: agent.id,
-  scopes: ["attributes.preferences.shopping.brands.read"],
-  deniedScopes: ["cookies.*", "identity.*", "medical.*"],
-  expiresInSeconds: 600,
-});
-```
-
-## Secondary experiment: privacy-safe shopping learning
+The SDK sends intent and grant metadata to a protected gateway. It never receives a private key.
 
 ```ts
 import {
-  createShoppingEvidenceImportRequest,
-  parseShoppingOrderCsv,
+  AgentCapabilityClient,
+  requireFreshPaidResult,
 } from "@agent-capability-middleware/sdk";
 
-const preview = parseShoppingOrderCsv(await file.text(), {
-  source: "amazon_order_history_export",
+const acm = new AgentCapabilityClient(process.env.ACM_GATEWAY_URL!, {
+  apiKey: process.env.ACM_API_KEY,
 });
 
-// Display preview.signals for the user's review before upload.
-await acm.importShoppingEvidence(
-  createShoppingEvidenceImportRequest("user_example", preview),
-);
+const result = await acm.consumeX402Testnet({
+  grantId: "grant_approved_by_user",
+  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
+  category: "market_intelligence",
+  purpose: "build_current_btc_risk_brief",
+  idempotencyKey: crypto.randomUUID(),
+  expectedPayment: {
+    amount: 0.003,
+    network: "eip155:84532",
+    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+  },
+});
+
+const data = requireFreshPaidResult(result, {
+  expectedSchema: "market_risk_snapshot.v1",
+});
 ```
 
-The parser does not read cookies. It does not include order IDs, addresses, payment details or raw product titles in the import request. Potentially sensitive purchase categories are excluded, and all learned attributes remain pending until confirmed.
+The gateway enforces the exact resource, price, network, asset, receiver, purpose, expiry, replay key, approval and revocation state.
 
-## x402 boundary
+### 2. Developer sells an API
 
-The SDK can inspect x402 resources and call a compatible gateway's bounded payment endpoints. Its typed `consumeX402Testnet<T>()` method returns the paid body, receipt, and policy result. Pass that result to `requireFreshPaidResult()` to fail closed unless it is paid, receipted, fresh, and—when supplied—the expected schema. It never accepts or stores a private key. A production gateway must bind payment approval to the exact resource, amount, network, recipient, purpose and idempotency key before a separately configured wallet signs.
+```ts
+import {
+  createDeveloperServiceOffer,
+  LocalCapabilityDirectory,
+} from "@agent-capability-middleware/sdk";
 
-Omni Terminal is the first real external-service example. Six canonical paid route forms now cover
-enriched news, public trader profiles, liquidation maps, trader rankings and composite market
-risk. All have completed Base Sepolia settlement and are cataloged in CDP Bazaar. Run the opt-in example only
-against a protected, funded ACM gateway:
+const directory = new LocalCapabilityDirectory();
+const offer = directory.publish(createDeveloperServiceOffer({
+  developerId: "weather_builder",
+  name: "Current delivery weather risk",
+  description: "Fresh structured weather context for delivery agents.",
+  capability: "api.weather.delivery_risk",
+  purpose: "check_delivery_conditions",
+  endpoint: "https://api.example.com/x402/weather-risk",
+  terms: {
+    policy: "paid",
+    priceUsdc: 0.002,
+    payTo: "0x1111111111111111111111111111111111111111",
+    network: "eip155:84532",
+  },
+}));
+```
+
+This creates a discoverable policy object for the example. Your resource server still issues and settles the real x402 challenge. ACM controls which buyer agent may pay and why.
+
+### 3. User sells one capability
+
+```ts
+import {
+  createUserCapabilityOffer,
+  LocalCapabilityDirectory,
+} from "@agent-capability-middleware/sdk";
+
+const directory = new LocalCapabilityDirectory();
+directory.publish(createUserCapabilityOffer({
+  userId: "user_123",
+  name: "Running-shoe purchase intent",
+  description: "A confirmed intent, not raw order history.",
+  capability: "commerce.intent.running_shoes",
+  purpose: "match_running_shoe_offer",
+  confirmedByUser: true,
+  projection: {
+    category: "running_shoes",
+    sizeBand: "UK_9_10",
+    budgetBand: "GBP_70_110",
+  },
+  retention: "session",
+  terms: {
+    policy: "paid",
+    priceUsdc: 0.01,
+    payTo: "0x1111111111111111111111111111111111111111",
+    network: "eip155:84532",
+  },
+}));
+```
+
+The preview accepts only low-risk commerce, shopping, food, or travel capabilities; requires explicit user confirmation; and rejects obvious cookie, session, secret, card, passport, licence, private-key, and raw-data fields. This is defence in depth, not a complete data-loss-prevention system.
+
+## Why an agent would use ACM every day
+
+- **Shopping:** request confirmed size, budget band, and brand preference instead of asking again or scraping a profile.
+- **Travel:** buy a fresh disruption or weather result while sharing only the journey context needed for that request.
+- **Trading:** buy current news, liquidation, or trader-profile data under a fixed per-call budget and reject stale output.
+- **Delivery:** receive a coarse delivery area and an address-verification result without retaining a full identity profile.
+- **Food:** use confirmed allergy and cuisine constraints for one restaurant search, with session-only retention.
+- **Research:** route a question to a specialist paid API and leave a receipt tied to the exact purpose.
+- **Commerce:** let a merchant agent pay for a user-confirmed purchase-intent projection instead of receiving browsing history.
+- **Multi-agent work:** pass narrower authority to a specialist agent without forwarding the user’s wallet key or entire memory.
+
+Agents benefit because structured, consented data is faster than repeated questioning, more reliable than guessing, safer than raw credentials, and easier to audit than ad-hoc scraping.
+
+## How the pieces fit
+
+```mermaid
+flowchart LR
+    U["User policy and vault"] --> G["ACM gateway"]
+    A["Buyer agent"] --> G
+    G --> D["Developer x402 API"]
+    G --> C["User-confirmed capability"]
+    G -. "optional settlement" .-> X["x402 / Base USDC"]
+    G -. "identity and claims" .-> I["OAuth, OIDC, verifiable credentials"]
+```
+
+MCP is a tool-call surface, OAuth/OIDC identifies clients and users, verifiable credentials carry attestations, and x402 carries payment requirements and proofs. ACM composes them; it does not replace them or invent a new transport.
+
+## Verify from a clean install
 
 ```bash
-ACM_GATEWAY_URL=http://127.0.0.1:8787 \
+git clone https://github.com/InTheta/agent-capability-middleware.git
+cd agent-capability-middleware
+npm ci
+npm run verify
+```
+
+`npm run verify` type-checks the SDK and a consumer, runs the privacy tests, executes every local offer flow, packs the package, installs it in a temporary empty project, checks the CLI, and runs the fresh-developer lifecycle.
+
+The explicitly funded Base Sepolia path is separate:
+
+```bash
+ACM_GATEWAY_URL=https://your-protected-gateway.example \
+ACM_API_KEY=server_only_workload_credential \
 ACM_CONFIRM_TESTNET_SPEND=yes \
 npm run partner:check
 ```
 
-Without the explicit confirmation variable, the example performs only a keyless lookup of Omni's receiving address in CDP Bazaar. Developers can also call `searchCdpX402Bazaar` or `listCdpX402MerchantResources` directly. The funded path is intentionally excluded from `npm run verify` and CI because it may spend test USDC. The stable Omni URL also requires its path-scoped Cloudflare Access application; see [x402 integration](docs/x402-integration.md).
+See [x402 integration](docs/x402-integration.md) before running it.
 
-The paid acceptance run succeeds only after both markers are printed:
+## Boundaries
 
-```text
-OMNI_X402_PAID_FRESH_OK
-OMNI_X402_REVOKED_DENY_OK
-```
-
-The second check creates no payment. It proves the revoked grant is rejected as `grant_revoked`
-before ACM asks the seller for another quote.
-
-To smoke all live query shapes with an explicit `0.025` test-USDC budget:
-
-```bash
-ACM_GATEWAY_URL=http://127.0.0.1:8787 \
-ACM_CONFIRM_CATALOG_TESTNET_SPEND=yes \
-npm run example:omni-catalog
-```
-
-The generic typed `consumeX402<T>()` method supports a compatible gateway's guarded mainnet
-approval flow while `payQuotedX402<T>()` remains an alias. The caller pins `expectedPayment`
-(network, asset, amount and receiver); the protected gateway re-quotes and fails if any term
-changes. Neither method receives a private key. Mainnet status and live read-only balances are
-available through `getMainnetWalletStatus()` and `getMainnetWalletBalances()`.
-
-## Repository map
-
-- `src/` — dependency-light TypeScript SDK and local evidence parser.
-- `examples/` — end-to-end external-consumer flow and non-production reference server.
-- `docs/` — developer guides, architecture and public roadmap.
-- `specs/` — versioned implementation profiles for capabilities, audit and x402 policy binding.
-- `tests/` — privacy and package contract checks.
-
-## Public versus hosted components
-
-Open here:
-
-- SDK and types;
-- privacy-safe local importers;
-- public implementation profiles;
-- reference examples and tests.
-
-Not included:
-
-- hosted multi-tenant vault;
-- production identity verification integrations;
-- custody or funded-wallet keys;
-- fraud/risk engine;
-- enterprise policy control plane;
-- production connectors and operational configuration.
+The public repo includes the SDK, local evidence minimizer, offer helpers, examples, profiles and tests. It does **not** include a hosted vault, payer custody, private keys, production identity verification, a live user-data marketplace, guaranteed user revenue, or a production fraud/risk control plane.
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md)
-- [Runnable examples and screenshots](docs/examples.md)
+- [Five-minute getting started](docs/getting-started.md)
+- [Runnable examples](docs/examples.md)
+- [Daily use cases](docs/daily-use-cases.md)
+- [SDK API](docs/sdk-api.md)
 - [Architecture](docs/architecture.md)
 - [Privacy-safe learning](docs/privacy-safe-learning.md)
-- [SDK API](docs/sdk-api.md)
 - [x402 integration](docs/x402-integration.md)
-- [Controlled design-partner checklist](docs/design-partner-checklist.md)
-- [Planned user-side seller agent](docs/user-seller-agent.md)
-- [Public roadmap](docs/roadmap.md)
-- [Security policy](SECURITY.md)
+- [User seller preview](docs/user-seller-agent.md)
+- [Roadmap](docs/roadmap.md)
+- [Security](SECURITY.md)
 
-Licensed under [Apache-2.0](LICENSE).
+Apache-2.0 licensed.

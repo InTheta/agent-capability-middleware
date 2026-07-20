@@ -10,9 +10,10 @@
 - Keep live/funded examples opt-in. Do not run them from `test`, `verify`, package lifecycle scripts, or CI.
 - Label features as implemented, verified live, prepared, planned, or hypothesis; do not turn
   testnet proof into mainnet or customer-traction language.
-- The zero-key CLI may make read-only Bazaar calls. User-side **Sell one capability** remains a
-  documented experimental next step; do not expose it as a production SDK contract before the two
-  unaided external-developer buyer completions.
+- The zero-key CLI may make read-only Bazaar calls and run local demos. `src/offers.ts` is an
+  experimental, in-memory, fixed-price preview only. It must not claim custody, settlement,
+  auctions, live liquidity, guaranteed user earnings, or a production marketplace. Hosted
+  user-side fulfilment remains gated on two unaided external-developer buyer completions.
 
 ## Data learning
 

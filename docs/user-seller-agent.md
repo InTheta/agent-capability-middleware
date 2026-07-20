@@ -1,36 +1,49 @@
-# Planned User-Side Seller Agent
+# User seller preview
 
-This is an experimental next step, not a production SDK claim.
+The public SDK now includes a local, keyless preview of **Sell one capability**. It is deliberately narrower than a data marketplace.
 
-The first ACM release path is **Buy safely**: developers let an agent consume one exact x402 resource
-through a bounded grant and a protected payer. After two external developers complete that flow
-without assistance, ACM will pilot **Sell one capability** for users.
+## Try it
 
-## One-way use
+```bash
+npx github:InTheta/agent-capability-middleware#main demo user-seller
+```
 
-A user will be able to use ACM only as a seller. They will confirm one low-risk capability, choose a
-standing policy and designate a Base USDC receiver. A matching `paid` request can be fulfilled while
-the user is away; `ask` still requires their approval.
+The example creates one user-confirmed running-shoe purchase intent and evaluates a fixed-price request. It does not settle payment.
 
-This is passive fulfilment, not guaranteed passive income. Installing ACM does not create buyer
-demand. The pilot therefore requires one real requester integration before it expands.
-
-## Intended user flow
+## Intended user experience
 
 ```text
 Create ACM Agent
-  -> Sell one capability
-  -> import or enter one source
-  -> review one minimum-disclosure result
+  -> import or enter one low-risk source
+  -> review one minimum-disclosure projection
+  -> explicitly confirm it
   -> choose Free / Paid / Ask / Deny
-  -> connect a Base USDC receiver
-  -> publish and retain a revoke button
+  -> add a Base USDC receiving address if Paid
+  -> publish, view activity, or revoke
 ```
 
-Normal users will use a hosted web or signed desktop app. They should not need Node.js, YAML, x402
-knowledge, a funded payer, a private-key environment variable or a publicly reachable home server.
-The seller receives funds; a separate buyer-side ACM gateway owns payer custody.
+A normal user should eventually do this in a hosted web or signed desktop app. They should not need Node.js, YAML, x402 knowledge, a funded payer, a private-key environment variable, or a publicly reachable home server.
 
-The first capability is a synthetic/user-confirmed commerce intent. Raw cookies, session tokens,
-identity documents, order rows, payment credentials and full-profile downloads remain outside the
-contract. Fixed pricing comes before auctions.
+## What can be offered in the preview
+
+- commerce intent;
+- shopping preferences;
+- food preferences; and
+- travel preferences.
+
+The helper requires explicit confirmation and rejects obvious raw, cookie, session, secret, card, passport, driving-licence, and private-key fields. Production will require stronger schema allowlists, classification, policy review, encryption, abuse controls, and independent security assessment.
+
+## Economics
+
+Users may choose:
+
+- `free` for convenience;
+- `paid` at a fixed USDC price;
+- `ask` to approve every request; or
+- `deny` to block access.
+
+This is passive fulfilment, not guaranteed passive income. Installing ACM does not create requester demand. Fixed pricing comes before auctions, and the pilot should not expand until there is at least one genuine requester integration.
+
+## Boundary with the buyer path
+
+The user seller receives funds at their configured address. The buyer-side ACM gateway owns the separate protected payer and enforces the buyer’s grant. The public SDK owns neither key.

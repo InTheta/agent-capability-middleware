@@ -6,12 +6,31 @@
 |---|---|
 | `acm doctor` | Verify Node.js compatibility and the no-private-key SDK boundary without a network request. |
 | `acm inspect` | Inspect one live x402 resource through public CDP Bazaar without signing or paying. |
+| `acm demo buyer` | Validate a synthetic fresh paid result locally. |
+| `acm demo developer-seller` | Create and request a local paid developer API offer. |
+| `acm demo user-seller` | Create and request a confirmed minimum-disclosure user offer. |
+| `acm demo exchange` | Put developer and user offers through one local decision model. |
 
 Until npm publication, run the CLI directly from GitHub:
 
 ```bash
 npx github:InTheta/agent-capability-middleware#main inspect
 ```
+
+All `demo` commands are local, keyless, and non-settling.
+
+## Offer helpers (experimental)
+
+| Export | Purpose |
+|---|---|
+| `createDeveloperServiceOffer` | Describe a developer x402 API and its fixed policy terms. |
+| `createUserCapabilityOffer` | Describe a user-confirmed minimum-disclosure capability. |
+| `evaluateCapabilityRequest` | Return `allow`, `payment_required`, `requires_user_approval`, or `deny`. |
+| `LocalCapabilityDirectory` | Publish, list, filter, and request offers in memory. |
+
+`OfferTerms.policy` is `free`, `paid`, `ask`, or `deny`. Paid offers require a positive USDC price, supported Base network, and EVM receiving address. User offers are restricted to low-risk preview namespaces and must set `confirmedByUser: true`.
+
+These helpers do not sign challenges, settle payments, host data, or create a production marketplace. A developer seller still operates an x402 resource server. A future hosted user seller fulfils an approved projection only after the buyer-side grant and payment are validated.
 
 ## Client
 

@@ -1,166 +1,94 @@
-# Getting Started
+# Five-minute getting started
 
-## Start with the narrow MVP
+Requirements: Node.js 20+. No account or wallet is required for the local demos.
 
-The supported developer-preview proof is one paid, fresh market-intelligence result through a
-protected ACM gateway. Do not begin by integrating identity claims, personal attributes or an
-importer.
-
-First inspect the catalog without spending:
+## Zero-install preview
 
 ```bash
-npx github:InTheta/agent-capability-middleware#main inspect
+npx github:InTheta/agent-capability-middleware#main demo exchange
 ```
 
-For the full repository preflight:
+This prints one developer API offer, one user capability offer, and the policy decision for each. It is local and fixed-price; no payment settles.
+
+## Install
 
 ```bash
+mkdir acm-example && cd acm-example
+npm init -y
+npm install github:InTheta/agent-capability-middleware#main
+```
+
+## 1. Agent buys safely
+
+Start with the no-spend lifecycle:
+
+```bash
+npx acm demo buyer
+```
+
+For the complete packed clean-room mock:
+
+```bash
+git clone https://github.com/InTheta/agent-capability-middleware.git
+cd agent-capability-middleware
 npm ci
-npm run partner:check
-```
-
-If you want to see the complete lifecycle before requesting gateway access, run the clean-room
-mock. It packs and installs the SDK into a new temporary project and needs no wallet:
-
-```bash
 npm run example:fresh-dev
 ```
 
-Then obtain controlled gateway access and run the same command with
-`ACM_CONFIRM_TESTNET_SPEND=yes`. The example creates the 15-minute `x402.pay` grant; the payer key
-remains at the gateway and is never SDK input. Return only the generated redacted partner report.
+Expected marker: `FRESH_DEV_MOCK_OK`. It creates a bounded grant, validates a synthetic fresh result, revokes the grant, and proves the next request is denied. Its `0xmock_…` receipt is not a chain transaction.
 
-## Development modes
+For a real testnet purchase, ask the ACM operator for a gateway URL and workload credential, then follow [x402 integration](x402-integration.md). The SDK never accepts the payer private key.
 
-### Local reference mode
-
-Use this to understand the lifecycle with synthetic data:
+## 2. Developer sells an API
 
 ```bash
-npm ci
-npm run quickstart
+npx acm demo developer-seller
 ```
 
-The reference server keeps state in memory, has no authentication and is destroyed when the example exits. It is not the hosted product.
-
-### Gateway mode
-
-Use the SDK against an Agent Capability Middleware-compatible gateway:
-
-```ts
-import {
-  AgentCapabilityClient,
-  requireFreshPaidResult,
-} from "@agent-capability-middleware/sdk";
-
-const acm = new AgentCapabilityClient(process.env.ACM_GATEWAY_URL!, {
-  apiKey: process.env.ACM_API_KEY,
-});
-```
-
-Keep gateway credentials on a server or in a protected workload environment. Do not embed a privileged API key in a public browser bundle.
-
-## Secondary capability lifecycle
-
-1. Register the agent identity.
-2. Ask the user to create or approve a narrow grant.
-3. Request only the attribute or action required for the stated purpose.
-4. Handle `allow`, `deny`, `requires_approval` and `payment_required` decisions explicitly.
-5. Make revocation and activity history visible to the user.
-
-```ts
-const agent = await acm.registerAgent({ name: "Restaurant Finder" });
-const grant = await acm.createGrant({
-  userId: "user_123",
-  agentId: agent.id,
-  scopes: ["attributes.preferences.dietary_requirements.read"],
-  expiresInSeconds: 900,
-});
-
-const result = await acm.getConfirmedAttribute(
-  grant.id,
-  "preferences.dietary_requirements",
-  "restaurant_recommendation",
-);
-```
-
-## Canonical integration: pay a protected x402 resource
-
-The public SDK delegates signing and settlement to the protected gateway. For a Base Sepolia integration test, create a narrow grant and pass the exact resource URL:
-
-```ts
-const marketGrant = await acm.createGrant({
-  userId: "user_123",
-  agentId: agent.id,
-  scopes: ["x402.pay"],
-  spendPolicy: {
-    currency: "USDC",
-    perRequestMax: 0.003,
-    dailyMax: 0.05,
-    approvalRequiredAbove: 0.003,
-  },
-  resourcePolicy: {
-    allowedDomains: ["omniterminal.app"],
-    allowedCategories: ["market_intelligence"],
-  },
-  expiresInSeconds: 900,
-});
-
-const paid = await acm.consumeX402Testnet<{
-  schema: "market_risk_snapshot.v1";
-  freshness: { status: "fresh" | "stale" | "unknown" };
-}>({
-  grantId: marketGrant.id,
-  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
-  category: "market_intelligence",
-  purpose: "evaluate_btc_market_risk",
-  idempotencyKey: crypto.randomUUID(),
-});
-
-const marketRisk = requireFreshPaidResult(paid, {
-  expectedSchema: "market_risk_snapshot.v1",
-});
-
-await acm.revokeGrant(marketGrant.id);
-const denied = await acm.consumeX402Testnet({
-  grantId: marketGrant.id,
-  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
-  category: "market_intelligence",
-  purpose: "prove_revocation",
-  idempotencyKey: crypto.randomUUID(),
-});
-if (denied.decision !== "deny" || denied.reason !== "grant_revoked") {
-  throw new Error("Revoked grant was not denied before payment");
-}
-```
-
-The live Omni catalog also exposes enriched news, exact news windows, liquidation maps, trader
-rankings and individual trader profiles. These are proof coverage, not additional MVP integration
-requirements. Run the deliberately spend-gated catalog smoke only against a funded Base Sepolia
-payer:
+Or run the source example:
 
 ```bash
-ACM_GATEWAY_URL=https://your-protected-gateway.example \
-ACM_API_KEY=server_only_key \
-ACM_CONFIRM_CATALOG_TESTNET_SPEND=yes \
-npm run example:omni-catalog
+npm run example:developer-seller
 ```
 
-The example authorizes at most `0.025` test USDC and is not part of CI.
+The result is `payment_required` with the exact price, receiving address, network, and resource. This is the offer/policy layer. Your seller server must still implement a real x402 challenge and settlement flow.
 
-See [Runnable examples](examples.md) for the no-spend Bazaar command, expected success markers,
-screenshots and the exact boundary between mock and funded runs.
+## 3. User sells a capability
 
-## Mainnet boundary
+```bash
+npx acm demo user-seller
+```
 
-`payQuotedX402()` can address a compatible mainnet seller, but the gateway must still have mainnet explicitly enabled, a dedicated funded payer, an exact network/asset/payee grant and—by default—a human approval. Inspect `getMainnetWalletStatus()` and `getMainnetWalletBalances()` before attempting any mainnet flow. Never put wallet keys in SDK configuration or a browser bundle.
+The source example also shows local minimization from an Amazon-shaped CSV:
 
-## Production checklist
+```bash
+npm run example:user-seller
+```
 
-- Authenticate both developer workload and end user.
-- Bind the grant to the correct tenant, user and agent.
-- Prefer short-lived grants and least-privilege scopes.
-- Require explicit user approval for sensitive identity or payment actions.
-- Never give an agent raw cookies, session tokens, identity documents or wallet keys.
-- Record redacted allow and deny decisions.
-- Test revocation and replay behavior before launch.
+It publishes a user-confirmed purchase-intent projection. It does not read cookies or publish raw order rows, product titles, address, payment details, or identity documents.
+
+## 4. Data exchange preview
+
+```bash
+npx acm demo exchange
+```
+
+The local directory can hold developer and user offers and produces explicit `allow`, `payment_required`, `requires_user_approval`, or `deny` decisions. It is not a live auction or liquidity claim.
+
+## Policy outcomes
+
+| Policy | Result | Typical use |
+|---|---|---|
+| `free` | `allow` | User chooses convenience or developer offers a free sample |
+| `paid` | `payment_required` | API call or minimum-disclosure capability has a fixed price |
+| `ask` | `requires_user_approval` | User wants to review every request |
+| `deny` | `deny` | Capability must never be shared |
+
+## Production rules
+
+- Authenticate developer workload, user, and agent separately.
+- Bind grants to purpose, resource, payee, asset, amount, expiry, and idempotency key.
+- Keep gateway credentials server-side.
+- Never give an agent raw cookies, session tokens, identity documents, card details, or wallet keys.
+- Make activity, approval, and revocation visible to the user.
+- Treat seller helpers as experimental until a hosted settlement and fulfilment service exists.

@@ -31,7 +31,10 @@ try {
   const smoke = spawnSync(process.execPath, ["--input-type=module", "-e", `
     import {
       AgentCapabilityClient,
+      createDeveloperServiceOffer,
+      createUserCapabilityOffer,
       listCdpX402MerchantResources,
+      LocalCapabilityDirectory,
       requireFreshPaidResult,
     } from "@agent-capability-middleware/sdk";
     const client = new AgentCapabilityClient("https://gateway.example.com");
@@ -40,6 +43,9 @@ try {
       || typeof client.createGrant !== "function"
       || typeof client.consumeX402Testnet !== "function"
       || typeof client.consumeX402 !== "function"
+      || typeof createDeveloperServiceOffer !== "function"
+      || typeof createUserCapabilityOffer !== "function"
+      || typeof LocalCapabilityDirectory !== "function"
       || typeof listCdpX402MerchantResources !== "function"
       || typeof requireFreshPaidResult !== "function"
     ) {
@@ -59,6 +65,16 @@ try {
     throw new Error(`Installed ACM CLI did not preserve the key boundary: ${cli.stdout}`);
   }
   process.stdout.write("EXTERNAL_CLI_SMOKE_OK\n");
+
+  const exchange = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["demo", "exchange"], {
+    cwd: temporaryDirectory,
+    encoding: "utf8",
+  });
+  if (exchange.status !== 0) throw new Error(exchange.stderr || exchange.stdout);
+  if (!exchange.stdout.includes("ACM_EXCHANGE_DEMO_OK")) {
+    throw new Error(`Installed ACM CLI could not run the exchange demo: ${exchange.stdout}`);
+  }
+  process.stdout.write("EXTERNAL_EXCHANGE_CLI_SMOKE_OK\n");
 } finally {
   await rm(temporaryDirectory, { recursive: true, force: true });
 }

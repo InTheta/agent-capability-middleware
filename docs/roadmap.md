@@ -20,6 +20,8 @@
   Base Sepolia run through the protected preview gateway.
 - zero-key `acm doctor` and read-only `acm inspect` CLI entry points, including installation direct
   from the public GitHub repository before npm publication.
+- zero-key local demos for buyer, developer seller, user seller, and a combined fixed-price
+  directory; seller helpers are experimental and do not settle or claim a live marketplace.
 
 ## Next
 
@@ -28,8 +30,8 @@
 - measure and reduce README-to-first-paid-result time;
 - publish a versioned OpenAPI document for the private preview gateway;
 - decide whether repeat adoption justifies workload identity and tenant isolation.
-- after the two external completions, expose one experimental user-side standing capability through
-  a hosted seller agent; do not add auctions or broad profile export.
+- after the two external completions, connect the local user-offer model to one experimental hosted
+  standing capability and one genuine requester; do not add auctions or broad profile export.
 
 ## Later
 
