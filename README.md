@@ -25,11 +25,11 @@ npx github:InTheta/agent-capability-middleware#main inspect
 
 ## External developer acceptance
 
-The tester does not need to clone this repository. One command installs the pinned preview and
-checks the live canonical Bazaar contract without spending:
+The tester needs only Node.js 20+ and npm—not a clone or Git installation. One command installs the
+pinned preview archive and checks the live canonical Bazaar contract without spending:
 
 ```bash
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.14.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -43,7 +43,7 @@ it is not written into shell history:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.14.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
