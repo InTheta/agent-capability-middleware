@@ -10,6 +10,7 @@
 | `acm demo developer-seller` | Create and request a local paid developer API offer. |
 | `acm demo user-seller` | Create and request a confirmed minimum-disclosure user offer. |
 | `acm demo exchange` | Put developer and user offers through one local decision model. |
+| `acm partner-check` | Run the installed no-spend acceptance check; optionally run the explicitly armed Base Sepolia acceptance through a protected gateway. |
 
 Until npm publication, run the CLI directly from GitHub:
 
@@ -18,6 +19,14 @@ npx github:InTheta/agent-capability-middleware#main inspect
 ```
 
 All `demo` commands are local, keyless, and non-settling.
+
+`acm partner-check` is no-spend by default. The funded path requires `ACM_GATEWAY_URL` and the exact
+string `ACM_CONFIRM_TESTNET_SPEND=yes`; `ACM_API_KEY` is an optional server-only workload credential.
+Its `design_partner_check.v3` JSON report excludes credentials and response bodies.
+
+The same functionality is available as `runDesignPartnerCheck(options)` for controlled automation.
+Supply a custom `fetch` implementation for conformance testing. Do not enable `confirmTestnetSpend`
+unless the protected gateway and dedicated testnet payer are intentionally ready.
 
 ## Offer helpers (experimental)
 

@@ -26,6 +26,9 @@ cd agent-capability-middleware
 npm ci
 ```
 
+External testers should use `acm partner-check` from the pinned GitHub preview instead of cloning;
+the repository examples below are for contributors and deeper inspection.
+
 ### Buyer: clean external install
 
 ```bash

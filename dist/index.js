@@ -242,3 +242,4 @@ export { AgentCapabilityClient as AgentPermissionWalletClient };
 export { AgentCapabilityApiError as AgentPermissionWalletApiError };
 export * from "./shopping-evidence.js";
 export * from "./offers.js";
+export * from "./partner-check.js";

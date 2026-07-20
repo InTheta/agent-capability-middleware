@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createDeveloperServiceOffer, createUserCapabilityOffer, LocalCapabilityDirectory, requireFreshPaidResult, searchCdpX402Bazaar, } from "./index.js";
+import { createDeveloperServiceOffer, createUserCapabilityOffer, LocalCapabilityDirectory, requireFreshPaidResult, runDesignPartnerCheck, searchCdpX402Bazaar, } from "./index.js";
 const command = process.argv[2] ?? "help";
 if (command === "help" || command === "--help" || command === "-h") {
     printHelp();
@@ -42,7 +42,7 @@ else if (command === "inspect") {
             } : null,
             spent: false,
             privateKeyUsed: false,
-            next: "Request controlled ACM gateway access, then run npm run partner:check.",
+            next: "Request controlled ACM gateway access, then run acm partner-check with the explicit testnet spend flag.",
         }, null, 2));
     }
     catch (error) {
@@ -60,6 +60,30 @@ else if (command === "demo") {
         process.exitCode = 1;
     }
 }
+else if (command === "partner-check") {
+    try {
+        const major = Number(process.version.match(/^v(\d+)/)?.[1] ?? 0);
+        if (major < 20)
+            throw new Error(`ACM requires Node.js 20 or newer; found ${process.version}`);
+        const report = await runDesignPartnerCheck({
+            ...(process.env.ACM_GATEWAY_URL ? { gatewayUrl: process.env.ACM_GATEWAY_URL } : {}),
+            ...(process.env.ACM_API_KEY ? { apiKey: process.env.ACM_API_KEY } : {}),
+            ...(process.env.ACM_USER_ID ? { userId: process.env.ACM_USER_ID } : {}),
+            confirmTestnetSpend: process.env.ACM_CONFIRM_TESTNET_SPEND === "yes",
+        });
+        console.log(JSON.stringify(report, null, 2));
+    }
+    catch (error) {
+        const step = error && typeof error === "object" && "step" in error ? String(error.step) : "unknown";
+        console.error(JSON.stringify({
+            ok: false,
+            step,
+            message: error instanceof Error ? error.message : "Design-partner check failed",
+            secretsIncluded: false,
+        }, null, 2));
+        process.exitCode = 1;
+    }
+}
 else {
     console.error(`Unknown ACM command: ${command}`);
     printHelp();
@@ -73,8 +97,11 @@ Usage:
   acm inspect  Inspect one live x402 resource through public CDP Bazaar. No payment.
   acm demo buyer|developer-seller|user-seller|exchange
                 Run a local, keyless product flow. No payment.
+  acm partner-check
+                Validate the installed package and live canonical Bazaar contract. No spend by default.
 
-The public SDK never accepts a wallet private key. Funded calls require a separately protected ACM gateway.`);
+Funded testnet acceptance requires ACM_GATEWAY_URL and ACM_CONFIRM_TESTNET_SPEND=yes.
+The public SDK never accepts a wallet private key.`);
 }
 function runDemo(flow) {
     const directory = new LocalCapabilityDirectory();

@@ -36,6 +36,7 @@ try {
       listCdpX402MerchantResources,
       LocalCapabilityDirectory,
       requireFreshPaidResult,
+      runDesignPartnerCheck,
     } from "@agent-capability-middleware/sdk";
     const client = new AgentCapabilityClient("https://gateway.example.com");
     if (
@@ -46,6 +47,7 @@ try {
       || typeof createDeveloperServiceOffer !== "function"
       || typeof createUserCapabilityOffer !== "function"
       || typeof LocalCapabilityDirectory !== "function"
+      || typeof runDesignPartnerCheck !== "function"
       || typeof listCdpX402MerchantResources !== "function"
       || typeof requireFreshPaidResult !== "function"
     ) {

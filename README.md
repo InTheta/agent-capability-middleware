@@ -23,6 +23,35 @@ Inspect a real Bazaar-listed x402 service without paying:
 npx github:InTheta/agent-capability-middleware#main inspect
 ```
 
+## External developer acceptance
+
+The tester does not need to clone this repository. One command installs the pinned preview and
+checks the live canonical Bazaar contract without spending:
+
+```bash
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+  > acm-no-spend-report.json
+```
+
+The JSON report must contain `"ok": true`, `"mode": "no_spend"`, six listed Omni routes, the
+`0.003` Base Sepolia USDC quote, and `"secretsIncluded": false`.
+
+After ACM provides controlled gateway access, the same installed command performs the funded
+testnet acceptance. Enter the workload key through a hidden prompt so it is not written into shell
+history:
+
+```bash
+export ACM_GATEWAY_URL='https://provided-gateway.example'
+printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
+export ACM_CONFIRM_TESTNET_SPEND=yes
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+  > acm-paid-report.json
+unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
+```
+
+Only the redacted report should be returned. See the
+[external test script](docs/design-partner-checklist.md) for success criteria and feedback questions.
+
 ## Choose your job
 
 | I want to… | Start here | Status |
@@ -171,18 +200,11 @@ npm ci
 npm run verify
 ```
 
-`npm run verify` type-checks the SDK and a consumer, runs the privacy tests, executes every local offer flow, packs the package, installs it in a temporary empty project, checks the CLI, and runs the fresh-developer lifecycle.
-
-The explicitly funded Base Sepolia path is separate:
-
-```bash
-ACM_GATEWAY_URL=https://your-protected-gateway.example \
-ACM_API_KEY=server_only_workload_credential \
-ACM_CONFIRM_TESTNET_SPEND=yes \
-npm run partner:check
-```
-
-See [x402 integration](docs/x402-integration.md) before running it.
+`npm run verify` type-checks the SDK and a consumer, runs the privacy and partner-contract checks,
+executes every local offer flow, packs the package, installs it in a temporary empty project,
+checks the CLI, and runs the fresh-developer lifecycle. Contributors can still run the older
+repository-based `npm run partner:check`; external testers should use the pinned installed command
+documented above.
 
 ## Boundaries
 

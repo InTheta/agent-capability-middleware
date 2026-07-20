@@ -1,106 +1,115 @@
-# Controlled Design-Partner Checklist
+# External developer test script
 
-This preview tests one question: can an external agent developer obtain a fresh paid Omni
-market-risk result through ACM policy without handling a wallet key?
+This test answers one question:
 
-It is not a test of personal-data learning, identity verification, auctions, browser extensions or
-mainnet payments.
+> Can an external agent developer install ACM and complete discover → grant → pay → validate →
+> revoke without handling a wallet key or receiving live help?
 
-## Part 1: public no-spend check
+It is not a test of user data, identity, auctions, browser extensions, mainnet, or the experimental
+seller directory.
 
-Requirements: Node.js 20 or 22.
+## Rules for the tester
 
-Optional zero-network rehearsal: run `npm run example:fresh-dev` first. It installs the packed SDK
-into a brand-new temporary project and proves the grant/pay/validate/revoke lifecycle against a
-clearly labeled mock receipt. This is setup validation, not the external paid acceptance result.
+- Start a timer before the first command.
+- Use Node.js 20 or newer on a clean machine or project.
+- Follow only this page; do not request a screen-share unless a step fails.
+- Never send a wallet key, ACM API key, `.env`, or shell history.
+- Return only the generated redacted reports and the five feedback answers.
 
-```bash
-git clone https://github.com/InTheta/agent-capability-middleware.git
-cd agent-capability-middleware
-npm ci
-npm run partner:check
-```
+## Step 1 — installed no-spend check
 
-Expected final marker:
-
-```text
-OMNI_X402_NO_SPEND_READY
-```
-
-This confirms the canonical route is present in CDP Bazaar with the expected Base Sepolia USDC
-asset, `0.003` price and Omni receiver. It also packs the SDK and installs it into a temporary
-external project. It creates no payment and needs no key.
-
-The command writes `.acm-design-partner-report.json`. The report contains timing, public catalog
-metadata and pass/fail status only; it does not contain keys, API credentials or response bodies.
-
-## Part 2: controlled paid check
-
-The ACM operator provides a private gateway URL and, when workload authentication is enabled, a
-server-only API key. Never place the key in browser code or commit it.
+No clone, account, environment file, or wallet is required:
 
 ```bash
-ACM_GATEWAY_URL='https://provided-private-gateway' \
-ACM_API_KEY='provided-server-only-key-if-required' \
-ACM_CONFIRM_TESTNET_SPEND=yes \
-npm run partner:check
+node --version
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+  > acm-no-spend-report.json
 ```
 
-The example creates a 15-minute grant restricted to:
+Open `acm-no-spend-report.json`. Success requires:
+
+```json
+{
+  "reportVersion": "design_partner_check.v3",
+  "ok": true,
+  "mode": "no_spend",
+  "packageInstall": "installed_cli",
+  "secretsIncluded": false
+}
+```
+
+The catalog section should show the canonical `0.003` Base Sepolia USDC market-risk quote. This
+step performs a read-only CDP Bazaar request and creates no signature or payment.
+
+Record the minutes from opening this page to the successful report.
+
+## Step 2 — controlled paid check
+
+Stop here until the ACM operator provides:
+
+- a protected gateway URL;
+- a server-only workload credential; and
+- confirmation that the dedicated testnet payer is ready.
+
+Enter the credential through a hidden prompt:
+
+```bash
+export ACM_GATEWAY_URL='https://provided-gateway.example'
+printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
+export ACM_CONFIRM_TESTNET_SPEND=yes
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.13 partner-check \
+  > acm-paid-report.json
+unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
+```
+
+The command creates one 15-minute grant restricted to:
 
 - scope `x402.pay`;
-- domain `omniterminal.app`;
-- category `market_intelligence`;
-- Base Sepolia USDC;
-- the Omni receiver;
-- maximum `0.003` USDC per request.
+- `omniterminal.app` and `market_intelligence`;
+- exactly `0.003` USDC on Base Sepolia;
+- the canonical USDC contract and Omni receiver;
+- no wallet transfer, trading execution, or cookies.
 
-The current private preview creates this as a synthetic demo-operator grant. It is not a claim of
-production end-user authentication or consent.
+It then buys one current BTC market-risk result, rejects it unless paid, receipted, fresh, and
+`market_risk_snapshot.v1`, revokes the grant, and proves the next request is denied before a second
+settlement.
 
-It fails unless settlement succeeds and the returned composite response reports
-`freshness.status = fresh`. The runner then revokes the grant and makes one new request, which must
-return `deny` with reason `grant_revoked` and no settlement receipt. Success prints both
-`OMNI_X402_PAID_FRESH_OK` and `OMNI_X402_REVOKED_DENY_OK`, and updates the same redacted report with
-the public receipt/audit identifiers plus the revocation-denial evidence.
+Success requires the paid report to contain:
 
-Never send `.env`, shell history or terminal output containing `ACM_API_KEY`. The report is the
-only artifact the tester should return.
+- `"mode": "paid_testnet"`;
+- a public `receiptId` and ACM `auditEventId`;
+- `"freshness": "fresh"`;
+- `"denialReason": "grant_revoked"`;
+- `"secondSettlementCreated": false`; and
+- `"secretsIncluded": false`.
 
-## Report only these outcomes
+The private payer key never enters the CLI or SDK. The provided API key authenticates the developer
+workload; it is not a wallet key and must still be kept server-side.
 
-1. Minutes from opening the README to `OMNI_X402_NO_SPEND_READY`.
-2. Minutes from receiving gateway access to the first paid fresh response.
-3. Any step requiring undocumented help or a workaround.
-4. Whether protected custody, policy binding and audit are valuable compared with paying directly.
-5. Whether the developer would integrate or pay for this control layer.
+## Step 3 — return evidence
 
-Do not request more integrations during this test. Record them separately as evidence, not as MVP
-scope.
+Return:
 
-## Operator rehearsal status
+1. `acm-no-spend-report.json`;
+2. `acm-paid-report.json`;
+3. minutes to the no-spend result;
+4. minutes from receiving credentials to the paid result; and
+5. answers to the questions in [the feedback template](design-partner-feedback-template.md).
 
-On 18 July 2026 the checklist passed from a brand-new public-repository clone. The clean install,
-temporary external-package smoke, and live no-spend Bazaar check found all six Omni route forms and
-the pinned `0.003` Base Sepolia USDC market-risk quote. A separately authorized paid rehearsal then
-returned a fresh `market_risk_snapshot.v1`, a public settlement receipt, and a matching ACM audit
-event without exposing a key or credential.
+Do not return terminal history or credentials.
 
-This proves that the runner is ready to hand to participants. It does not count as external
-developer validation; two unaided participants remain the acceptance gate.
+## Failure guide
 
-The current runner emits `design_partner_check.v2`. Version 2 adds the revocation and post-revoke
-denial result; no secret, paid response body, signature or private key is included.
+| Failure | What to do |
+|---|---|
+| Node is older than 20 | Install Node.js 20 or 22 and rerun. |
+| `step: catalog` | Confirm internet access, then retry once. Do not enable spend. |
+| `step: gateway` | Check the supplied URL and re-enter the workload key through the hidden prompt. |
+| `step: payment` | Stop. Return the redacted error and do not blindly retry uncertain settlement. |
+| `step: revocation` | Stop. Return the redacted error; do not perform another paid call. |
 
-The v2 funded operator rehearsal completed on 18 July 2026 in 6.32 seconds. It returned fresh
-`market_risk_snapshot.v1`, Base Sepolia receipt
-[`0xcacf…39ca2`](https://sepolia.basescan.org/tx/0xcacffcfb1de09b17cc39cd7ed5a046d45c0895a0f0b65f973abd5f27fdb39ca2),
-payment audit event `evt_000062`, revocation-denial event `evt_000064`, and no second settlement.
-The chain receipt has status `1`. This remains operator repeatability evidence, not an external
-developer completion.
+## Evidence status
 
-On 19 July 2026, public commit `8ddc137` passed another clean-room portability check in a pristine
-Node 22 Debian container using npm 10: `npm ci`, `npm run example:fresh-dev`, the external tarball
-smoke and `npm run partner:check` all passed. The live read-only check returned six Omni routes and
-the pinned `0.003` quote. This proves npm setup repeatability; it still does not count as either
-external developer.
+The earlier repository-based v2 runner has completed operator rehearsals and clean npm/container
+checks. The installed v3 no-spend command was verified on 20 July 2026 against six live Bazaar
+routes. These are repeatability checks, not either of the two required external completions.

@@ -22,6 +22,8 @@
   from the public GitHub repository before npm publication.
 - zero-key local demos for buyer, developer seller, user seller, and a combined fixed-price
   directory; seller helpers are experimental and do not settle or claim a live marketplace.
+- installed `acm partner-check` v3 with no-spend live catalog validation, an explicitly armed
+  funded Base Sepolia path, redacted JSON evidence, revocation proof, and no clone requirement.
 
 ## Next
 

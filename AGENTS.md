@@ -36,6 +36,9 @@
   quickstart, and the clean-room packed install. Keep scripts package-manager neutral.
 - Keep the clean-room `example:fresh-dev` in `verify`; it must install the packed artifact into a
   new temporary project, use an unmistakably mock receipt, and perform no external request or spend.
+- Keep installed `acm partner-check` no-spend by default. Its funded path must require both a
+  protected gateway URL and `ACM_CONFIRM_TESTNET_SPEND=yes`, return no paid body or credential in
+  its report, revoke after success, and prove the next request creates no settlement.
 - Keep generated `dist/` tracked while the preview is installed directly from GitHub. Git-hosted
   package managers must not need to run an unapproved `prepare` script merely to expose the CLI.
 - Add a focused request-shape test for every public client method.
