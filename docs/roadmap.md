@@ -18,6 +18,8 @@
 - clean-room packed-SDK install and complete mock grant/pay/validate/revoke flow;
 - clean-clone external-package and live Bazaar rehearsal, plus an independently gated funded
   Base Sepolia run through the protected preview gateway.
+- zero-key `acm doctor` and read-only `acm inspect` CLI entry points, including installation direct
+  from the public GitHub repository before npm publication.
 
 ## Next
 
@@ -26,6 +28,8 @@
 - measure and reduce README-to-first-paid-result time;
 - publish a versioned OpenAPI document for the private preview gateway;
 - decide whether repeat adoption justifies workload identity and tenant isolation.
+- after the two external completions, expose one experimental user-side standing capability through
+  a hosted seller agent; do not add auctions or broad profile export.
 
 ## Later
 

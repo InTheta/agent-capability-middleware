@@ -9,6 +9,12 @@ importer.
 First inspect the catalog without spending:
 
 ```bash
+npx github:InTheta/agent-capability-middleware#main inspect
+```
+
+For the full repository preflight:
+
+```bash
 npm ci
 npm run partner:check
 ```

@@ -40,6 +40,16 @@ the expected amount, network, asset and payee and delegates signing to a protect
 
 ## Fastest safe setup
 
+Inspect one live Bazaar-listed x402 resource with one read-only command. It creates no wallet,
+signature or payment:
+
+```bash
+npx github:InTheta/agent-capability-middleware#main inspect
+```
+
+Expected output includes `"spent": false` and `"privateKeyUsed": false`. This is the fastest way to
+prove that the package and public discovery path work; it is not the funded ACM lifecycle.
+
 Run the entire SDK lifecycle in a brand-new temporary consumer project without credentials or a
 payment:
 
@@ -216,6 +226,7 @@ Not included:
 - [SDK API](docs/sdk-api.md)
 - [x402 integration](docs/x402-integration.md)
 - [Controlled design-partner checklist](docs/design-partner-checklist.md)
+- [Planned user-side seller agent](docs/user-seller-agent.md)
 - [Public roadmap](docs/roadmap.md)
 - [Security policy](SECURITY.md)
 

@@ -1,5 +1,18 @@
 # SDK API
 
+## CLI
+
+| Command | Purpose |
+|---|---|
+| `acm doctor` | Verify Node.js compatibility and the no-private-key SDK boundary without a network request. |
+| `acm inspect` | Inspect one live x402 resource through public CDP Bazaar without signing or paying. |
+
+Until npm publication, run the CLI directly from GitHub:
+
+```bash
+npx github:InTheta/agent-capability-middleware#main inspect
+```
+
 ## Client
 
 ```ts
