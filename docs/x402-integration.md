@@ -73,12 +73,24 @@ using a current route should fail closed unless `freshness.status` is `fresh`; a
 news window may deliberately report `historical`. The composite market-risk response includes
 component freshness for both its live Hyperliquid projection and news context.
 
-Create a grant that allows only `x402.pay`, category `market_intelligence`, domain `omniterminal.app`, and a small USDC cap. Then run:
+The installed acceptance runner creates a 15-minute grant restricted to `x402.pay`, category
+`market_intelligence`, domain `omniterminal.app`, and the exact canonical quote. Run its read-only
+phase first:
 
 ```bash
-ACM_GATEWAY_URL=http://127.0.0.1:8787 \
-ACM_CONFIRM_TESTNET_SPEND=yes \
-npm run partner:check
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
+  > acm-no-spend-report.json
+```
+
+Only after an ACM operator supplies controlled gateway access and confirms the dedicated testnet
+payer is ready, explicitly arm one paid acceptance:
+
+```bash
+export ACM_GATEWAY_URL='https://provided-gateway.example'
+export ACM_CONFIRM_TESTNET_SPEND=yes
+npx github:InTheta/agent-capability-middleware#v0.1.0-preview.14 partner-check \
+  > acm-paid-report.json
+unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
 
 Use `consumeX402Testnet<T>()` when the agent needs a typed paid body and must validate that data
@@ -87,15 +99,15 @@ to apply the SDK's standard paid, receipt, body, freshness, and schema checks. T
 replace protected-gateway settlement reconciliation. `payQuotedX402Testnet()` remains supported
 for compatibility; both call the same protected quoted-payment endpoint.
 
-Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the partner check packs and externally installs the SDK,
-then performs only the public CDP merchant lookup. It writes a redacted acceptance report.
-`ACM_GATEWAY_URL` identifies the protected buyer gateway. The partner check intentionally pins the
-canonical market-risk resource and must not be repurposed for another priced route. Never set the
-gateway variable to a wallet private key.
+Without `ACM_CONFIRM_TESTNET_SPEND=yes`, the installed CLI performs only the public CDP merchant
+lookup and writes a redacted report. `ACM_GATEWAY_URL` identifies the protected buyer gateway. The
+partner check intentionally pins the canonical market-risk resource and must not be repurposed for
+another priced route. Never set the gateway variable to a wallet private key.
 
-Paid success requires both `OMNI_X402_PAID_FRESH_OK` and `OMNI_X402_REVOKED_DENY_OK`. The generated
-`design_partner_check.v2` report records the paid receipt/audit identifiers and the post-revoke
-`grant_revoked` denial, but omits the paid body and all secrets.
+The generated `design_partner_check.v3` report records only public receipt/audit identifiers and the
+post-revoke `grant_revoked` denial. It omits the paid body and all secrets. The older
+`OMNI_X402_PAID_FRESH_OK` and `OMNI_X402_REVOKED_DENY_OK` markers belong to the contributor-only v2
+rehearsal and are not the external acceptance interface.
 
 On 15 July 2026, the funded ACM payer completed the News Pulse purchase. The Base Sepolia receipt has status `1`:
 
