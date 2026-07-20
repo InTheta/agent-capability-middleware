@@ -1,6 +1,6 @@
 {
   "name": "@agent-capability-middleware/sdk",
-  "version": "0.1.0-preview.14",
+  "version": "0.1.0-preview.15",
   "description": "TypeScript SDK for policy-bound x402 buying and experimental capability offers",
   "type": "module",
   "license": "Apache-2.0",
@@ -49,12 +49,13 @@
     "example:bazaar": "tsc -p tsconfig.json && node examples/bazaar-discovery.mjs",
     "example:omni-x402": "tsc -p tsconfig.json && node examples/omni-x402.mjs",
     "example:omni-catalog": "tsc -p tsconfig.json && node examples/omni-catalog.mjs",
+    "example:omni-recipes": "tsc -p tsconfig.json && node examples/omni-agent-recipes.mjs",
     "example:developer-seller": "tsc -p tsconfig.json && node examples/developer-sells-api.mjs",
     "example:user-seller": "tsc -p tsconfig.json && node examples/user-sells-capability.mjs",
     "example:exchange": "tsc -p tsconfig.json && node examples/data-exchange.mjs",
     "partner:check": "node scripts/design-partner-run.mjs",
     "cli:smoke": "tsc -p tsconfig.json && node dist/cli.js doctor && node dist/cli.js help",
-    "verify": "tsc --noEmit -p tsconfig.json && tsc -p tsconfig.json && tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext examples/typecheck.ts && node --test tests/*.test.mjs && node scripts/verify-offers.mjs && node scripts/verify-partner-check.mjs && node examples/developer-sells-api.mjs && node examples/user-sells-capability.mjs && node examples/data-exchange.mjs && node scripts/smoke-package.mjs && node scripts/run-quickstart.mjs && node scripts/fresh-dev-setup.mjs && node dist/cli.js doctor && node dist/cli.js demo exchange && node dist/cli.js help",
+    "verify": "tsc --noEmit -p tsconfig.json && tsc -p tsconfig.json && tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext examples/typecheck.ts && node --test tests/*.test.mjs && node scripts/verify-offers.mjs && node scripts/verify-partner-check.mjs && node examples/developer-sells-api.mjs && node examples/user-sells-capability.mjs && node examples/data-exchange.mjs && node examples/omni-agent-recipes.mjs && node scripts/smoke-package.mjs && node scripts/run-quickstart.mjs && node scripts/fresh-dev-setup.mjs && node dist/cli.js doctor && node dist/cli.js recipes && node dist/cli.js demo exchange && node dist/cli.js help",
     "prepack": "rm -rf dist && tsc -p tsconfig.json"
   },
   "engines": {

@@ -446,4 +446,5 @@ import type { ShoppingEvidenceImportRequest } from "./shopping-evidence.js";
 export * from "./shopping-evidence.js";
 export * from "./offers.js";
 export * from "./partner-check.js";
+export * from "./omni.js";
 //# sourceMappingURL=index.d.ts.map

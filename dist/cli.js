@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createDeveloperServiceOffer, createUserCapabilityOffer, LocalCapabilityDirectory, requireFreshPaidResult, runDesignPartnerCheck, searchCdpX402Bazaar, } from "./index.js";
+import { createDeveloperServiceOffer, createUserCapabilityOffer, LocalCapabilityDirectory, listOmniAgentRecipes, requireFreshPaidResult, runDesignPartnerCheck, searchCdpX402Bazaar, } from "./index.js";
 const command = process.argv[2] ?? "help";
 if (command === "help" || command === "--help" || command === "-h") {
     printHelp();
@@ -50,6 +50,19 @@ else if (command === "inspect") {
         process.exitCode = 1;
     }
 }
+else if (command === "recipes") {
+    console.log(JSON.stringify({
+        ok: true,
+        action: "bounded_omni_agent_recipes",
+        canonicalRouteTemplates: 6,
+        recipes: listOmniAgentRecipes().map(({ label, kind, resourceUrl, schema, priceUsdc, purpose, note }) => ({
+            label, kind, resourceUrl, schema, priceUsdc, purpose, ...(note ? { note } : {}),
+        })),
+        spent: false,
+        privateKeyUsed: false,
+        note: "Recipes reuse six cataloged route templates; they do not claim additional Bazaar listings.",
+    }, null, 2));
+}
 else if (command === "demo") {
     const flow = process.argv[3] ?? "exchange";
     try {
@@ -95,6 +108,7 @@ function printHelp() {
 Usage:
   acm doctor   Check the local SDK runtime. No network request or payment.
   acm inspect  Inspect one live x402 resource through public CDP Bazaar. No payment.
+  acm recipes  Print bounded real Omni news, trader and liquidation request recipes. No payment.
   acm demo buyer|developer-seller|user-seller|exchange
                 Run a local, keyless product flow. No payment.
   acm partner-check

@@ -32,6 +32,9 @@ try {
     import {
       AgentCapabilityClient,
       createDeveloperServiceOffer,
+      createOmniPaymentRequest,
+      createOmniRecipeGrant,
+      createOmniX402Recipe,
       createUserCapabilityOffer,
       listCdpX402MerchantResources,
       LocalCapabilityDirectory,
@@ -45,6 +48,9 @@ try {
       || typeof client.consumeX402Testnet !== "function"
       || typeof client.consumeX402 !== "function"
       || typeof createDeveloperServiceOffer !== "function"
+      || typeof createOmniX402Recipe !== "function"
+      || typeof createOmniRecipeGrant !== "function"
+      || typeof createOmniPaymentRequest !== "function"
       || typeof createUserCapabilityOffer !== "function"
       || typeof LocalCapabilityDirectory !== "function"
       || typeof runDesignPartnerCheck !== "function"
@@ -67,6 +73,17 @@ try {
     throw new Error(`Installed ACM CLI did not preserve the key boundary: ${cli.stdout}`);
   }
   process.stdout.write("EXTERNAL_CLI_SMOKE_OK\n");
+
+  const recipes = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["recipes"], {
+    cwd: temporaryDirectory,
+    encoding: "utf8",
+  });
+  if (recipes.status !== 0) throw new Error(recipes.stderr || recipes.stdout);
+  const recipeReport = JSON.parse(recipes.stdout);
+  if (recipeReport.canonicalRouteTemplates !== 6 || recipeReport.recipes?.length < 10 || recipeReport.spent !== false) {
+    throw new Error(`Installed ACM CLI returned an invalid recipe plan: ${recipes.stdout}`);
+  }
+  process.stdout.write("EXTERNAL_RECIPES_CLI_SMOKE_OK\n");
 
   const exchange = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["demo", "exchange"], {
     cwd: temporaryDirectory,

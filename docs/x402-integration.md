@@ -78,7 +78,7 @@ The installed acceptance runner creates a 15-minute grant restricted to `x402.pa
 phase first:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.14.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -88,7 +88,7 @@ payer is ready, explicitly arm one paid acceptance:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.14.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```

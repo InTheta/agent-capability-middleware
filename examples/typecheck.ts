@@ -1,6 +1,9 @@
 import {
   AgentCapabilityClient,
   createDeveloperServiceOffer,
+  createOmniPaymentRequest,
+  createOmniRecipeGrant,
+  createOmniX402Recipe,
   createShoppingEvidenceImportRequest,
   createUserCapabilityOffer,
   listCdpX402MerchantResources,
@@ -9,6 +12,7 @@ import {
   requireFreshPaidResult,
   searchCdpX402Bazaar,
   type RegisterAgentRequest,
+  type OmniNewsPulseResponse,
 } from "@agent-capability-middleware/sdk";
 
 const client = new AgentCapabilityClient("http://127.0.0.1:8787/", { apiKey: "test_key" });
@@ -58,6 +62,20 @@ void client.getMainnetWalletBalances();
 
 void searchCdpX402Bazaar({ query: "market news", network: "eip155:84532", limit: 5 });
 void listCdpX402MerchantResources("0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457");
+
+const hourlyBriefing = createOmniX402Recipe({
+  kind: "hourly_market_briefing",
+  market: "crypto",
+  limit: 8,
+  minConfidence: 0.7,
+});
+const recipeGrant = createOmniRecipeGrant("agent_example", [hourlyBriefing]);
+void client.createGrant(recipeGrant);
+void client.consumeX402Testnet<OmniNewsPulseResponse>(createOmniPaymentRequest(
+  "grant_example",
+  hourlyBriefing,
+  "typed_hourly_briefing_001",
+));
 
 const directory = new LocalCapabilityDirectory();
 directory.publish(createDeveloperServiceOffer({

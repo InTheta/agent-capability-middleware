@@ -100,6 +100,16 @@ This reads Coinbase’s public x402 discovery API and does not pay. It ends with
 
 ![Six Omni x402 routes shown in the ACM Bazaar interface](assets/omni-bazaar-six-routes.png)
 
+### Real Omni agent recipes
+
+```bash
+npm run example:omni-recipes
+```
+
+This builds a least-privilege grant and exact request plans for the real Omni news, liquidation,
+trader and market-risk products. It spends nothing and ends with
+`OMNI_AGENT_RECIPES_NO_SPEND_OK`. See [the recipe guide](omni-agent-recipes.md).
+
 ## Real Base Sepolia purchase
 
 Only run this after an ACM operator provides a controlled gateway credential and confirms the protected payer has test USDC:

@@ -21,7 +21,13 @@ Inspect a real Bazaar-listed x402 service without paying:
 
 ```bash
 npx github:InTheta/agent-capability-middleware#main inspect
+npx github:InTheta/agent-capability-middleware#main recipes
 ```
+
+`recipes` prints bounded request plans for targeted news, a 60-minute market briefing, exact news
+windows, liquidation views, best/worst/largest/risk traders, public trader profiles, and the
+composite market-risk product. These reuse six canonical Bazaar route templates; they do not create
+or claim extra listings.
 
 ## External developer acceptance
 
@@ -29,7 +35,7 @@ The tester needs only Node.js 20+ and npm—not a clone or Git installation. One
 pinned preview archive and checks the live canonical Bazaar contract without spending:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.14.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -43,7 +49,7 @@ it is not written into shell history:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.14.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -62,6 +68,7 @@ Only the redacted report should be returned. See the
 | I want to… | Start here | Status |
 |---|---|---|
 | Let my agent buy one exact x402 result under a budget | `acm demo buyer` then [buyer quickstart](docs/getting-started.md#1-agent-buys-safely) | Implemented; live payment is opt-in |
+| Build a real Omni news/trader/liquidation request | `acm recipes` then [agent recipes](docs/omni-agent-recipes.md) | Implemented request builders; payment remains gateway-controlled |
 | Charge agents for my API | `acm demo developer-seller` | Experimental offer helper; seller still provides an x402 server |
 | Let a user offer one confirmed capability | `acm demo user-seller` | Experimental local preview |
 | See both offer types in one directory | `acm demo exchange` | Experimental local fixed-price preview |
@@ -81,29 +88,28 @@ The SDK sends intent and grant metadata to a protected gateway. It never receive
 ```ts
 import {
   AgentCapabilityClient,
+  createOmniPaymentRequest,
+  createOmniX402Recipe,
   requireFreshPaidResult,
+  type OmniMarketRiskResponse,
 } from "@agent-capability-middleware/sdk";
 
 const acm = new AgentCapabilityClient(process.env.ACM_GATEWAY_URL!, {
   apiKey: process.env.ACM_API_KEY,
 });
 
-const result = await acm.consumeX402Testnet({
-  grantId: "grant_approved_by_user",
-  resourceUrl: "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current",
-  category: "market_intelligence",
-  purpose: "build_current_btc_risk_brief",
-  idempotencyKey: crypto.randomUUID(),
-  expectedPayment: {
-    amount: 0.003,
-    network: "eip155:84532",
-    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
-  },
+const recipe = createOmniX402Recipe({
+  kind: "market_risk",
+  symbol: "BTC",
 });
+const result = await acm.consumeX402Testnet<OmniMarketRiskResponse>(createOmniPaymentRequest(
+  "grant_approved_by_user",
+  recipe,
+  crypto.randomUUID(),
+));
 
 const data = requireFreshPaidResult(result, {
-  expectedSchema: "market_risk_snapshot.v1",
+  expectedSchema: recipe.schema,
 });
 ```
 

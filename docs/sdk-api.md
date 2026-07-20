@@ -6,6 +6,7 @@
 |---|---|
 | `acm doctor` | Verify Node.js compatibility and the no-private-key SDK boundary without a network request. |
 | `acm inspect` | Inspect one live x402 resource through public CDP Bazaar without signing or paying. |
+| `acm recipes` | Print bounded real Omni news, trader, liquidation and market-risk request plans without paying. |
 | `acm demo buyer` | Validate a synthetic fresh paid result locally. |
 | `acm demo developer-seller` | Create and request a local paid developer API offer. |
 | `acm demo user-seller` | Create and request a confirmed minimum-disclosure user offer. |
@@ -103,6 +104,22 @@ Standalone, keyless discovery helpers do not use the configured ACM gateway:
 | `listCdpX402MerchantResources` | List cataloged services for a receiving wallet. |
 
 These calls are read-only and send no API key or wallet material.
+
+### Omni recipe helpers
+
+| Function | Purpose |
+|---|---|
+| `createOmniX402Recipe` | Convert a bounded news, trader, liquidation, profile, or risk question into an exact canonical resource and expected payment. |
+| `listOmniAgentRecipes` | List representative real request plans for the six Bazaar route templates. |
+| `createOmniRecipeGrant` | Build the least-privilege grant policy and aggregate cap for selected recipes. |
+| `createOmniPaymentRequest` | Bind a grant and idempotency key to one recipe for protected gateway consumption. |
+
+Recipes never sign or settle and cannot grant themselves permission. See
+[Real Omni agent recipes](omni-agent-recipes.md).
+
+The exported `OmniNewsPulseResponse`, `OmniTraderLeaderboardResponse`,
+`OmniLiquidationMapResponse`, `OmniTraderProfileResponse`, and `OmniMarketRiskResponse` interfaces
+provide typed paid bodies without exposing raw upstream fields.
 
 ### Validate a paid resource before acting
 

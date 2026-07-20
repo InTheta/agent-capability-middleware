@@ -32,6 +32,11 @@ The agent buys a fresh market-risk snapshot, enriched news window, liquidation m
 
 **Benefit:** the agent receives current structured context, while the user keeps custody and a bounded budget.
 
+Examples include a 60-minute crypto briefing with 24-hour context, BTC news filtered to high-impact
+events, best/worst/largest public trader rankings, strongest liquidation clusters, and a composite
+market-risk snapshot. These are query recipes over a small product catalog, not unrestricted access
+to Omni's databases.
+
 ## Research agent
 
 The primary agent discovers a specialist paid service, requests one exact result, and records why it was bought. The user or business can later audit the result, price, payee, and purpose.
