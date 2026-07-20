@@ -35,5 +35,7 @@
   quickstart, and the clean-room packed install. Keep scripts package-manager neutral.
 - Keep the clean-room `example:fresh-dev` in `verify`; it must install the packed artifact into a
   new temporary project, use an unmistakably mock receipt, and perform no external request or spend.
+- Keep generated `dist/` tracked while the preview is installed directly from GitHub. Git-hosted
+  package managers must not need to run an unapproved `prepare` script merely to expose the CLI.
 - Add a focused request-shape test for every public client method.
 - Update `README.md`, `docs/sdk-api.md`, relevant integration docs, examples, specs/status claims, and these rules whenever the public contract changes.

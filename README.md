@@ -47,6 +47,12 @@ signature or payment:
 npx github:InTheta/agent-capability-middleware#main inspect
 ```
 
+The GitHub preview also works with pnpm:
+
+```bash
+pnpm dlx github:InTheta/agent-capability-middleware#main inspect
+```
+
 Expected output includes `"spent": false` and `"privateKeyUsed": false`. This is the fastest way to
 prove that the package and public discovery path work; it is not the funded ACM lifecycle.
 

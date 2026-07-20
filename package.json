@@ -52,8 +52,7 @@
     "partner:check": "node scripts/design-partner-run.mjs",
     "cli:smoke": "tsc -p tsconfig.json && node dist/cli.js doctor && node dist/cli.js help",
     "verify": "tsc --noEmit -p tsconfig.json && tsc -p tsconfig.json && tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext examples/typecheck.ts && node --test tests/*.test.mjs && node scripts/smoke-package.mjs && node scripts/run-quickstart.mjs && node scripts/fresh-dev-setup.mjs && node dist/cli.js doctor && node dist/cli.js help",
-    "prepack": "rm -rf dist && tsc -p tsconfig.json",
-    "prepare": "rm -rf dist && tsc -p tsconfig.json"
+    "prepack": "rm -rf dist && tsc -p tsconfig.json"
   },
   "engines": {
     "node": ">=20"
