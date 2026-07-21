@@ -79,7 +79,7 @@ The installed acceptance runner creates a 15-minute grant restricted to `x402.pa
 phase first:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -89,7 +89,7 @@ payer is ready, explicitly arm one paid acceptance:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -113,12 +113,13 @@ rehearsal and are not the external acceptance interface.
 On 15 July 2026, the funded ACM payer completed the News Pulse purchase. The Base Sepolia receipt has status `1`:
 
 - AI News Pulse: [`0x160b…fe1d`](https://sepolia.basescan.org/tx/0x160b9fc0216a3dbb1eb1582acf45603b308bfe217690ce26f5aebc265b4efe1d)
+- Hyperliquid Market Snapshot: [`0x556a…62c2`](https://sepolia.basescan.org/tx/0x556aa441facaeeaabcd348787df237b4ca1346b5eeb0d88da1b25a7ebc2662c2)
 
 A later opt-in catalog smoke paid 14 query variants: latest/context/window news, liquidation
 summary/buckets/clusters/flow, best/worst/largest/risk traders, a public trader profile and the
-composite market-risk snapshot. All 14 returned live protected results. The CDP receiver catalog
-currently returns the six previously settled route forms. Market Snapshot appears after its first
-successful CDP settlement and catalog refresh.
+composite market-risk snapshot. All 14 returned live protected results. On 21 July 2026, ACM then
+settled the seventh Market Snapshot template and validated a fresh candle-plus-liquidation result;
+the CDP receiver catalog now returns all seven route forms.
 
 ![Six Omni products returned by the CDP Bazaar-backed ACM interface](assets/omni-bazaar-six-routes.png)
 

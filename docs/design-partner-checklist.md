@@ -22,7 +22,7 @@ No clone, Git installation, account, environment file, or wallet is required:
 
 ```bash
 node --version
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -59,7 +59,7 @@ Enter the credential through a hidden prompt:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -120,5 +120,7 @@ Do not return terminal history or credentials.
 ## Evidence status
 
 The earlier repository-based v2 runner has completed operator rehearsals and clean npm/container
-checks. The installed v3 no-spend command was verified on 20 July 2026 against six live Bazaar
-routes. These are repeatability checks, not either of the two required external completions.
+checks. The installed v3 no-spend command was verified on 20 July 2026 against the then-six live
+Bazaar routes. On 21 July, the seventh Market Snapshot route completed a funded CDP settlement and
+the receiver-scoped catalog check passed all seven templates. These are repeatability checks, not
+either of the two required external completions.

@@ -26,9 +26,8 @@ npx github:InTheta/agent-capability-middleware#main recipes
 
 `recipes` prints bounded request plans for targeted news, a 60-minute market briefing, exact news
 windows, liquidation views, best/worst/largest/risk traders, public trader profiles, and the
-composite market-risk and market-snapshot products. These reuse seven canonical route templates;
-six are currently Bazaar-cataloged and the new Market Snapshot requires its registration
-settlement. Recipes do not create
+composite market-risk and market-snapshot products. These reuse seven canonical route templates,
+all funded and Bazaar-cataloged on Base Sepolia. Recipes do not create
 or claim extra listings.
 
 ## External developer acceptance
@@ -37,11 +36,11 @@ The tester needs only Node.js 20+ and npm—not a clone or Git installation. One
 pinned preview archive and checks the live canonical Bazaar contract without spending:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
-The JSON report must contain `"ok": true`, `"mode": "no_spend"`, six listed Omni routes, the
+The JSON report must contain `"ok": true`, `"mode": "no_spend"`, seven listed Omni routes, the
 `0.003` Base Sepolia USDC quote, and `"secretsIncluded": false`.
 
 After ACM provides controlled gateway access, the same installed command performs the funded
@@ -51,7 +50,7 @@ it is not written into shell history:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```

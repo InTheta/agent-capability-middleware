@@ -82,7 +82,7 @@ try {
   const recipeReport = JSON.parse(recipes.stdout);
   if (
     recipeReport.canonicalRouteTemplates !== 7 ||
-    recipeReport.catalogedRouteTemplates !== 6 ||
+    recipeReport.catalogedRouteTemplates !== 7 ||
     recipeReport.recipes?.length < 12 ||
     recipeReport.spent !== false
   ) {

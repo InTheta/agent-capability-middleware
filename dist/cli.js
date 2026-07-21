@@ -55,13 +55,13 @@ else if (command === "recipes") {
         ok: true,
         action: "bounded_omni_agent_recipes",
         canonicalRouteTemplates: 7,
-        catalogedRouteTemplates: 6,
+        catalogedRouteTemplates: 7,
         recipes: listOmniAgentRecipes().map(({ label, kind, resourceUrl, schema, priceUsdc, purpose, note }) => ({
             label, kind, resourceUrl, schema, priceUsdc, purpose, ...(note ? { note } : {}),
         })),
         spent: false,
         privateKeyUsed: false,
-        note: "Recipes reuse seven seller route templates. Six are cataloged; Market Snapshot requires its first CDP settlement before that claim.",
+        note: "Recipes reuse seven funded Base Sepolia seller route templates, all verified in CDP Bazaar; query variants do not create extra listings.",
     }, null, 2));
 }
 else if (command === "demo") {
