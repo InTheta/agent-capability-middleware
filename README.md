@@ -26,7 +26,9 @@ npx github:InTheta/agent-capability-middleware#main recipes
 
 `recipes` prints bounded request plans for targeted news, a 60-minute market briefing, exact news
 windows, liquidation views, best/worst/largest/risk traders, public trader profiles, and the
-composite market-risk product. These reuse six canonical Bazaar route templates; they do not create
+composite market-risk and market-snapshot products. These reuse seven canonical route templates;
+six are currently Bazaar-cataloged and the new Market Snapshot requires its registration
+settlement. Recipes do not create
 or claim extra listings.
 
 ## External developer acceptance
@@ -35,7 +37,7 @@ The tester needs only Node.js 20+ and npm—not a clone or Git installation. One
 pinned preview archive and checks the live canonical Bazaar contract without spending:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -49,7 +51,7 @@ it is not written into shell history:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```

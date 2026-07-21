@@ -57,7 +57,7 @@ quote or settlement. A revoked grant must never be reactivated by paying again.
 
 ## Real Omni example
 
-Omni Terminal currently exposes six canonical Base Sepolia paid route forms:
+Omni Terminal currently exposes seven canonical Base Sepolia paid route forms:
 
 | Product | Resource | Price |
 |---|---|---:|
@@ -67,6 +67,7 @@ Omni Terminal currently exposes six canonical Base Sepolia paid route forms:
 | Liquidation Map | `/api/x402/v1/liquidations/{symbol}` | `0.002` test USDC |
 | Trader Leaderboard | `/api/x402/v1/traders/{symbol}` | `0.002` test USDC |
 | Market Risk Snapshot | `/api/x402/v1/market-risk/{symbol}` | `0.003` test USDC |
+| Market Snapshot | `/api/x402/v1/market-snapshot/{symbol}` | `0.003` test USDC |
 
 Successful Omni responses expose `schema`, `generated_at`, `data_as_of`, and `freshness`. Consumers
 using a current route should fail closed unless `freshness.status` is `fresh`; an exact historical
@@ -78,7 +79,7 @@ The installed acceptance runner creates a 15-minute grant restricted to `x402.pa
 phase first:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -88,7 +89,7 @@ payer is ready, explicitly arm one paid acceptance:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.15.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.16.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -116,7 +117,8 @@ On 15 July 2026, the funded ACM payer completed the News Pulse purchase. The Bas
 A later opt-in catalog smoke paid 14 query variants: latest/context/window news, liquidation
 summary/buckets/clusters/flow, best/worst/largest/risk traders, a public trader profile and the
 composite market-risk snapshot. All 14 returned live protected results. The CDP receiver catalog
-currently returns all six canonical route forms.
+currently returns the six previously settled route forms. Market Snapshot appears after its first
+successful CDP settlement and catalog refresh.
 
 ![Six Omni products returned by the CDP Bazaar-backed ACM interface](assets/omni-bazaar-six-routes.png)
 

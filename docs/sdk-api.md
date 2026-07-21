@@ -109,8 +109,8 @@ These calls are read-only and send no API key or wallet material.
 
 | Function | Purpose |
 |---|---|
-| `createOmniX402Recipe` | Convert a bounded news, trader, liquidation, profile, or risk question into an exact canonical resource and expected payment. |
-| `listOmniAgentRecipes` | List representative real request plans for the six Bazaar route templates. |
+| `createOmniX402Recipe` | Convert a bounded news, trader, liquidation, profile, risk, or market-snapshot question into an exact canonical resource and expected payment. |
+| `listOmniAgentRecipes` | List representative real request plans for the seven seller route templates. |
 | `createOmniRecipeGrant` | Build the least-privilege grant policy and aggregate cap for selected recipes. |
 | `createOmniPaymentRequest` | Bind a grant and idempotency key to one recipe for protected gateway consumption. |
 
@@ -118,7 +118,8 @@ Recipes never sign or settle and cannot grant themselves permission. See
 [Real Omni agent recipes](omni-agent-recipes.md).
 
 The exported `OmniNewsPulseResponse`, `OmniTraderLeaderboardResponse`,
-`OmniLiquidationMapResponse`, `OmniTraderProfileResponse`, and `OmniMarketRiskResponse` interfaces
+`OmniLiquidationMapResponse`, `OmniTraderProfileResponse`, `OmniMarketRiskResponse`, and
+`OmniMarketSnapshotResponse` interfaces
 provide typed paid bodies without exposing raw upstream fields.
 
 ### Validate a paid resource before acting

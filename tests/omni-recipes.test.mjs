@@ -33,6 +33,36 @@ test("maps screenshot-bot trader concepts to one bounded Bazaar route", () => {
   }
 });
 
+test("maps screenshot-bot chart and filtered news concepts to bounded routes", () => {
+  const snapshot = createOmniX402Recipe({
+    kind: "market_snapshot",
+    symbol: "btc",
+    interval: "15m",
+    limit: 150,
+    scope: "aggregate",
+    includeLiquidations: true,
+  });
+  assert.equal(
+    snapshot.resourceUrl,
+    "https://omniterminal.app/api/x402/v1/market-snapshot/BTC?interval=15m&limit=150&scope=aggregate&include_liquidations=true",
+  );
+  assert.equal(snapshot.schema, "hyperliquid_market_snapshot.v1");
+  assert.equal(snapshot.priceUsdc, 0.003);
+
+  const news = createOmniX402Recipe({
+    kind: "targeted_news",
+    symbol: "ETH",
+    order: "impact",
+    offset: 1,
+    nearestTimestamp: 1_800_000_000_000,
+    limit: 1,
+  });
+  const params = new URL(news.resourceUrl).searchParams;
+  assert.equal(params.get("order"), "impact");
+  assert.equal(params.get("offset"), "1");
+  assert.equal(params.get("nearest_timestamp"), "1800000000000");
+});
+
 test("builds exact payment intent and a least-privilege aggregate grant", () => {
   const recipes = [
     createOmniX402Recipe({ kind: "targeted_news", symbol: "ETH", limit: 3 }),
@@ -67,11 +97,15 @@ test("rejects unbounded or malformed inputs before a payment request exists", ()
     }),
     /seven days/,
   );
+  assert.throws(
+    () => createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", limit: 201 }),
+    /limit must be an integer from 20 to 200/,
+  );
 });
 
 test("lists coherent recipes without creating new route templates", () => {
   const recipes = listOmniAgentRecipes(1_800_000_000_000);
-  assert.equal(recipes.length, 11);
+  assert.equal(recipes.length, 12);
   assert.equal(new Set(recipes.map((recipe) => new URL(recipe.resourceUrl).pathname.split("/").slice(0, 6).join("/"))).size > 0, true);
   assert.equal(recipes.every((recipe) => recipe.resourceUrl.startsWith("https://omniterminal.app/api/x402/v1/")), true);
 });

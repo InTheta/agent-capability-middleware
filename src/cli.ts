@@ -66,13 +66,14 @@ if (command === "help" || command === "--help" || command === "-h") {
   console.log(JSON.stringify({
     ok: true,
     action: "bounded_omni_agent_recipes",
-    canonicalRouteTemplates: 6,
+    canonicalRouteTemplates: 7,
+    catalogedRouteTemplates: 6,
     recipes: listOmniAgentRecipes().map(({ label, kind, resourceUrl, schema, priceUsdc, purpose, note }) => ({
       label, kind, resourceUrl, schema, priceUsdc, purpose, ...(note ? { note } : {}),
     })),
     spent: false,
     privateKeyUsed: false,
-    note: "Recipes reuse six cataloged route templates; they do not claim additional Bazaar listings.",
+    note: "Recipes reuse seven seller route templates. Six are cataloged; Market Snapshot requires its first CDP settlement before that claim.",
   }, null, 2));
 } else if (command === "demo") {
   const flow = process.argv[3] ?? "exchange";

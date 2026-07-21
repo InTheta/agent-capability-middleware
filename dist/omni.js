@@ -3,8 +3,9 @@ export const OMNI_X402_RECEIVER = "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457";
 export const OMNI_BASE_SEPOLIA_NETWORK = "eip155:84532";
 export const OMNI_BASE_SEPOLIA_USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 /**
- * Build one deterministic, bounded Omni x402 request. These are recipes over the six canonical
- * Bazaar route templates—not additional seller routes or a generic query proxy.
+ * Build one deterministic, bounded Omni x402 request. These are recipes over seven seller route
+ * templates—not additional per-query routes or a generic query proxy. Bazaar catalog status is
+ * verified separately because a new route requires a successful CDP settlement before indexing.
  */
 export function createOmniX402Recipe(input) {
     const url = new URL(`${OMNI_X402_ORIGIN}/api/x402/v1/`);
@@ -78,6 +79,10 @@ export function createOmniX402Recipe(input) {
             const address = normalizedAddress(input.address);
             url.pathname += `trader-profile/${address}`;
             url.searchParams.set("range", input.range ?? "30d");
+            url.searchParams.set("view", input.view ?? "full");
+            if (input.symbol)
+                url.searchParams.set("symbol", normalizedSymbol(input.symbol));
+            url.searchParams.set("limit", String(boundedInteger(input.limit ?? 20, 1, 20, "limit")));
             label = "Public trader profile";
             schema = "trader_profile.v1";
             priceUsdc = 0.002;
@@ -123,6 +128,19 @@ export function createOmniX402Recipe(input) {
             schema = "market_risk_snapshot.v1";
             priceUsdc = 0.003;
             purpose = `build_current_${symbol.toLowerCase()}_risk_brief`;
+            break;
+        }
+        case "market_snapshot": {
+            const symbol = normalizedSymbol(input.symbol);
+            url.pathname += `market-snapshot/${symbol}`;
+            url.searchParams.set("interval", input.interval ?? "1h");
+            url.searchParams.set("limit", String(boundedInteger(input.limit ?? 120, 20, 200, "limit")));
+            url.searchParams.set("scope", input.scope ?? "aggregate");
+            url.searchParams.set("include_liquidations", String(input.includeLiquidations ?? true));
+            label = `${symbol} market snapshot`;
+            schema = "hyperliquid_market_snapshot.v1";
+            priceUsdc = 0.003;
+            purpose = `evaluate_${symbol.toLowerCase()}_price_and_liquidation_structure`;
             break;
         }
     }
@@ -205,6 +223,7 @@ export function listOmniAgentRecipes(now = Date.now()) {
         createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "risk", limit: 10 }),
         createOmniX402Recipe({ kind: "trader_profile", address: "0x0ddf9bae2af4b874b96d287a5ad42eb47138a902", range: "30d" }),
         createOmniX402Recipe({ kind: "market_risk", symbol: "BTC" }),
+        createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "1h", limit: 120 }),
     ];
 }
 function addNewsQuery(url, input, mode, eventWindowMinutes) {
@@ -223,6 +242,17 @@ function addNewsFilters(url, input) {
             throw new RangeError("minConfidence must be from 0 to 1");
         }
         url.searchParams.set("min_confidence", String(input.minConfidence));
+    }
+    if (input.order)
+        url.searchParams.set("order", input.order);
+    if (input.offset !== undefined) {
+        url.searchParams.set("offset", String(boundedInteger(input.offset, 0, 19, "offset")));
+    }
+    if (input.nearestTimestamp !== undefined) {
+        if (!Number.isSafeInteger(input.nearestTimestamp) || String(input.nearestTimestamp).length !== 13) {
+            throw new RangeError("nearestTimestamp must be a 13-digit Unix millisecond timestamp");
+        }
+        url.searchParams.set("nearest_timestamp", String(input.nearestTimestamp));
     }
 }
 function normalizedSymbol(value) {

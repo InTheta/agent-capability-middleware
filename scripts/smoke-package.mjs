@@ -80,7 +80,12 @@ try {
   });
   if (recipes.status !== 0) throw new Error(recipes.stderr || recipes.stdout);
   const recipeReport = JSON.parse(recipes.stdout);
-  if (recipeReport.canonicalRouteTemplates !== 6 || recipeReport.recipes?.length < 10 || recipeReport.spent !== false) {
+  if (
+    recipeReport.canonicalRouteTemplates !== 7 ||
+    recipeReport.catalogedRouteTemplates !== 6 ||
+    recipeReport.recipes?.length < 12 ||
+    recipeReport.spent !== false
+  ) {
     throw new Error(`Installed ACM CLI returned an invalid recipe plan: ${recipes.stdout}`);
   }
   process.stdout.write("EXTERNAL_RECIPES_CLI_SMOKE_OK\n");

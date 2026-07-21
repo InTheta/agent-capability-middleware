@@ -8,6 +8,7 @@ export type OmniNewsSentiment = "bullish" | "bearish" | "neutral";
 export type OmniNewsImpact = "high" | "medium" | "low";
 export type OmniAnalyticsScope = "current" | "aggregate";
 export type OmniLiquidationView = "summary" | "buckets" | "clusters" | "flow";
+export type OmniMarketInterval = "1m" | "5m" | "15m" | "1h" | "2h" | "4h" | "8h" | "1d" | "3d" | "1w" | "1M";
 export type OmniTraderRank = "best" | "worst" | "largest" | "largest_size" | "wallet_size" | "risk" | "closest";
 export interface OmniFreshness {
     status: "fresh" | "stale" | "historical" | "unknown";
@@ -44,6 +45,9 @@ export interface OmniNewsPulseResponse {
         mode: "latest" | "window" | "context";
         from_timestamp: number | null;
         to_timestamp: number | null;
+        order: "recent" | "impact";
+        offset: number;
+        nearest_timestamp: number | null;
     };
 }
 export interface OmniTraderLeaderboardResponse {
@@ -89,6 +93,32 @@ export interface OmniTraderProfileResponse {
     freshness: OmniFreshness;
     [key: string]: unknown;
 }
+export interface OmniMarketSnapshotResponse {
+    service: "omni.hyperliquid_market_snapshot";
+    schema: "hyperliquid_market_snapshot.v1";
+    symbol: string;
+    interval: OmniMarketInterval;
+    scope: OmniAnalyticsScope;
+    generated_at: string;
+    data_as_of: string | null;
+    freshness: OmniFreshness;
+    candles: Array<{
+        open_time: number | null;
+        close_time: number | null;
+        open: number | null;
+        high: number | null;
+        low: number | null;
+        close: number | null;
+        volume: number | null;
+        trades: number | null;
+    }>;
+    liquidation_overlay?: OmniLiquidationMapResponse;
+    usage: {
+        candle_count: number;
+        candle_limit: number;
+        liquidation_overlay_included: boolean;
+    };
+}
 export interface OmniMarketRiskResponse {
     service: "omni.market_risk_snapshot";
     schema: "market_risk_snapshot.v1";
@@ -106,12 +136,15 @@ export interface OmniMarketRiskResponse {
     liquidations: OmniLiquidationMapResponse;
     news: OmniNewsPulseResponse;
 }
-export type OmniX402Response = OmniNewsPulseResponse | OmniTraderLeaderboardResponse | OmniLiquidationMapResponse | OmniTraderProfileResponse | OmniMarketRiskResponse;
+export type OmniX402Response = OmniNewsPulseResponse | OmniTraderLeaderboardResponse | OmniLiquidationMapResponse | OmniTraderProfileResponse | OmniMarketRiskResponse | OmniMarketSnapshotResponse;
 type NewsFilters = {
     limit?: number;
     sentiment?: OmniNewsSentiment;
     impact?: OmniNewsImpact;
     minConfidence?: number;
+    order?: "recent" | "impact";
+    offset?: number;
+    nearestTimestamp?: number;
 };
 export type OmniRecipeInput = ({
     kind: "targeted_news";
@@ -138,6 +171,9 @@ export type OmniRecipeInput = ({
     kind: "trader_profile";
     address: string;
     range?: "1d" | "7d" | "30d" | "all";
+    view?: "summary" | "positions" | "balances" | "full";
+    symbol?: string;
+    limit?: number;
 } | {
     kind: "liquidations";
     symbol: string;
@@ -157,6 +193,13 @@ export type OmniRecipeInput = ({
     kind: "market_risk";
     symbol: string;
     scope?: OmniAnalyticsScope;
+} | {
+    kind: "market_snapshot";
+    symbol: string;
+    interval?: OmniMarketInterval;
+    limit?: number;
+    scope?: OmniAnalyticsScope;
+    includeLiquidations?: boolean;
 };
 export interface OmniX402Recipe {
     kind: OmniRecipeInput["kind"];
@@ -175,8 +218,9 @@ export interface OmniX402Recipe {
     note?: string;
 }
 /**
- * Build one deterministic, bounded Omni x402 request. These are recipes over the six canonical
- * Bazaar route templates—not additional seller routes or a generic query proxy.
+ * Build one deterministic, bounded Omni x402 request. These are recipes over seven seller route
+ * templates—not additional per-query routes or a generic query proxy. Bazaar catalog status is
+ * verified separately because a new route requires a successful CDP settlement before indexing.
  */
 export declare function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe;
 export declare function createOmniRecipeGrant(agentId: string, recipes: readonly OmniX402Recipe[], options?: {

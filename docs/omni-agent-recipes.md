@@ -1,6 +1,6 @@
 # Real Omni agent recipes
 
-Omni Terminal exposes six bounded x402 route templates. ACM recipes turn common agent questions
+Omni Terminal exposes seven bounded x402 route templates. ACM recipes turn common agent questions
 into exact URLs, expected schemas, prices, and Base Sepolia payment constraints without putting a
 wallet key in agent code.
 
@@ -22,6 +22,7 @@ This command plans requests only. It does not create a grant, sign, or pay.
 | Which public wallets are best, worst, largest, or most at risk? | `traders` | `/traders/:symbol` | `0.002` USDC |
 | What is known about this public wallet? | `trader_profile` | `/trader-profile/:address` | `0.002` USDC |
 | Give me one joined news and liquidation risk input | `market_risk` | `/market-risk/:symbol` | `0.003` USDC |
+| Give me price structure plus liquidation levels | `market_snapshot` | `/market-snapshot/:symbol` | `0.003` USDC |
 
 The 60-minute briefing is not a new LLM call. It combines events from the latest 60-minute slice
 with the existing market context refreshed every 15 minutes over a 24-hour source window. This
@@ -82,10 +83,44 @@ const largest = createOmniX402Recipe({
 const clusters = createOmniX402Recipe({
   kind: "liquidations", symbol: "BTC", view: "clusters", limit: 10,
 });
+const exactBucket = createOmniX402Recipe({
+  kind: "liquidations", symbol: "BTC", view: "buckets", order: "nearest",
+  aroundPrice: 67500, side: "short", limit: 1,
+});
+const marketSnapshot = createOmniX402Recipe({
+  kind: "market_snapshot", symbol: "BTC", interval: "1h", limit: 120,
+  includeLiquidations: true,
+});
 ```
 
 These mirror the useful public-wallet and liquidation views proven by Omni's Telegram screenshot
 bot, while returning bounded JSON rather than a screenshot or an arbitrary database query.
+
+## News and profile selectors
+
+```ts
+const topBearish = createOmniX402Recipe({
+  kind: "targeted_news", symbol: "BTC", sentiment: "bearish",
+  order: "impact", limit: 1,
+});
+const secondHighImpact = createOmniX402Recipe({
+  kind: "targeted_news", symbol: "SOL", impact: "high",
+  order: "recent", offset: 1, limit: 1,
+});
+const nearestEvent = createOmniX402Recipe({
+  kind: "targeted_news", symbol: "BTC",
+  nearestTimestamp: 1_739_123_456_789, limit: 1,
+});
+const btcPositions = createOmniX402Recipe({
+  kind: "trader_profile",
+  address: "0x0ddf9bae2af4b874b96d287a5ad42eb47138a902",
+  range: "30d", view: "positions", symbol: "BTC", limit: 10,
+});
+```
+
+These correspond to `/news BTC bearish top`, `/news SOL high #2`, timestamp lookup, and a
+symbol-filtered `/trader` profile. The SDK builds intent only; the protected ACM gateway still owns
+approval, signing, receipt reconciliation, and revocation.
 
 ## Safety and freshness
 
@@ -95,5 +130,5 @@ bot, while returning bounded JSON rather than a screenshot or an arbitrary datab
 - Never automatically retry an uncertain settlement with a new idempotency key.
 - A recipe is request intent, not permission. The protected ACM gateway still enforces the grant,
   exact challenge, budget, approval, revocation, and reconciliation.
-- Query variants remain part of six coherent Bazaar products. A variant is not another catalog
+- Query variants remain part of seven coherent route templates. A variant is not another catalog
   listing or evidence of customer usage.

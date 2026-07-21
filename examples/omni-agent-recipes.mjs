@@ -6,7 +6,7 @@ import {
 
 const recipes = listOmniAgentRecipes();
 const selected = recipes.filter(({ kind }) =>
-  ["hourly_market_briefing", "traders", "liquidations", "market_risk"].includes(kind)
+  ["hourly_market_briefing", "traders", "liquidations", "market_risk", "market_snapshot"].includes(kind)
 );
 const grant = createOmniRecipeGrant("agent_example", selected, {
   userId: "user_example",
