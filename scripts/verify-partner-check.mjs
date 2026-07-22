@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { runDesignPartnerCheck } from "../dist/index.js";
+import { CANONICAL_OMNI_ROUTES, runDesignPartnerCheck } from "../dist/index.js";
 
 const receiver = "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457";
 const listing = {
@@ -14,16 +14,20 @@ const listing = {
     payTo: receiver,
   }],
 };
+const listings = CANONICAL_OMNI_ROUTES.map((resource) => resource === listing.resource
+  ? listing
+  : { ...listing, resource });
 
 const noSpend = await runDesignPartnerCheck({
   fetch: async () => Response.json({
     x402Version: 2,
     payTo: receiver,
-    resources: [listing],
-    pagination: { limit: 100, offset: 0, total: 1 },
+    resources: listings,
+    pagination: { limit: 100, offset: 0, total: listings.length },
   }),
 });
 assert.equal(noSpend.mode, "no_spend");
+assert.deepEqual(noSpend.catalog.canonicalRoutes, CANONICAL_OMNI_ROUTES);
 assert.equal(noSpend.catalog.canonicalMarketRisk.amountUsdc, 0.003);
 assert.equal(noSpend.secretsIncluded, false);
 assert.equal("payment" in noSpend, false);
@@ -45,8 +49,8 @@ const paid = await runDesignPartnerCheck({
       return Response.json({
         x402Version: 2,
         payTo: receiver,
-        resources: [listing],
-        pagination: { limit: 100, offset: 0, total: 1 },
+        resources: listings,
+        pagination: { limit: 100, offset: 0, total: listings.length },
       });
     }
     if (url.pathname === "/v1/agents/register") {

@@ -9,6 +9,15 @@ export const CANONICAL_OMNI_RECEIVER = "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc64
 export const CANONICAL_OMNI_MARKET_RISK_ROUTE = "https://omniterminal.app/api/x402/v1/market-risk/:symbol";
 export const CANONICAL_OMNI_MARKET_RISK_RESOURCE = "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current";
 export const BASE_SEPOLIA_USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
+export const CANONICAL_OMNI_ROUTES = [
+  "https://omniterminal.app/api/x402/v1/news/:symbol",
+  "https://omniterminal.app/api/x402/v1/news",
+  "https://omniterminal.app/api/x402/v1/trader-profile/:address",
+  "https://omniterminal.app/api/x402/v1/liquidations/:symbol",
+  "https://omniterminal.app/api/x402/v1/traders/:symbol",
+  CANONICAL_OMNI_MARKET_RISK_ROUTE,
+  "https://omniterminal.app/api/x402/v1/market-snapshot/:symbol",
+] as const;
 
 export interface DesignPartnerCheckOptions {
   gatewayUrl?: string;
@@ -30,6 +39,7 @@ export interface DesignPartnerCheckReport {
   catalog: {
     source: "cdp_bazaar";
     listedRoutes: number;
+    canonicalRoutes: string[];
     canonicalMarketRisk: {
       amountUsdc: 0.003;
       network: "eip155:84532";
@@ -82,6 +92,10 @@ export async function runDesignPartnerCheck(
   }
 
   const listing = resources.find((resource) => resource.resource === CANONICAL_OMNI_MARKET_RISK_ROUTE);
+  const listedRouteSet = new Set(resources.map((resource) => resource.resource));
+  for (const route of CANONICAL_OMNI_ROUTES) {
+    if (!listedRouteSet.has(route)) throw new DesignPartnerCheckError("catalog", `Canonical Omni route is not listed in CDP Bazaar: ${route}`);
+  }
   if (!listing) throw new DesignPartnerCheckError("catalog", "Canonical Omni market-risk route is not listed in CDP Bazaar");
   const quote = listing.accepts.find((accept) => accept.network === "eip155:84532");
   if (!quote) throw new DesignPartnerCheckError("catalog", "Canonical route has no Base Sepolia quote");
@@ -96,6 +110,7 @@ export async function runDesignPartnerCheck(
   const catalog: DesignPartnerCheckReport["catalog"] = {
     source: "cdp_bazaar",
     listedRoutes: resources.length,
+    canonicalRoutes: [...CANONICAL_OMNI_ROUTES],
     canonicalMarketRisk: {
       amountUsdc: 0.003,
       network: "eip155:84532",

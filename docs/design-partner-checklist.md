@@ -22,7 +22,7 @@ No clone, Git installation, account, environment file, or wallet is required:
 
 ```bash
 node --version
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -38,7 +38,8 @@ Open `acm-no-spend-report.json`. Success requires:
 }
 ```
 
-The catalog section should show the canonical `0.003` Base Sepolia USDC market-risk quote. This
+The catalog section should name all seven canonical Omni route templates and show the canonical
+`0.003` Base Sepolia USDC market-risk quote. This
 step performs a read-only CDP Bazaar request and creates no signature or payment.
 
 Record the minutes from opening this page to the successful report.
@@ -59,7 +60,7 @@ Enter the credential through a hidden prompt:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```

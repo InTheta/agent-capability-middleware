@@ -36,11 +36,11 @@ The tester needs only Node.js 20+ and npm—not a clone or Git installation. One
 pinned preview archive and checks the live canonical Bazaar contract without spending:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
-The JSON report must contain `"ok": true`, `"mode": "no_spend"`, seven listed Omni routes, the
+The JSON report must contain `"ok": true`, `"mode": "no_spend"`, all seven named canonical Omni routes, the
 `0.003` Base Sepolia USDC quote, and `"secretsIncluded": false`.
 
 After ACM provides controlled gateway access, the same installed command performs the funded
@@ -50,7 +50,7 @@ it is not written into shell history:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.17.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```

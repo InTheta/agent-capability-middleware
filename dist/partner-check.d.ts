@@ -2,6 +2,7 @@ export declare const CANONICAL_OMNI_RECEIVER = "0x733f40A4FA0cd13d59aBADE04b9eD2
 export declare const CANONICAL_OMNI_MARKET_RISK_ROUTE = "https://omniterminal.app/api/x402/v1/market-risk/:symbol";
 export declare const CANONICAL_OMNI_MARKET_RISK_RESOURCE = "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current";
 export declare const BASE_SEPOLIA_USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
+export declare const CANONICAL_OMNI_ROUTES: readonly ["https://omniterminal.app/api/x402/v1/news/:symbol", "https://omniterminal.app/api/x402/v1/news", "https://omniterminal.app/api/x402/v1/trader-profile/:address", "https://omniterminal.app/api/x402/v1/liquidations/:symbol", "https://omniterminal.app/api/x402/v1/traders/:symbol", "https://omniterminal.app/api/x402/v1/market-risk/:symbol", "https://omniterminal.app/api/x402/v1/market-snapshot/:symbol"];
 export interface DesignPartnerCheckOptions {
     gatewayUrl?: string;
     apiKey?: string;
@@ -21,6 +22,7 @@ export interface DesignPartnerCheckReport {
     catalog: {
         source: "cdp_bazaar";
         listedRoutes: number;
+        canonicalRoutes: string[];
         canonicalMarketRisk: {
             amountUsdc: 0.003;
             network: "eip155:84532";
