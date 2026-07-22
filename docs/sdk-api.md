@@ -1,5 +1,8 @@
 # SDK API
 
+This is the complete reference. New integrations should begin with the
+[five-minute buyer quickstart](getting-started.md), then return here for method details.
+
 ## CLI
 
 | Command | Purpose |

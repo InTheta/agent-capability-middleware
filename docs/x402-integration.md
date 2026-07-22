@@ -2,6 +2,8 @@
 
 x402 describes how an HTTP resource can request and verify payment. Agent Capability Middleware adds user and developer policy around that exchange.
 
+New to ACM? Complete the [five-minute buyer quickstart](getting-started.md) before using this protocol reference.
+
 ```mermaid
 sequenceDiagram
     participant A as Agent
@@ -120,8 +122,6 @@ summary/buckets/clusters/flow, best/worst/largest/risk traders, a public trader 
 composite market-risk snapshot. All 14 returned live protected results. On 21 July 2026, ACM then
 settled the seventh Market Snapshot template and validated a fresh candle-plus-liquidation result;
 the CDP receiver catalog now returns all seven route forms.
-
-![Six Omni products returned by the CDP Bazaar-backed ACM interface](assets/omni-bazaar-six-routes.png)
 
 ## Mainnet boundary
 

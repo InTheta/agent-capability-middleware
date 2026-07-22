@@ -120,8 +120,11 @@ Do not return terminal history or credentials.
 
 ## Evidence status
 
-The earlier repository-based v2 runner has completed operator rehearsals and clean npm/container
-checks. The installed v3 no-spend command was verified on 20 July 2026 against the then-six live
-Bazaar routes. On 21 July, the seventh Market Snapshot route completed a funded CDP settlement and
-the receiver-scoped catalog check passed all seven templates. These are repeatability checks, not
-either of the two required external completions.
+The exact pinned `v0.1.0-preview.18` command completed an operator no-spend clean-install check on
+22 July 2026 against all seven canonical Bazaar templates. The same installed command then completed
+the funded Base Sepolia flow in 3.491 seconds: fresh `market_risk_snapshot.v1`, public receipt
+`0xff57ccc4b5da7121d679eb47178be563427b21b81bc88406bba1f78e9a9e5283`, ACM audit event
+`evt_000074`, revoked grant `grant_000072`, `grant_revoked` denial, and no second settlement.
+
+This is operator repeatability evidence, not either of the two required unaided external developer
+completions.

@@ -1,16 +1,47 @@
 # Five-minute getting started
 
-Requirements: Node.js 20+. No account or wallet is required for the local demos.
+This guide follows one path: **discover → grant → pay → validate → revoke**.
 
-## Zero-install preview
+Requirements: Node.js 20+ and npm. The first two steps require no account, wallet, private key, or payment.
+
+## 1. Check the live catalog without spending
+
+Run the pinned preview from any empty directory:
 
 ```bash
-npx github:InTheta/agent-capability-middleware#main demo exchange
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
+  > acm-no-spend-report.json
 ```
 
-This prints one developer API offer, one user capability offer, and the policy decision for each. It is local and fixed-price; no payment settles.
+Success requires:
 
-## Install
+```json
+{
+  "ok": true,
+  "mode": "no_spend",
+  "packageInstall": "installed_cli",
+  "secretsIncluded": false
+}
+```
+
+This checks Coinbase's public x402 Bazaar catalog, the seven canonical Omni route templates, and the exact Base Sepolia quote. It does not sign or settle a transaction.
+
+## 2. Run the buyer lifecycle locally
+
+```bash
+npx github:InTheta/agent-capability-middleware#main demo buyer
+```
+
+Expected outcome:
+
+1. create a bounded grant;
+2. validate a fresh synthetic paid result;
+3. revoke the grant; and
+4. deny the next request without another receipt.
+
+The local `0xmock_...` receipt is not a blockchain transaction.
+
+## 3. Add ACM to an agent
 
 ```bash
 mkdir acm-example && cd acm-example
@@ -18,87 +49,80 @@ npm init -y
 npm install github:InTheta/agent-capability-middleware#main
 ```
 
-If you are evaluating ACM as an external design partner, skip the repository clone and run the
-pinned acceptance command:
+Create `buy-market-risk.mjs`:
 
-```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check
+```js
+import {
+  AgentCapabilityClient,
+  createOmniPaymentRequest,
+  createOmniX402Recipe,
+  requireFreshPaidResult,
+} from "@agent-capability-middleware/sdk";
+
+const acm = new AgentCapabilityClient(process.env.ACM_GATEWAY_URL, {
+  apiKey: process.env.ACM_API_KEY,
+});
+
+const recipe = createOmniX402Recipe({ kind: "market_risk", symbol: "BTC" });
+const request = createOmniPaymentRequest(
+  "grant_approved_by_user",
+  recipe,
+  crypto.randomUUID(),
+);
+
+const result = await acm.consumeX402Testnet(request);
+const data = requireFreshPaidResult(result, { expectedSchema: recipe.schema });
+
+console.log({ schema: data.schema, freshness: data.freshness.status });
 ```
 
-It validates the installed CLI and current public Bazaar contract without paying. Follow
-[the design-partner checklist](design-partner-checklist.md) only after it passes.
+The agent sends intent and grant metadata. It never receives the payer private key.
 
-## 1. Agent buys safely
+## 4. Complete the controlled Base Sepolia test
 
-Start with the no-spend lifecycle:
-
-```bash
-npx acm demo buyer
-```
-
-For the complete packed clean-room mock:
+Stop until an ACM operator provides a protected gateway URL and confirms its dedicated testnet payer is funded.
 
 ```bash
-git clone https://github.com/InTheta/agent-capability-middleware.git
-cd agent-capability-middleware
-npm ci
-npm run example:fresh-dev
+export ACM_GATEWAY_URL='https://provided-gateway.example'
+export ACM_CONFIRM_TESTNET_SPEND=yes
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
+  > acm-paid-report.json
+unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
 
-Expected marker: `FRESH_DEV_MOCK_OK`. It creates a bounded grant, validates a synthetic fresh result, revokes the grant, and proves the next request is denied. Its `0xmock_…` receipt is not a chain transaction.
-
-For a real testnet purchase, ask the ACM operator for a gateway URL and workload credential, then follow [x402 integration](x402-integration.md). The SDK never accepts the payer private key.
-
-## 2. Developer sells an API
+If the assigned deployment enforces a workload key, enter it through a hidden prompt first:
 
 ```bash
-npx acm demo developer-seller
+printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
 ```
 
-Or run the source example:
+The paid report must show a public receipt, an ACM audit event, fresh `market_risk_snapshot.v1` data, `grant_revoked`, no second settlement, and no included secrets. Follow the complete [external developer checklist](design-partner-checklist.md).
+
+## What ACM enforces
+
+- exact resource and purpose;
+- maximum amount and daily budget;
+- network, asset, and receiving address;
+- grant expiry and revocation;
+- idempotency and replay protection;
+- approval policy; and
+- response freshness and schema before agent use.
+
+## Safety rules
+
+- Keep workload credentials server-side.
+- Never put a wallet private key in the SDK, CLI, agent prompt, or `.env` shared with a tester.
+- Stop on an uncertain payment result; do not blindly retry.
+- Return only redacted acceptance reports.
+
+## Optional experimental previews
+
+These are local offer-policy helpers, not live settlement or marketplace claims:
 
 ```bash
-npm run example:developer-seller
+npx github:InTheta/agent-capability-middleware#main demo developer-seller
+npx github:InTheta/agent-capability-middleware#main demo user-seller
+npx github:InTheta/agent-capability-middleware#main demo exchange
 ```
 
-The result is `payment_required` with the exact price, receiving address, network, and resource. This is the offer/policy layer. Your seller server must still implement a real x402 challenge and settlement flow.
-
-## 3. User sells a capability
-
-```bash
-npx acm demo user-seller
-```
-
-The source example also shows local minimization from an Amazon-shaped CSV:
-
-```bash
-npm run example:user-seller
-```
-
-It publishes a user-confirmed purchase-intent projection. It does not read cookies or publish raw order rows, product titles, address, payment details, or identity documents.
-
-## 4. Data exchange preview
-
-```bash
-npx acm demo exchange
-```
-
-The local directory can hold developer and user offers and produces explicit `allow`, `payment_required`, `requires_user_approval`, or `deny` decisions. It is not a live auction or liquidity claim.
-
-## Policy outcomes
-
-| Policy | Result | Typical use |
-|---|---|---|
-| `free` | `allow` | User chooses convenience or developer offers a free sample |
-| `paid` | `payment_required` | API call or minimum-disclosure capability has a fixed price |
-| `ask` | `requires_user_approval` | User wants to review every request |
-| `deny` | `deny` | Capability must never be shared |
-
-## Production rules
-
-- Authenticate developer workload, user, and agent separately.
-- Bind grants to purpose, resource, payee, asset, amount, expiry, and idempotency key.
-- Keep gateway credentials server-side.
-- Never give an agent raw cookies, session tokens, identity documents, card details, or wallet keys.
-- Make activity, approval, and revocation visible to the user.
-- Treat seller helpers as experimental until a hosted settlement and fulfilment service exists.
+See [runnable examples](examples.md) for their exact boundaries.
