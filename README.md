@@ -11,7 +11,7 @@ Give an AI agent permission to buy **one exact x402 resource** under a bounded g
 Requirements: Node.js 20+ and internet access. No clone, account, wallet, or private key is required.
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.19.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -74,7 +74,7 @@ After an ACM operator provides a protected gateway URL and confirms its dedicate
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.18.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.19.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
