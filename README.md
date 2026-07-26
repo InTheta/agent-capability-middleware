@@ -92,13 +92,17 @@ The acceptance flow buys one current BTC market-risk result, requires a fresh sc
 | Goal | Command or guide | Status |
 |---|---|---|
 | Inspect live Bazaar routes without paying | `npx github:InTheta/agent-capability-middleware#main inspect` | Implemented |
-| Build exact Omni news, trader, liquidation, and risk requests | `npx github:InTheta/agent-capability-middleware#main recipes` | Implemented |
+| Build exact calls across all seven Omni x402 products | `npx github:InTheta/agent-capability-middleware#main recipes` | Implemented |
 | Buy through a protected, policy-bound payer | [Getting started](docs/getting-started.md) | Implemented on Base Sepolia |
 | Charge agents for a developer API | `acm demo developer-seller` | Experimental local offer helper |
 | Offer a user-confirmed minimum-disclosure capability | `acm demo user-seller` | Experimental local offer helper |
 | Compare both offer types | `acm demo exchange` | Experimental local directory |
 
-The seven canonical Omni templates cover targeted and market-wide AI news, exact time windows, liquidation views, trader rankings, public trader profiles, market risk, and a composite market snapshot. Recipe builders reuse those templates; they do not claim extra Bazaar listings.
+The seven canonical Omni templates cover targeted and market-wide AI news, exact time windows,
+all bounded liquidation views, all seven trader ranks, public trader-profile projections,
+15/60-minute composite market risk, and candles with optional liquidation overlay. `acm recipes`
+prints 23 concrete no-spend request plans over those templates; it does not claim 23 Bazaar
+listings.
 
 ## Architecture
 

@@ -109,7 +109,7 @@ function printHelp() {
 Usage:
   acm doctor   Check the local SDK runtime. No network request or payment.
   acm inspect  Inspect one live x402 resource through public CDP Bazaar. No payment.
-  acm recipes  Print bounded real Omni news, trader and liquidation request recipes. No payment.
+  acm recipes  Print bounded calls across all seven real Omni x402 products. No payment.
   acm demo buyer|developer-seller|user-seller|exchange
                 Run a local, keyless product flow. No payment.
   acm partner-check

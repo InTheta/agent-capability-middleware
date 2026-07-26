@@ -113,7 +113,7 @@ These calls are read-only and send no API key or wallet material.
 | Function | Purpose |
 |---|---|
 | `createOmniX402Recipe` | Convert a bounded news, trader, liquidation, profile, risk, or market-snapshot question into an exact canonical resource and expected payment. |
-| `listOmniAgentRecipes` | List representative real request plans for the seven seller route templates. |
+| `listOmniAgentRecipes` | List 23 bounded no-spend request plans spanning the stable modes of all seven seller route templates. |
 | `createOmniRecipeGrant` | Build the least-privilege grant policy and aggregate cap for selected recipes. |
 | `createOmniPaymentRequest` | Bind a grant and idempotency key to one recipe for protected gateway consumption. |
 

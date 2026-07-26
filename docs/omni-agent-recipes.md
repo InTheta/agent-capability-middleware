@@ -18,10 +18,10 @@ This command plans requests only. It does not create a grant, sign, or pay.
 | Give me the current broad crypto briefing | `hourly_market_briefing` | `/news` | `0.001` USDC |
 | What is the current market-wide context only? | `news_context` | `/news` | `0.001` USDC |
 | What happened during this exact historical window? | `historical_news` | `/news` or `/news/:symbol` | `0.001` USDC |
-| Where are the strongest or nearest liquidation areas? | `liquidations` | `/liquidations/:symbol` | `0.002` USDC |
-| Which public wallets are best, worst, largest, or most at risk? | `traders` | `/traders/:symbol` | `0.002` USDC |
-| What is known about this public wallet? | `trader_profile` | `/trader-profile/:address` | `0.002` USDC |
-| Give me one joined news and liquidation risk input | `market_risk` | `/market-risk/:symbol` | `0.003` USDC |
+| Where are the summary, buckets, clusters, cumulative flow, or nearest liquidation areas? | `liquidations` | `/liquidations/:symbol` | `0.002` USDC |
+| Which public wallets are best/worst by PnL, largest by value/size, largest wallets, closest, or most at risk? | `traders` | `/traders/:symbol` | `0.002` USDC |
+| What is known about this public wallet, its positions, or balances? | `trader_profile` | `/trader-profile/:address` | `0.002` USDC |
+| Give me one joined 15- or 60-minute news and liquidation risk input | `market_risk` | `/market-risk/:symbol` | `0.003` USDC |
 | Give me price structure plus liquidation levels | `market_snapshot` | `/market-snapshot/:symbol` | `0.003` USDC |
 
 The 60-minute briefing is not a new LLM call. It combines events from the latest 60-minute slice
@@ -91,6 +91,19 @@ const marketSnapshot = createOmniX402Recipe({
   kind: "market_snapshot", symbol: "BTC", interval: "1h", limit: 120,
   includeLiquidations: true,
 });
+const closest = createOmniX402Recipe({
+  kind: "traders", symbol: "BTC", rank: "closest", limit: 5,
+});
+const largestWallets = createOmniX402Recipe({
+  kind: "traders", symbol: "BTC", rank: "wallet_size", limit: 10,
+});
+const liquidationFlow = createOmniX402Recipe({
+  kind: "liquidations", symbol: "BTC", view: "flow", limit: 20,
+});
+const fastRisk = createOmniX402Recipe({
+  kind: "market_risk", symbol: "BTC",
+  eventWindowMinutes: 15, limit: 5,
+});
 ```
 
 These mirror the useful public-wallet and liquidation views proven by Omni's Telegram screenshot
@@ -121,6 +134,11 @@ const btcPositions = createOmniX402Recipe({
 These correspond to `/news BTC bearish top`, `/news SOL high #2`, timestamp lookup, and a
 symbol-filtered `/trader` profile. The SDK builds intent only; the protected ACM gateway still owns
 approval, signing, receipt reconciliation, and revocation.
+
+Run `acm recipes` to print 23 no-spend examples spanning every stable news mode, all four
+liquidation views, all seven trader ranks, the three useful profile projections, both composite
+risk horizons, and market snapshots with or without liquidation data. These are query variants on
+seven cataloged products—not 23 separate Bazaar listings.
 
 ## Safety and freshness
 

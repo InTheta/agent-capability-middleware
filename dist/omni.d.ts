@@ -193,6 +193,8 @@ export type OmniRecipeInput = ({
     kind: "market_risk";
     symbol: string;
     scope?: OmniAnalyticsScope;
+    eventWindowMinutes?: 15 | 60;
+    limit?: number;
 } | {
     kind: "market_snapshot";
     symbol: string;

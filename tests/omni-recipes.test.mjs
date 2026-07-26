@@ -79,6 +79,31 @@ test("builds exact payment intent and a least-privilege aggregate grant", () => 
   assert.deepEqual(request.expectedPayment, recipes[1].expectedPayment);
 });
 
+test("builds bounded 15-minute and 60-minute composite risk calls", () => {
+  const fast = createOmniX402Recipe({
+    kind: "market_risk",
+    symbol: "BTC",
+    scope: "current",
+    eventWindowMinutes: 15,
+    limit: 8,
+  });
+  assert.equal(
+    fast.resourceUrl,
+    "https://omniterminal.app/api/x402/v1/market-risk/BTC?scope=current&event_window_minutes=15&limit=8",
+  );
+  const hourly = createOmniX402Recipe({
+    kind: "market_risk",
+    symbol: "ETH",
+    eventWindowMinutes: 60,
+  });
+  assert.equal(new URL(hourly.resourceUrl).searchParams.get("event_window_minutes"), "60");
+  assert.equal(new URL(hourly.resourceUrl).searchParams.get("limit"), "5");
+  assert.throws(
+    () => createOmniX402Recipe({ kind: "market_risk", symbol: "BTC", limit: 11 }),
+    /limit must be an integer from 1 to 10/,
+  );
+});
+
 test("rejects unbounded or malformed inputs before a payment request exists", () => {
   assert.throws(
     () => createOmniX402Recipe({ kind: "traders", symbol: "BTC", limit: 21 }),
@@ -105,7 +130,23 @@ test("rejects unbounded or malformed inputs before a payment request exists", ()
 
 test("lists coherent recipes without creating new route templates", () => {
   const recipes = listOmniAgentRecipes(1_800_000_000_000);
-  assert.equal(recipes.length, 12);
+  assert.equal(recipes.length, 23);
+  assert.deepEqual(
+    new Set(
+      recipes
+        .filter((recipe) => recipe.kind === "traders")
+        .map((recipe) => new URL(recipe.resourceUrl).searchParams.get("rank")),
+    ),
+    new Set(["best", "worst", "largest", "largest_size", "wallet_size", "risk", "closest"]),
+  );
+  assert.deepEqual(
+    new Set(
+      recipes
+        .filter((recipe) => recipe.kind === "liquidations")
+        .map((recipe) => new URL(recipe.resourceUrl).searchParams.get("view")),
+    ),
+    new Set(["summary", "buckets", "clusters", "flow"]),
+  );
   assert.equal(new Set(recipes.map((recipe) => new URL(recipe.resourceUrl).pathname.split("/").slice(0, 6).join("/"))).size > 0, true);
   assert.equal(recipes.every((recipe) => recipe.resourceUrl.startsWith("https://omniterminal.app/api/x402/v1/")), true);
 });

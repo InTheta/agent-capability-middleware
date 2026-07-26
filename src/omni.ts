@@ -167,7 +167,13 @@ export type OmniRecipeInput =
   | { kind: "trader_profile"; address: string; range?: "1d" | "7d" | "30d" | "all"; view?: "summary" | "positions" | "balances" | "full"; symbol?: string; limit?: number }
   | { kind: "liquidations"; symbol: string; scope?: OmniAnalyticsScope; view?: OmniLiquidationView; limit?: number; order?: "strongest" | "nearest" | "price"; aroundPrice?: number; side?: "all" | "long" | "short" }
   | { kind: "traders"; symbol: string; scope?: OmniAnalyticsScope; rank?: OmniTraderRank; limit?: number }
-  | { kind: "market_risk"; symbol: string; scope?: OmniAnalyticsScope }
+  | {
+      kind: "market_risk";
+      symbol: string;
+      scope?: OmniAnalyticsScope;
+      eventWindowMinutes?: 15 | 60;
+      limit?: number;
+    }
   | { kind: "market_snapshot"; symbol: string; interval?: OmniMarketInterval; limit?: number; scope?: OmniAnalyticsScope; includeLiquidations?: boolean };
 
 export interface OmniX402Recipe {
@@ -304,6 +310,8 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       const symbol = normalizedSymbol(input.symbol);
       url.pathname += `market-risk/${symbol}`;
       url.searchParams.set("scope", input.scope ?? "current");
+      url.searchParams.set("event_window_minutes", String(input.eventWindowMinutes ?? 60));
+      url.searchParams.set("limit", String(boundedInteger(input.limit ?? 5, 1, 10, "limit")));
       label = `${symbol} composite market risk`;
       schema = "market_risk_snapshot.v1";
       priceUsdc = 0.003;
@@ -404,14 +412,25 @@ export function listOmniAgentRecipes(now = Date.now()): OmniX402Recipe[] {
     createOmniX402Recipe({ kind: "hourly_market_briefing", market: "crypto", limit: 10 }),
     createOmniX402Recipe({ kind: "news_context", market: "crypto" }),
     createOmniX402Recipe({ kind: "historical_news", market: "crypto", fromTimestamp: now - 3_600_000, toTimestamp: now, limit: 10 }),
+    createOmniX402Recipe({ kind: "targeted_news", symbol: "BTC", impact: "high", minConfidence: 0.8, order: "impact", limit: 3 }),
+    createOmniX402Recipe({ kind: "liquidations", symbol: "BTC", view: "summary", limit: 10 }),
+    createOmniX402Recipe({ kind: "liquidations", symbol: "BTC", view: "buckets", order: "strongest", limit: 10 }),
     createOmniX402Recipe({ kind: "liquidations", symbol: "BTC", view: "clusters", limit: 10 }),
+    createOmniX402Recipe({ kind: "liquidations", symbol: "BTC", view: "flow", limit: 20 }),
     createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "best", limit: 10 }),
     createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "worst", limit: 10 }),
     createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "largest", limit: 10 }),
+    createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "largest_size", limit: 10 }),
+    createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "wallet_size", limit: 10 }),
     createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "risk", limit: 10 }),
+    createOmniX402Recipe({ kind: "traders", symbol: "BTC", rank: "closest", limit: 10 }),
     createOmniX402Recipe({ kind: "trader_profile", address: "0x0ddf9bae2af4b874b96d287a5ad42eb47138a902", range: "30d" }),
-    createOmniX402Recipe({ kind: "market_risk", symbol: "BTC" }),
+    createOmniX402Recipe({ kind: "trader_profile", address: "0x0ddf9bae2af4b874b96d287a5ad42eb47138a902", range: "7d", view: "positions", symbol: "BTC", limit: 10 }),
+    createOmniX402Recipe({ kind: "trader_profile", address: "0x0ddf9bae2af4b874b96d287a5ad42eb47138a902", range: "all", view: "balances", limit: 10 }),
+    createOmniX402Recipe({ kind: "market_risk", symbol: "BTC", eventWindowMinutes: 15, limit: 5 }),
+    createOmniX402Recipe({ kind: "market_risk", symbol: "BTC", eventWindowMinutes: 60, limit: 5 }),
     createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "1h", limit: 120 }),
+    createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "15m", limit: 96, includeLiquidations: false }),
   ];
 }
 
