@@ -11,7 +11,7 @@ npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/ta
   > acm-no-spend-report.json
 ```
 
-This installs the pinned preview, reads Coinbase's public x402 Bazaar catalog, verifies all seven canonical Omni route templates and the `0.003` Base Sepolia USDC market-risk quote, then exits without signing or paying.
+This installs the pinned preview, reads Coinbase's public x402 Bazaar catalog, verifies all nine canonical Omni route templates and the `0.003` Base Sepolia USDC market-risk quote, then exits without signing or paying.
 
 Expected fields:
 
@@ -78,7 +78,7 @@ npm ci
 |---|---|---|
 | `npm run example:fresh-dev` | Pack, install in an empty project, grant, validate, revoke, deny | None; deterministic mock |
 | `npm run example:bazaar` | List the live receiver-scoped Bazaar catalog | None |
-| `npm run example:omni-recipes` | Build exact news, liquidation, trader, risk, and snapshot requests | None |
+| `npm run example:omni-recipes` | Build exact news, liquidation, trader, risk, snapshot, entity-resolution, and carry requests | None |
 | `npm run example:omni-x402` | Run the partner flow | No spend unless explicitly enabled |
 | `npm run verify` | Type-check, test, package-smoke, and exercise public examples | None |
 

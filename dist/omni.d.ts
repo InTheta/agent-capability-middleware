@@ -136,7 +136,54 @@ export interface OmniMarketRiskResponse {
     liquidations: OmniLiquidationMapResponse;
     news: OmniNewsPulseResponse;
 }
-export type OmniX402Response = OmniNewsPulseResponse | OmniTraderLeaderboardResponse | OmniLiquidationMapResponse | OmniTraderProfileResponse | OmniMarketRiskResponse | OmniMarketSnapshotResponse;
+export interface OmniEntityResolutionResponse {
+    service: "omni.market_entity_resolution";
+    product_version: "v1";
+    schema: "market_entity_resolution.v1";
+    generated_at: string;
+    data_as_of: string | null;
+    freshness: OmniFreshness;
+    venue: "hyperliquid";
+    results: Array<{
+        input: string;
+        resolution_status: "resolved" | "unsupported";
+        canonical_symbol: string | null;
+        confidence: number;
+        product_supported: boolean;
+        [key: string]: unknown;
+    }>;
+    usage: {
+        mention_count: number;
+        resolved_count: number;
+        mention_limit: 20;
+    };
+}
+export interface OmniMarketCarryResponse {
+    service: "omni.hyperliquid_market_carry";
+    product_version: "v1";
+    schema: "hyperliquid_market_carry.v1";
+    symbol: string;
+    canonical_symbol: string;
+    venue: "hyperliquid";
+    market_type: "perp";
+    generated_at: string;
+    data_as_of: string | null;
+    freshness: OmniFreshness;
+    carry: {
+        funding_rate_per_hour: number;
+        funding_annualized_pct: number;
+        annualization_method: "simple_current_hourly_rate_x_8760";
+        funding_direction: "longs_pay_shorts" | "shorts_pay_longs" | "balanced";
+        premium: number | null;
+    };
+    positioning: Record<string, number | null>;
+    prices: Record<string, number | null>;
+    usage: {
+        current_snapshot_only: true;
+        historical_series_included: false;
+    };
+}
+export type OmniX402Response = OmniNewsPulseResponse | OmniTraderLeaderboardResponse | OmniLiquidationMapResponse | OmniTraderProfileResponse | OmniMarketRiskResponse | OmniMarketSnapshotResponse | OmniEntityResolutionResponse | OmniMarketCarryResponse;
 type NewsFilters = {
     limit?: number;
     sentiment?: OmniNewsSentiment;
@@ -202,6 +249,13 @@ export type OmniRecipeInput = ({
     limit?: number;
     scope?: OmniAnalyticsScope;
     includeLiquidations?: boolean;
+} | {
+    kind: "entity_resolution";
+    mentions: string[];
+    venue?: "hyperliquid";
+} | {
+    kind: "market_carry";
+    symbol: string;
 };
 export interface OmniX402Recipe {
     kind: OmniRecipeInput["kind"];
@@ -211,6 +265,9 @@ export interface OmniX402Recipe {
     priceUsdc: 0.001 | 0.002 | 0.003;
     category: "market_intelligence";
     purpose: string;
+    method?: "GET" | "POST";
+    headers?: Record<string, string>;
+    body?: string;
     expectedPayment: {
         amount: 0.001 | 0.002 | 0.003;
         network: typeof OMNI_BASE_SEPOLIA_NETWORK;
@@ -220,7 +277,7 @@ export interface OmniX402Recipe {
     note?: string;
 }
 /**
- * Build one deterministic, bounded Omni x402 request. These are recipes over seven seller route
+ * Build one deterministic, bounded Omni x402 request. These are recipes over nine seller route
  * templates—not additional per-query routes or a generic query proxy. Bazaar catalog status is
  * verified separately because a new route requires a successful CDP settlement before indexing.
  */

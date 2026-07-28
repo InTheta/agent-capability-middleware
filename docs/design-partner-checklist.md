@@ -38,7 +38,7 @@ Open `acm-no-spend-report.json`. Success requires:
 }
 ```
 
-The catalog section should name all seven canonical Omni route templates and show the canonical
+The catalog section should name all nine canonical Omni route templates and show the canonical
 `0.003` Base Sepolia USDC market-risk quote. This
 step performs a read-only CDP Bazaar request and creates no signature or payment.
 
@@ -121,7 +121,8 @@ Do not return terminal history or credentials.
 ## Evidence status
 
 The exact pinned `v0.1.0-preview.18` command completed an operator no-spend clean-install check on
-22 July 2026 against all seven canonical Bazaar templates. The same installed command then completed
+22 July 2026 against the seven canonical Bazaar templates available at that time. The same
+installed command then completed
 the funded Base Sepolia flow in 3.491 seconds: fresh `market_risk_snapshot.v1`, public receipt
 `0xff57ccc4b5da7121d679eb47178be563427b21b81bc88406bba1f78e9a9e5283`, ACM audit event
 `evt_000074`, revoked grant `grant_000072`, `grant_revoked` denial, and no second settlement.

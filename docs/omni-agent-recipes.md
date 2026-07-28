@@ -1,6 +1,6 @@
 # Real Omni agent recipes
 
-Omni Terminal exposes seven bounded x402 route templates. ACM recipes turn common agent questions
+Omni Terminal exposes nine bounded x402 route templates. ACM recipes turn common agent questions
 into exact URLs, expected schemas, prices, and Base Sepolia payment constraints without putting a
 wallet key in agent code.
 
@@ -23,6 +23,8 @@ This command plans requests only. It does not create a grant, sign, or pay.
 | What is known about this public wallet, its positions, or balances? | `trader_profile` | `/trader-profile/:address` | `0.002` USDC |
 | Give me one joined 15- or 60-minute news and liquidation risk input | `market_risk` | `/market-risk/:symbol` | `0.003` USDC |
 | Give me price structure plus liquidation levels | `market_snapshot` | `/market-snapshot/:symbol` | `0.003` USDC |
+| Resolve current market names or aliases into canonical instruments | `entity_resolution` | `POST /symbols/resolve` | `0.001` USDC |
+| Give me current funding, basis, open interest, and carry | `market_carry` | `/market-carry/:symbol` | `0.001` USDC |
 
 The 60-minute briefing is not a new LLM call. It combines events from the latest 60-minute slice
 with the existing market context refreshed every 15 minutes over a 24-hour source window. This
@@ -104,6 +106,13 @@ const fastRisk = createOmniX402Recipe({
   kind: "market_risk", symbol: "BTC",
   eventWindowMinutes: 15, limit: 5,
 });
+const resolved = createOmniX402Recipe({
+  kind: "entity_resolution",
+  mentions: ["bitcoin", "BTC-PERP"],
+});
+const carry = createOmniX402Recipe({
+  kind: "market_carry", symbol: "BTC",
+});
 ```
 
 These mirror the useful public-wallet and liquidation views proven by Omni's Telegram screenshot
@@ -135,10 +144,10 @@ These correspond to `/news BTC bearish top`, `/news SOL high #2`, timestamp look
 symbol-filtered `/trader` profile. The SDK builds intent only; the protected ACM gateway still owns
 approval, signing, receipt reconciliation, and revocation.
 
-Run `acm recipes` to print 23 no-spend examples spanning every stable news mode, all four
+Run `acm recipes` to print 25 no-spend examples spanning every stable news mode, all four
 liquidation views, all seven trader ranks, the three useful profile projections, both composite
-risk horizons, and market snapshots with or without liquidation data. These are query variants on
-seven cataloged products—not 23 separate Bazaar listings.
+risk horizons, market snapshots with or without liquidation data, entity resolution, and market
+carry. These are query variants on nine cataloged products—not 25 separate Bazaar listings.
 
 ## Safety and freshness
 
@@ -148,5 +157,5 @@ seven cataloged products—not 23 separate Bazaar listings.
 - Never automatically retry an uncertain settlement with a new idempotency key.
 - A recipe is request intent, not permission. The protected ACM gateway still enforces the grant,
   exact challenge, budget, approval, revocation, and reconciliation.
-- Query variants remain part of seven coherent route templates. A variant is not another catalog
+- Query variants remain part of nine coherent route templates. A variant is not another catalog
   listing or evidence of customer usage.

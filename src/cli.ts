@@ -66,14 +66,14 @@ if (command === "help" || command === "--help" || command === "-h") {
   console.log(JSON.stringify({
     ok: true,
     action: "bounded_omni_agent_recipes",
-    canonicalRouteTemplates: 7,
-    catalogedRouteTemplates: 7,
+    canonicalRouteTemplates: 9,
+    catalogedRouteTemplates: 9,
     recipes: listOmniAgentRecipes().map(({ label, kind, resourceUrl, schema, priceUsdc, purpose, note }) => ({
       label, kind, resourceUrl, schema, priceUsdc, purpose, ...(note ? { note } : {}),
     })),
     spent: false,
     privateKeyUsed: false,
-    note: "Recipes reuse seven funded Base Sepolia seller route templates, all verified in CDP Bazaar; query variants do not create extra listings.",
+    note: "Recipes reuse nine funded Base Sepolia seller route templates, all verified in CDP Bazaar; query variants do not create extra listings.",
   }, null, 2));
 } else if (command === "demo") {
   const flow = process.argv[3] ?? "exchange";
@@ -116,7 +116,7 @@ function printHelp(): void {
 Usage:
   acm doctor   Check the local SDK runtime. No network request or payment.
   acm inspect  Inspect one live x402 resource through public CDP Bazaar. No payment.
-  acm recipes  Print bounded calls across all seven real Omni x402 products. No payment.
+  acm recipes  Print bounded calls across all nine real Omni x402 products. No payment.
   acm demo buyer|developer-seller|user-seller|exchange
                 Run a local, keyless product flow. No payment.
   acm partner-check

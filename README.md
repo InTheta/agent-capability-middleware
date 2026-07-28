@@ -26,7 +26,7 @@ Success means the report contains:
 }
 ```
 
-The check reads Coinbase's public x402 Bazaar catalog, confirms all seven canonical Omni routes, and validates the `0.003` Base Sepolia USDC quote. It creates no signature or payment.
+The check reads Coinbase's public x402 Bazaar catalog, confirms all nine canonical Omni routes, and validates the `0.003` Base Sepolia USDC quote. It creates no signature or payment.
 
 ## Five-minute local demo
 
@@ -92,16 +92,18 @@ The acceptance flow buys one current BTC market-risk result, requires a fresh sc
 | Goal | Command or guide | Status |
 |---|---|---|
 | Inspect live Bazaar routes without paying | `npx github:InTheta/agent-capability-middleware#main inspect` | Implemented |
-| Build exact calls across all seven Omni x402 products | `npx github:InTheta/agent-capability-middleware#main recipes` | Implemented |
+| Build exact calls across all nine Omni x402 products | `npx github:InTheta/agent-capability-middleware#main recipes` | Implemented |
 | Buy through a protected, policy-bound payer | [Getting started](docs/getting-started.md) | Implemented on Base Sepolia |
+| Buy a bounded Omni MCP tool through the protected payer | [`consumeX402McpTestnet`](docs/sdk-api.md#consume-a-paid-mcp-tool) | Implemented on Base Sepolia |
 | Charge agents for a developer API | `acm demo developer-seller` | Experimental local offer helper |
 | Offer a user-confirmed minimum-disclosure capability | `acm demo user-seller` | Experimental local offer helper |
 | Compare both offer types | `acm demo exchange` | Experimental local directory |
 
-The seven canonical Omni templates cover targeted and market-wide AI news, exact time windows,
+The nine canonical Omni templates cover targeted and market-wide AI news, exact time windows,
 all bounded liquidation views, all seven trader ranks, public trader-profile projections,
-15/60-minute composite market risk, and candles with optional liquidation overlay. `acm recipes`
-prints 23 concrete no-spend request plans over those templates; it does not claim 23 Bazaar
+15/60-minute composite market risk, candles with optional liquidation overlay, current market
+entity resolution, and current funding/carry. `acm recipes`
+prints 25 concrete no-spend request plans over those templates; it does not claim 25 Bazaar
 listings.
 
 ## Architecture
@@ -115,7 +117,7 @@ flowchart LR
     G --> L["Receipt and audit"]
 ```
 
-MCP can carry tool calls, OAuth/OIDC can identify workloads and users, verifiable credentials can carry attestations, and x402 carries payment requirements and proofs. ACM composes existing standards rather than replacing them.
+MCP can carry tool calls, OAuth/OIDC can identify workloads and users, verifiable credentials can carry attestations, and x402 carries payment requirements and proofs. ACM composes existing standards rather than replacing them. The protected gateway now applies the same exact grant and payment binding to four bounded Omni MCP tools.
 
 ## Experimental seller previews
 

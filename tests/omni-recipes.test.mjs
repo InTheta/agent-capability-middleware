@@ -104,6 +104,49 @@ test("builds bounded 15-minute and 60-minute composite risk calls", () => {
   );
 });
 
+test("builds bounded entity-resolution and market-carry requests", () => {
+  const resolution = createOmniX402Recipe({
+    kind: "entity_resolution",
+    mentions: [" bitcoin ", "BTC-PERP"],
+  });
+  assert.equal(
+    resolution.resourceUrl,
+    "https://omniterminal.app/api/x402/v1/symbols/resolve",
+  );
+  assert.equal(resolution.method, "POST");
+  assert.deepEqual(resolution.headers, {
+    "content-type": "application/json",
+  });
+  assert.deepEqual(JSON.parse(resolution.body), {
+    mentions: ["bitcoin", "BTC-PERP"],
+    venue: "hyperliquid",
+  });
+  assert.equal(resolution.schema, "market_entity_resolution.v1");
+  assert.equal(resolution.priceUsdc, 0.001);
+
+  const payment = createOmniPaymentRequest(
+    "grant_resolver",
+    resolution,
+    "resolve_request_001",
+  );
+  assert.equal(payment.method, "POST");
+  assert.deepEqual(payment.headers, {
+    "content-type": "application/json",
+  });
+  assert.equal(payment.body, resolution.body);
+
+  const carry = createOmniX402Recipe({
+    kind: "market_carry",
+    symbol: "btc",
+  });
+  assert.equal(
+    carry.resourceUrl,
+    "https://omniterminal.app/api/x402/v1/market-carry/BTC",
+  );
+  assert.equal(carry.schema, "hyperliquid_market_carry.v1");
+  assert.equal(carry.priceUsdc, 0.001);
+});
+
 test("rejects unbounded or malformed inputs before a payment request exists", () => {
   assert.throws(
     () => createOmniX402Recipe({ kind: "traders", symbol: "BTC", limit: 21 }),
@@ -126,11 +169,19 @@ test("rejects unbounded or malformed inputs before a payment request exists", ()
     () => createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", limit: 201 }),
     /limit must be an integer from 20 to 200/,
   );
+  assert.throws(
+    () =>
+      createOmniX402Recipe({
+        kind: "entity_resolution",
+        mentions: Array.from({ length: 21 }, (_, index) => `symbol-${index}`),
+      }),
+    /mentions must contain from 1 to 20 items/,
+  );
 });
 
 test("lists coherent recipes without creating new route templates", () => {
   const recipes = listOmniAgentRecipes(1_800_000_000_000);
-  assert.equal(recipes.length, 23);
+  assert.equal(recipes.length, 25);
   assert.deepEqual(
     new Set(
       recipes
@@ -146,6 +197,14 @@ test("lists coherent recipes without creating new route templates", () => {
         .map((recipe) => new URL(recipe.resourceUrl).searchParams.get("view")),
     ),
     new Set(["summary", "buckets", "clusters", "flow"]),
+  );
+  assert.equal(
+    recipes.filter((recipe) => recipe.kind === "entity_resolution").length,
+    1,
+  );
+  assert.equal(
+    recipes.filter((recipe) => recipe.kind === "market_carry").length,
+    1,
   );
   assert.equal(new Set(recipes.map((recipe) => new URL(recipe.resourceUrl).pathname.split("/").slice(0, 6).join("/"))).size > 0, true);
   assert.equal(recipes.every((recipe) => recipe.resourceUrl.startsWith("https://omniterminal.app/api/x402/v1/")), true);

@@ -53,13 +53,19 @@ The standalone `searchCdpX402Bazaar` and `listCdpX402MerchantResources` helpers 
 The SDK methods `payQuotedX402Testnet`, typed `consumeX402Testnet<T>`, `payQuotedX402<T>`, and
 typed `consumeX402<T>` call such a gateway. They do not sign locally.
 
+The typed `consumeX402McpTestnet<T>` method calls the protected gateway's native MCP adapter. Its
+current Omni allowlist is `get_market_moving_events`, `get_market_risk_context`,
+`resolve_market_entities`, and `get_market_carry`. The gateway binds the exact server, tool,
+arguments, MCP resource, payment terms, grant, purpose, and idempotency key before the protected
+testnet payer signs.
+
 Revocation is part of the paid acceptance contract, not merely a dashboard feature. The canonical
 runner revokes the grant after its successful purchase and proves a new request is rejected before
 quote or settlement. A revoked grant must never be reactivated by paying again.
 
 ## Real Omni example
 
-Omni Terminal currently exposes seven canonical Base Sepolia paid route forms:
+Omni Terminal currently exposes nine canonical Base Sepolia paid route forms:
 
 | Product | Resource | Price |
 |---|---|---:|
@@ -70,6 +76,8 @@ Omni Terminal currently exposes seven canonical Base Sepolia paid route forms:
 | Trader Leaderboard | `/api/x402/v1/traders/{symbol}` | `0.002` test USDC |
 | Market Risk Snapshot | `/api/x402/v1/market-risk/{symbol}` | `0.003` test USDC |
 | Market Snapshot | `/api/x402/v1/market-snapshot/{symbol}` | `0.003` test USDC |
+| Market Entity Resolution | `POST /api/x402/v1/symbols/resolve` | `0.001` test USDC |
+| Market Carry | `/api/x402/v1/market-carry/{symbol}` | `0.001` test USDC |
 
 Successful Omni responses expose `schema`, `generated_at`, `data_as_of`, and `freshness`. Consumers
 using a current route should fail closed unless `freshness.status` is `fresh`; an exact historical
@@ -121,7 +129,8 @@ A later opt-in catalog smoke paid 14 query variants: latest/context/window news,
 summary/buckets/clusters/flow, best/worst/largest/risk traders, a public trader profile and the
 composite market-risk snapshot. All 14 returned live protected results. On 21 July 2026, ACM then
 settled the seventh Market Snapshot template and validated a fresh candle-plus-liquidation result;
-the CDP receiver catalog now returns all seven route forms.
+on 28 July 2026, bounded Entity Resolution and Market Carry settlements expanded the CDP receiver
+catalog to all nine route forms.
 
 ## Mainnet boundary
 

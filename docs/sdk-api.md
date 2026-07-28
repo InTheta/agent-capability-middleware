@@ -96,6 +96,7 @@ Vector search is an optional gateway feature. Sensitive namespaces should be exc
 | `inspectPublicX402Challenge` | Inspect a payment challenge without paying. |
 | `payQuotedX402Testnet` | Ask a protected ACM gateway to quote, authorize, sign, settle, and retry an exact testnet resource. |
 | `consumeX402Testnet<T>` | Typed alias for the same keyless flow; returns the paid response as `resourceBody: T` with its receipt and policy result. |
+| `consumeX402McpTestnet<T>` | Call one allowlisted paid MCP tool through the same grant-bound protected testnet payer. |
 | `payQuotedX402` | Ask a protected gateway to quote any allowed x402 resource; mainnet requires a separate payer, explicit settlement policy and approval. |
 | `consumeX402<T>` | Typed generic x402 consumption; pins `expectedPayment` and returns the protected response, receipt and approval state. |
 
@@ -112,8 +113,8 @@ These calls are read-only and send no API key or wallet material.
 
 | Function | Purpose |
 |---|---|
-| `createOmniX402Recipe` | Convert a bounded news, trader, liquidation, profile, risk, or market-snapshot question into an exact canonical resource and expected payment. |
-| `listOmniAgentRecipes` | List 23 bounded no-spend request plans spanning the stable modes of all seven seller route templates. |
+| `createOmniX402Recipe` | Convert a bounded news, trader, liquidation, profile, risk, snapshot, entity-resolution, or carry question into an exact canonical resource and expected payment. |
+| `listOmniAgentRecipes` | List 25 bounded no-spend request plans spanning the stable modes of all nine seller route templates. |
 | `createOmniRecipeGrant` | Build the least-privilege grant policy and aggregate cap for selected recipes. |
 | `createOmniPaymentRequest` | Bind a grant and idempotency key to one recipe for protected gateway consumption. |
 
@@ -121,8 +122,9 @@ Recipes never sign or settle and cannot grant themselves permission. See
 [Real Omni agent recipes](omni-agent-recipes.md).
 
 The exported `OmniNewsPulseResponse`, `OmniTraderLeaderboardResponse`,
-`OmniLiquidationMapResponse`, `OmniTraderProfileResponse`, `OmniMarketRiskResponse`, and
-`OmniMarketSnapshotResponse` interfaces
+`OmniLiquidationMapResponse`, `OmniTraderProfileResponse`, `OmniMarketRiskResponse`,
+`OmniMarketSnapshotResponse`, `OmniEntityResolutionResponse`, and `OmniMarketCarryResponse`
+interfaces
 provide typed paid bodies without exposing raw upstream fields.
 
 ### Validate a paid resource before acting
@@ -179,6 +181,35 @@ const marketRisk = requireFreshPaidResult(paid, {
 ```
 
 The configured gateway owns payer custody, challenge validation, budget reservation, and reconciliation. Keep live payment examples opt-in and outside CI.
+
+### Consume a paid MCP tool
+
+`consumeX402McpTestnet<T>` supports Omni's bounded
+`get_market_moving_events`, `get_market_risk_context`, `resolve_market_entities`, and
+`get_market_carry` tools. It sends no payer key. The gateway binds the exact endpoint, tool name,
+arguments, `mcp://tool/...` resource, network, asset, amount, payee, grant, purpose, and
+idempotency key before signing.
+
+```ts
+const carry = await client.consumeX402McpTestnet<{
+  schema: "hyperliquid_market_carry.v1";
+  freshness: { status: string };
+}>({
+  grantId: grant.id,
+  serverUrl: "https://omniterminal.app/api/x402/mcp",
+  toolName: "get_market_carry",
+  arguments: { symbol: "BTC" },
+  category: "market_intelligence",
+  purpose: "check_current_btc_carry",
+  idempotencyKey: crypto.randomUUID(),
+  expectedPayment: {
+    amount: 0.001,
+    network: "eip155:84532",
+    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+  },
+});
+```
 
 For mainnet-capable gateways, grants must explicitly allow the network, canonical asset contract
 and payee. The first call may return `needs_user_approval`; approve that request, then repeat with

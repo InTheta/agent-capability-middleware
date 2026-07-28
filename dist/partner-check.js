@@ -11,6 +11,8 @@ export const CANONICAL_OMNI_ROUTES = [
     "https://omniterminal.app/api/x402/v1/traders/:symbol",
     CANONICAL_OMNI_MARKET_RISK_ROUTE,
     "https://omniterminal.app/api/x402/v1/market-snapshot/:symbol",
+    "https://omniterminal.app/api/x402/v1/symbols/resolve",
+    "https://omniterminal.app/api/x402/v1/market-carry/:symbol",
 ];
 export class DesignPartnerCheckError extends Error {
     step;

@@ -140,13 +140,64 @@ export interface OmniMarketRiskResponse {
   news: OmniNewsPulseResponse;
 }
 
+export interface OmniEntityResolutionResponse {
+  service: "omni.market_entity_resolution";
+  product_version: "v1";
+  schema: "market_entity_resolution.v1";
+  generated_at: string;
+  data_as_of: string | null;
+  freshness: OmniFreshness;
+  venue: "hyperliquid";
+  results: Array<{
+    input: string;
+    resolution_status: "resolved" | "unsupported";
+    canonical_symbol: string | null;
+    confidence: number;
+    product_supported: boolean;
+    [key: string]: unknown;
+  }>;
+  usage: {
+    mention_count: number;
+    resolved_count: number;
+    mention_limit: 20;
+  };
+}
+
+export interface OmniMarketCarryResponse {
+  service: "omni.hyperliquid_market_carry";
+  product_version: "v1";
+  schema: "hyperliquid_market_carry.v1";
+  symbol: string;
+  canonical_symbol: string;
+  venue: "hyperliquid";
+  market_type: "perp";
+  generated_at: string;
+  data_as_of: string | null;
+  freshness: OmniFreshness;
+  carry: {
+    funding_rate_per_hour: number;
+    funding_annualized_pct: number;
+    annualization_method: "simple_current_hourly_rate_x_8760";
+    funding_direction: "longs_pay_shorts" | "shorts_pay_longs" | "balanced";
+    premium: number | null;
+  };
+  positioning: Record<string, number | null>;
+  prices: Record<string, number | null>;
+  usage: {
+    current_snapshot_only: true;
+    historical_series_included: false;
+  };
+}
+
 export type OmniX402Response =
   | OmniNewsPulseResponse
   | OmniTraderLeaderboardResponse
   | OmniLiquidationMapResponse
   | OmniTraderProfileResponse
   | OmniMarketRiskResponse
-  | OmniMarketSnapshotResponse;
+  | OmniMarketSnapshotResponse
+  | OmniEntityResolutionResponse
+  | OmniMarketCarryResponse;
 
 type NewsFilters = {
   limit?: number;
@@ -174,7 +225,9 @@ export type OmniRecipeInput =
       eventWindowMinutes?: 15 | 60;
       limit?: number;
     }
-  | { kind: "market_snapshot"; symbol: string; interval?: OmniMarketInterval; limit?: number; scope?: OmniAnalyticsScope; includeLiquidations?: boolean };
+  | { kind: "market_snapshot"; symbol: string; interval?: OmniMarketInterval; limit?: number; scope?: OmniAnalyticsScope; includeLiquidations?: boolean }
+  | { kind: "entity_resolution"; mentions: string[]; venue?: "hyperliquid" }
+  | { kind: "market_carry"; symbol: string };
 
 export interface OmniX402Recipe {
   kind: OmniRecipeInput["kind"];
@@ -184,6 +237,9 @@ export interface OmniX402Recipe {
   priceUsdc: 0.001 | 0.002 | 0.003;
   category: "market_intelligence";
   purpose: string;
+  method?: "GET" | "POST";
+  headers?: Record<string, string>;
+  body?: string;
   expectedPayment: {
     amount: 0.001 | 0.002 | 0.003;
     network: typeof OMNI_BASE_SEPOLIA_NETWORK;
@@ -194,7 +250,7 @@ export interface OmniX402Recipe {
 }
 
 /**
- * Build one deterministic, bounded Omni x402 request. These are recipes over seven seller route
+ * Build one deterministic, bounded Omni x402 request. These are recipes over nine seller route
  * templates—not additional per-query routes or a generic query proxy. Bazaar catalog status is
  * verified separately because a new route requires a successful CDP settlement before indexing.
  */
@@ -331,6 +387,47 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       purpose = `evaluate_${symbol.toLowerCase()}_price_and_liquidation_structure`;
       break;
     }
+    case "entity_resolution": {
+      const mentions = normalizedMentions(input.mentions);
+      const venue = input.venue ?? "hyperliquid";
+      url.pathname += "symbols/resolve";
+      label = "Current market entity resolution";
+      schema = "market_entity_resolution.v1";
+      priceUsdc = 0.001;
+      purpose = "resolve_current_market_entities";
+      note =
+        "Current-only resolution for 1-20 mentions; it does not expose the full alias registry.";
+      return {
+        kind: input.kind,
+        label,
+        resourceUrl: url.toString(),
+        schema,
+        priceUsdc,
+        category: "market_intelligence",
+        purpose,
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mentions, venue }),
+        expectedPayment: {
+          amount: priceUsdc,
+          network: OMNI_BASE_SEPOLIA_NETWORK,
+          asset: OMNI_BASE_SEPOLIA_USDC,
+          payTo: OMNI_X402_RECEIVER,
+        },
+        note,
+      };
+    }
+    case "market_carry": {
+      const symbol = normalizedSymbol(input.symbol);
+      url.pathname += `market-carry/${symbol}`;
+      label = `${symbol} current market carry`;
+      schema = "hyperliquid_market_carry.v1";
+      priceUsdc = 0.001;
+      purpose = `evaluate_current_${symbol.toLowerCase()}_market_carry`;
+      note =
+        "Current funding annualization is mechanical and is not a forecast or historical series.";
+      break;
+    }
   }
 
   return {
@@ -403,6 +500,9 @@ export function createOmniPaymentRequest(
     purpose: recipe.purpose,
     idempotencyKey,
     expectedPayment: recipe.expectedPayment,
+    ...(recipe.method ? { method: recipe.method } : {}),
+    ...(recipe.headers ? { headers: recipe.headers } : {}),
+    ...(recipe.body ? { body: recipe.body } : {}),
   };
 }
 
@@ -431,6 +531,11 @@ export function listOmniAgentRecipes(now = Date.now()): OmniX402Recipe[] {
     createOmniX402Recipe({ kind: "market_risk", symbol: "BTC", eventWindowMinutes: 60, limit: 5 }),
     createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "1h", limit: 120 }),
     createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "15m", limit: 96, includeLiquidations: false }),
+    createOmniX402Recipe({
+      kind: "entity_resolution",
+      mentions: ["bitcoin", "BTC-PERP"],
+    }),
+    createOmniX402Recipe({ kind: "market_carry", symbol: "BTC" }),
   ];
 }
 
@@ -477,6 +582,28 @@ function normalizedAddress(value: string): string {
   const address = value.trim().toLowerCase();
   if (!/^0x[0-9a-f]{40}$/.test(address)) throw new TypeError("address must be a 20-byte EVM address");
   return address;
+}
+
+function normalizedMentions(values: string[]): string[] {
+  if (!Array.isArray(values) || values.length < 1 || values.length > 20) {
+    throw new RangeError("mentions must contain from 1 to 20 items");
+  }
+  return values.map((value) => {
+    if (typeof value !== "string") {
+      throw new TypeError("each mention must be a string");
+    }
+    const mention = value.trim();
+    if (
+      mention.length < 1 ||
+      mention.length > 100 ||
+      /[\u0000-\u001f\u007f]/.test(mention)
+    ) {
+      throw new RangeError(
+        "each mention must contain from 1 to 100 printable characters",
+      );
+    }
+    return mention;
+  });
 }
 
 function boundedInteger(value: number, minimum: number, maximum: number, name: string): number {

@@ -24,7 +24,7 @@ Success requires:
 }
 ```
 
-This checks Coinbase's public x402 Bazaar catalog, the seven canonical Omni route templates, and the exact Base Sepolia quote. It does not sign or settle a transaction.
+This checks Coinbase's public x402 Bazaar catalog, the nine canonical Omni route templates, and the exact Base Sepolia quote. It does not sign or settle a transaction.
 
 ## 2. Run the buyer lifecycle locally
 
