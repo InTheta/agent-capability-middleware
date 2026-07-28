@@ -143,6 +143,8 @@ npm run verify
 ```
 
 Verification type-checks the SDK and a consumer, runs the test suite and privacy checks, exercises the examples, packs and installs the package in a clean temporary project, and checks the CLI and fresh-developer lifecycle.
+CI also rebuilds the committed `dist/` directory and fails if the shipped GitHub-install artifact
+does not exactly match the TypeScript source.
 
 ## Boundaries
 
