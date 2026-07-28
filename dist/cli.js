@@ -10,10 +10,45 @@ else if (command === "doctor") {
         console.error(`ACM requires Node.js 20 or newer; found ${process.version}.`);
         process.exitCode = 1;
     }
+    else if (process.argv.includes("--local")) {
+        console.log(JSON.stringify({
+            ok: true,
+            mode: "local",
+            node: process.version,
+            walletKeyRequired: false,
+            networkRequestCreated: false,
+            spent: false,
+            next: "Run acm doctor without --local to validate the live nine-route Bazaar contract.",
+        }, null, 2));
+    }
     else {
-        console.log(`ACM SDK ready · Node ${process.version}`);
-        console.log("No wallet key is required by this SDK.");
-        console.log("Next: acm inspect");
+        try {
+            const report = await runDesignPartnerCheck({ confirmTestnetSpend: false });
+            console.log(JSON.stringify({
+                ok: true,
+                mode: "live_no_spend",
+                node: process.version,
+                canonicalRoutes: report.catalog.canonicalRoutes.length,
+                canonicalMarketRisk: report.catalog.canonicalMarketRisk,
+                walletKeyRequired: false,
+                privateKeyUsed: false,
+                spent: false,
+                secretsIncluded: false,
+                next: "Run acm demo buyer locally, or request controlled gateway access for the paid partner-check.",
+            }, null, 2));
+        }
+        catch (error) {
+            const step = error && typeof error === "object" && "step" in error ? String(error.step) : "catalog";
+            console.error(JSON.stringify({
+                ok: false,
+                step,
+                message: error instanceof Error ? error.message : "Live ACM readiness check failed",
+                spent: false,
+                privateKeyUsed: false,
+                secretsIncluded: false,
+            }, null, 2));
+            process.exitCode = 1;
+        }
     }
 }
 else if (command === "inspect") {
@@ -107,7 +142,9 @@ function printHelp() {
     console.log(`Agent Capability Middleware
 
 Usage:
-  acm doctor   Check the local SDK runtime. No network request or payment.
+  acm doctor   Check Node and the live nine-route Bazaar contract. No payment.
+  acm doctor --local
+               Check only the local runtime. No network request or payment.
   acm inspect  Inspect one live x402 resource through public CDP Bazaar. No payment.
   acm recipes  Print bounded calls across all nine real Omni x402 products. No payment.
   acm demo buyer|developer-seller|user-seller|exchange
