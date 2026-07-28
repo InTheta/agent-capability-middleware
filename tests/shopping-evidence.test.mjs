@@ -119,6 +119,52 @@ test("typed x402 consumption uses the keyless quoted-payment route", async () =>
   });
 });
 
+test("typed MCP consumption delegates only bounded tool metadata to the protected gateway", async () => {
+  let captured;
+  const client = new AgentCapabilityClient("https://gateway.example.com", {
+    fetch: async (input, init) => {
+      captured = {
+        url: String(input),
+        method: init?.method,
+        body: JSON.parse(String(init?.body)),
+      };
+      return Response.json({
+        decision: "paid",
+        receiptId: "0xmcp_receipt",
+        resourceBody: {
+          service: "omni.hyperliquid_market_carry",
+          schema: "hyperliquid_market_carry.v1",
+          freshness: { status: "fresh" },
+        },
+      });
+    },
+  });
+  const request = {
+    grantId: "grant_mcp_agent",
+    serverUrl: "https://omniterminal.app/api/x402/mcp",
+    toolName: "get_market_carry",
+    arguments: { symbol: "BTC" },
+    category: "market_intelligence",
+    purpose: "check_current_btc_carry",
+    idempotencyKey: "mcp_carry_001",
+    expectedPayment: {
+      amount: 0.001,
+      network: "eip155:84532",
+      asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+      payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+    },
+  };
+
+  const result = await client.consumeX402McpTestnet(request);
+
+  assert.equal(result.resourceBody.schema, "hyperliquid_market_carry.v1");
+  assert.deepEqual(captured, {
+    url: "https://gateway.example.com/v1/pay/x402/mcp/testnet/quoted",
+    method: "POST",
+    body: request,
+  });
+});
+
 test("grant revocation uses the protected lifecycle endpoint", async () => {
   let captured;
   const client = new AgentCapabilityClient("https://gateway.example.com", {

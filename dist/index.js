@@ -126,6 +126,9 @@ export class AgentCapabilityClient {
     consumeX402Testnet(request) {
         return this.post("/v1/pay/x402/testnet/quoted", request);
     }
+    consumeX402McpTestnet(request) {
+        return this.post("/v1/pay/x402/mcp/testnet/quoted", request);
+    }
     payQuotedX402(request) {
         return this.post("/v1/pay/x402/quoted", request);
     }

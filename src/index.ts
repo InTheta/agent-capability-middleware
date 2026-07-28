@@ -353,6 +353,29 @@ export interface PayQuotedX402Request extends PayQuotedX402TestnetRequest {
   approvalId?: string;
 }
 
+export type OmniX402McpToolName =
+  | "get_market_moving_events"
+  | "get_market_risk_context"
+  | "resolve_market_entities"
+  | "get_market_carry";
+
+export interface PayQuotedX402McpTestnetRequest {
+  grantId: string;
+  serverUrl: string;
+  toolName: OmniX402McpToolName;
+  arguments: Record<string, unknown>;
+  category: string;
+  purpose: string;
+  idempotencyKey: string;
+  currency?: string;
+  expectedPayment?: {
+    amount: number;
+    network: string;
+    asset: string;
+    payTo: string;
+  };
+}
+
 export interface X402ConsumptionResult<T = unknown> {
   decision: "paid" | "allow" | "deny" | "requires_approval" | "needs_user_approval";
   reason?: string;
@@ -500,6 +523,12 @@ export class AgentCapabilityClient {
 
   consumeX402Testnet<T = unknown>(request: PayQuotedX402TestnetRequest): Promise<X402ConsumptionResult<T>> {
     return this.post("/v1/pay/x402/testnet/quoted", request);
+  }
+
+  consumeX402McpTestnet<T = unknown>(
+    request: PayQuotedX402McpTestnetRequest,
+  ): Promise<X402ConsumptionResult<T>> {
+    return this.post("/v1/pay/x402/mcp/testnet/quoted", request);
   }
 
   payQuotedX402<T = unknown>(request: PayQuotedX402Request): Promise<X402ConsumptionResult<T>> {

@@ -3,7 +3,7 @@ export const OMNI_X402_RECEIVER = "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457";
 export const OMNI_BASE_SEPOLIA_NETWORK = "eip155:84532";
 export const OMNI_BASE_SEPOLIA_USDC = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 /**
- * Build one deterministic, bounded Omni x402 request. These are recipes over seven seller route
+ * Build one deterministic, bounded Omni x402 request. These are recipes over nine seller route
  * templates—not additional per-query routes or a generic query proxy. Bazaar catalog status is
  * verified separately because a new route requires a successful CDP settlement before indexing.
  */
@@ -145,6 +145,47 @@ export function createOmniX402Recipe(input) {
             purpose = `evaluate_${symbol.toLowerCase()}_price_and_liquidation_structure`;
             break;
         }
+        case "entity_resolution": {
+            const mentions = normalizedMentions(input.mentions);
+            const venue = input.venue ?? "hyperliquid";
+            url.pathname += "symbols/resolve";
+            label = "Current market entity resolution";
+            schema = "market_entity_resolution.v1";
+            priceUsdc = 0.001;
+            purpose = "resolve_current_market_entities";
+            note =
+                "Current-only resolution for 1-20 mentions; it does not expose the full alias registry.";
+            return {
+                kind: input.kind,
+                label,
+                resourceUrl: url.toString(),
+                schema,
+                priceUsdc,
+                category: "market_intelligence",
+                purpose,
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ mentions, venue }),
+                expectedPayment: {
+                    amount: priceUsdc,
+                    network: OMNI_BASE_SEPOLIA_NETWORK,
+                    asset: OMNI_BASE_SEPOLIA_USDC,
+                    payTo: OMNI_X402_RECEIVER,
+                },
+                note,
+            };
+        }
+        case "market_carry": {
+            const symbol = normalizedSymbol(input.symbol);
+            url.pathname += `market-carry/${symbol}`;
+            label = `${symbol} current market carry`;
+            schema = "hyperliquid_market_carry.v1";
+            priceUsdc = 0.001;
+            purpose = `evaluate_current_${symbol.toLowerCase()}_market_carry`;
+            note =
+                "Current funding annualization is mechanical and is not a forecast or historical series.";
+            break;
+        }
     }
     return {
         kind: input.kind,
@@ -210,6 +251,9 @@ export function createOmniPaymentRequest(grantId, recipe, idempotencyKey) {
         purpose: recipe.purpose,
         idempotencyKey,
         expectedPayment: recipe.expectedPayment,
+        ...(recipe.method ? { method: recipe.method } : {}),
+        ...(recipe.headers ? { headers: recipe.headers } : {}),
+        ...(recipe.body ? { body: recipe.body } : {}),
     };
 }
 export function listOmniAgentRecipes(now = Date.now()) {
@@ -237,6 +281,11 @@ export function listOmniAgentRecipes(now = Date.now()) {
         createOmniX402Recipe({ kind: "market_risk", symbol: "BTC", eventWindowMinutes: 60, limit: 5 }),
         createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "1h", limit: 120 }),
         createOmniX402Recipe({ kind: "market_snapshot", symbol: "BTC", interval: "15m", limit: 96, includeLiquidations: false }),
+        createOmniX402Recipe({
+            kind: "entity_resolution",
+            mentions: ["bitcoin", "BTC-PERP"],
+        }),
+        createOmniX402Recipe({ kind: "market_carry", symbol: "BTC" }),
     ];
 }
 function addNewsQuery(url, input, mode, eventWindowMinutes) {
@@ -279,6 +328,23 @@ function normalizedAddress(value) {
     if (!/^0x[0-9a-f]{40}$/.test(address))
         throw new TypeError("address must be a 20-byte EVM address");
     return address;
+}
+function normalizedMentions(values) {
+    if (!Array.isArray(values) || values.length < 1 || values.length > 20) {
+        throw new RangeError("mentions must contain from 1 to 20 items");
+    }
+    return values.map((value) => {
+        if (typeof value !== "string") {
+            throw new TypeError("each mention must be a string");
+        }
+        const mention = value.trim();
+        if (mention.length < 1 ||
+            mention.length > 100 ||
+            /[\u0000-\u001f\u007f]/.test(mention)) {
+            throw new RangeError("each mention must contain from 1 to 100 printable characters");
+        }
+        return mention;
+    });
 }
 function boundedInteger(value, minimum, maximum, name) {
     if (!Number.isInteger(value) || value < minimum || value > maximum) {

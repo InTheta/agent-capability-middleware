@@ -76,6 +76,27 @@ void client.consumeX402Testnet<OmniNewsPulseResponse>(createOmniPaymentRequest(
   hourlyBriefing,
   "typed_hourly_briefing_001",
 ));
+void client.consumeX402McpTestnet<{
+  schema: "market_entity_resolution.v1";
+  freshness: { status: string };
+}>({
+  grantId: "grant_example",
+  serverUrl: "https://omniterminal.app/api/x402/mcp",
+  toolName: "resolve_market_entities",
+  arguments: {
+    mentions: ["bitcoin", "BTC-PERP"],
+    venue: "hyperliquid",
+  },
+  category: "market_intelligence",
+  purpose: "resolve_current_market_entities",
+  idempotencyKey: "typed_mcp_resolution_001",
+  expectedPayment: {
+    amount: 0.001,
+    network: "eip155:84532",
+    asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
+  },
+});
 
 const directory = new LocalCapabilityDirectory();
 directory.publish(createDeveloperServiceOffer({
