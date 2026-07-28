@@ -7,7 +7,7 @@ Start with the buyer path. Seller and exchange examples are clearly separated be
 From any empty directory with Node.js 20+:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.20.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -27,7 +27,7 @@ Expected fields:
 ## 2. Deterministic buyer demo — no spend
 
 ```bash
-npx github:InTheta/agent-capability-middleware#main demo buyer
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz demo buyer
 ```
 
 This demonstrates the policy lifecycle without a chain transaction:
@@ -45,7 +45,7 @@ Run only after an ACM operator provides a protected gateway URL and confirms its
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.20.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -90,9 +90,9 @@ These examples create and evaluate local fixed-price offer objects. They do **no
 
 | Command | Preview |
 |---|---|
-| `npx github:InTheta/agent-capability-middleware#main demo developer-seller` | Developer describes a paid API offer |
-| `npx github:InTheta/agent-capability-middleware#main demo user-seller` | User offers a confirmed minimum-disclosure capability |
-| `npx github:InTheta/agent-capability-middleware#main demo exchange` | Both offer types share Free, Paid, Ask, or Deny decisions |
+| `acm demo developer-seller` | Developer describes a paid API offer |
+| `acm demo user-seller` | User offers a confirmed minimum-disclosure capability |
+| `acm demo exchange` | Both offer types share Free, Paid, Ask, or Deny decisions |
 
 The user-seller example locally minimizes an Amazon-shaped CSV into aggregate evidence. It explicitly reports that raw rows and product titles are not uploaded, cookies are not read, and settlement did not occur. See the [user seller preview](user-seller-agent.md).
 

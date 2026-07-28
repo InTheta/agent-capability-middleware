@@ -7,7 +7,8 @@ This is the complete reference. New integrations should begin with the
 
 | Command | Purpose |
 |---|---|
-| `acm doctor` | Verify Node.js compatibility and the no-private-key SDK boundary without a network request. |
+| `acm doctor` | Verify Node.js, the no-private-key boundary, all nine live Bazaar routes, and the canonical quote without paying. |
+| `acm doctor --local` | Verify only the local Node.js and no-wallet-key boundary without a network request. |
 | `acm inspect` | Inspect one live x402 resource through public CDP Bazaar without signing or paying. |
 | `acm recipes` | Print bounded real Omni news, trader, liquidation and market-risk request plans without paying. |
 | `acm demo buyer` | Validate a synthetic fresh paid result locally. |
@@ -19,7 +20,7 @@ This is the complete reference. New integrations should begin with the
 Until npm publication, run the CLI directly from GitHub:
 
 ```bash
-npx github:InTheta/agent-capability-middleware#main inspect
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz inspect
 ```
 
 All `demo` commands are local, keyless, and non-settling.

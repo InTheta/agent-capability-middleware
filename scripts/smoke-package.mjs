@@ -65,12 +65,19 @@ try {
   if (smoke.status !== 0) throw new Error(smoke.stderr || smoke.stdout);
   process.stdout.write(smoke.stdout);
 
-  const cli = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["doctor"], {
+  const cli = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["doctor", "--local"], {
     cwd: temporaryDirectory,
     encoding: "utf8",
   });
   if (cli.status !== 0) throw new Error(cli.stderr || cli.stdout);
-  if (!cli.stdout.includes("No wallet key is required")) {
+  const doctorReport = JSON.parse(cli.stdout);
+  if (
+    doctorReport.ok !== true
+    || doctorReport.mode !== "local"
+    || doctorReport.walletKeyRequired !== false
+    || doctorReport.networkRequestCreated !== false
+    || doctorReport.spent !== false
+  ) {
     throw new Error(`Installed ACM CLI did not preserve the key boundary: ${cli.stdout}`);
   }
   process.stdout.write("EXTERNAL_CLI_SMOKE_OK\n");

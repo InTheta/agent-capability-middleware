@@ -5,7 +5,7 @@ The public SDK now includes a local, keyless preview of **Sell one capability**.
 ## Try it
 
 ```bash
-npx github:InTheta/agent-capability-middleware#main demo user-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz demo user-seller
 ```
 
 The example creates one user-confirmed running-shoe purchase intent and evaluates a fixed-price request. It does not settle payment.

@@ -5,7 +5,7 @@ into exact URLs, expected schemas, prices, and Base Sepolia payment constraints 
 wallet key in agent code.
 
 ```bash
-npx github:InTheta/agent-capability-middleware#main recipes
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz recipes
 ```
 
 This command plans requests only. It does not create a grant, sign, or pay.

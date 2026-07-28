@@ -22,7 +22,7 @@ No clone, Git installation, account, environment file, or wallet is required:
 
 ```bash
 node --version
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.20.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz doctor \
   > acm-no-spend-report.json
 ```
 
@@ -30,10 +30,10 @@ Open `acm-no-spend-report.json`. Success requires:
 
 ```json
 {
-  "reportVersion": "design_partner_check.v3",
   "ok": true,
-  "mode": "no_spend",
-  "packageInstall": "installed_cli",
+  "mode": "live_no_spend",
+  "canonicalRoutes": 9,
+  "spent": false,
   "secretsIncluded": false
 }
 ```
@@ -60,7 +60,7 @@ Enter the credential through a hidden prompt:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.20.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.21.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -120,12 +120,19 @@ Do not return terminal history or credentials.
 
 ## Evidence status
 
-The exact pinned `v0.1.0-preview.18` command completed an operator no-spend clean-install check on
-22 July 2026 against the seven canonical Bazaar templates available at that time. The same
-installed command then completed
-the funded Base Sepolia flow in 3.491 seconds: fresh `market_risk_snapshot.v1`, public receipt
-`0xff57ccc4b5da7121d679eb47178be563427b21b81bc88406bba1f78e9a9e5283`, ACM audit event
-`evt_000074`, revoked grant `grant_000072`, `grant_revoked` denial, and no second settlement.
+The exact pinned `v0.1.0-preview.20` command completed an operator no-spend clean-install check on
+28 July 2026 against all nine canonical Bazaar templates and the `0.003` Base Sepolia quote.
+Four separately governed paid MCP lifecycle checks also completed on Base Sepolia: entity
+resolution, market carry, moving events, and market risk. Each produced a successful public
+transaction, fresh typed data, a matched audit event, revocation, and a receipt-free
+`grant_revoked` denial.
+
+The Ask Omni development backend also completed a real `get_market_risk_context` call through its
+loopback ACM sidecar, used 8,912 characters of fresh paid context in the model prompt, and settled
+transaction
+`0x741f16ccc043ecfa911ebd5abc2a1bc0dd34c43eaf86b9dc511cf52c24da9261`.
+This proves repeatable product integration; viewing the receipt in the authenticated Omni UI is a
+separate acceptance step.
 
 This is operator repeatability evidence, not either of the two required unaided external developer
 completions.
