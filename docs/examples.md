@@ -7,7 +7,7 @@ Start with the buyer path. Seller and exchange examples are clearly separated be
 From any empty directory with Node.js 20+:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -27,7 +27,7 @@ Expected fields:
 ## 2. Deterministic buyer demo — no spend
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz demo buyer
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz demo buyer
 ```
 
 This demonstrates the policy lifecycle without a chain transaction:
@@ -45,7 +45,7 @@ Run only after an ACM operator provides a protected gateway URL and confirms its
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```

@@ -65,12 +65,8 @@ try {
   if (smoke.status !== 0) throw new Error(smoke.stderr || smoke.stdout);
   process.stdout.write(smoke.stdout);
 
-  const cli = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["doctor", "--local"], {
-    cwd: temporaryDirectory,
-    encoding: "utf8",
-  });
-  if (cli.status !== 0) throw new Error(cli.stderr || cli.stdout);
-  const doctorReport = JSON.parse(cli.stdout);
+  const cliOutput = runInstalledCli(["doctor", "--local"]);
+  const doctorReport = JSON.parse(cliOutput);
   if (
     doctorReport.ok !== true
     || doctorReport.mode !== "local"
@@ -78,33 +74,25 @@ try {
     || doctorReport.networkRequestCreated !== false
     || doctorReport.spent !== false
   ) {
-    throw new Error(`Installed ACM CLI did not preserve the key boundary: ${cli.stdout}`);
+    throw new Error(`Installed ACM CLI did not preserve the key boundary: ${cliOutput}`);
   }
   process.stdout.write("EXTERNAL_CLI_SMOKE_OK\n");
 
-  const recipes = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["recipes"], {
-    cwd: temporaryDirectory,
-    encoding: "utf8",
-  });
-  if (recipes.status !== 0) throw new Error(recipes.stderr || recipes.stdout);
-  const recipeReport = JSON.parse(recipes.stdout);
+  const recipesOutput = runInstalledCli(["recipes"]);
+  const recipeReport = JSON.parse(recipesOutput);
   if (
     recipeReport.canonicalRouteTemplates !== 9 ||
     recipeReport.catalogedRouteTemplates !== 9 ||
     recipeReport.recipes?.length !== 25 ||
     recipeReport.spent !== false
   ) {
-    throw new Error(`Installed ACM CLI returned an invalid recipe plan: ${recipes.stdout}`);
+    throw new Error(`Installed ACM CLI returned an invalid recipe plan: ${recipesOutput}`);
   }
   process.stdout.write("EXTERNAL_RECIPES_CLI_SMOKE_OK\n");
 
-  const exchange = spawnSync(join(temporaryDirectory, "node_modules", ".bin", "acm"), ["demo", "exchange"], {
-    cwd: temporaryDirectory,
-    encoding: "utf8",
-  });
-  if (exchange.status !== 0) throw new Error(exchange.stderr || exchange.stdout);
-  if (!exchange.stdout.includes("ACM_EXCHANGE_DEMO_OK")) {
-    throw new Error(`Installed ACM CLI could not run the exchange demo: ${exchange.stdout}`);
+  const exchangeOutput = runInstalledCli(["demo", "exchange"]);
+  if (!exchangeOutput.includes("ACM_EXCHANGE_DEMO_OK")) {
+    throw new Error(`Installed ACM CLI could not run the exchange demo: ${exchangeOutput}`);
   }
   process.stdout.write("EXTERNAL_EXCHANGE_CLI_SMOKE_OK\n");
 } finally {
@@ -115,4 +103,11 @@ function runNpm(arguments_, cwd = process.cwd()) {
   const result = spawnSync(process.execPath, [npmCli, ...arguments_], { cwd, encoding: "utf8" });
   if (result.status !== 0) throw new Error(result.stderr || result.stdout);
   return result.stdout;
+}
+
+function runInstalledCli(arguments_) {
+  const execArguments = npmCli.includes("pnpm")
+    ? ["exec", "acm", ...arguments_]
+    : ["exec", "--", "acm", ...arguments_];
+  return runNpm(execArguments, temporaryDirectory);
 }
