@@ -36,6 +36,8 @@
 
 - Run `npm run verify` (or `pnpm run verify`) for source, consumer typecheck, tests, package smoke,
   quickstart, and the clean-room packed install. Keep scripts package-manager neutral.
+- Keep package lifecycle and clean-room scripts OS-neutral. Use Node filesystem APIs for cleanup and
+  invoke installed bins through the active package manager; do not assume Unix `rm` or bin shims.
 - Keep the clean-room `example:fresh-dev` in `verify`; it must install the packed artifact into a
   new temporary project, use an unmistakably mock receipt, and perform no external request or spend.
 - Keep installed `acm partner-check` no-spend by default. Its funded path must require both a

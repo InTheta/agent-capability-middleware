@@ -49,8 +49,20 @@ try {
   if (consumer.status !== 0) throw new Error(`Fresh consumer exited ${consumer.status ?? "unknown"}`);
   if (!consumer.stdout?.includes("FRESH_DEV_MOCK_OK")) throw new Error("Fresh consumer omitted success marker");
 } finally {
-  gateway?.kill("SIGTERM");
-  await rm(temporaryDirectory, { recursive: true, force: true });
+  if (gateway?.exitCode === null) {
+    const exited = new Promise((resolveExit) => gateway.once("exit", resolveExit));
+    gateway.kill("SIGTERM");
+    await Promise.race([
+      exited,
+      new Promise((resolveWait) => setTimeout(resolveWait, 5_000)),
+    ]);
+  }
+  await rm(temporaryDirectory, {
+    recursive: true,
+    force: true,
+    maxRetries: 5,
+    retryDelay: 100,
+  });
 }
 
 function runNpm(arguments_, cwd = process.cwd()) {

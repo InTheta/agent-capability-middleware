@@ -20,7 +20,7 @@ This is the complete reference. New integrations should begin with the
 Until npm publication, run the CLI directly from GitHub:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz inspect
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz inspect
 ```
 
 All `demo` commands are local, keyless, and non-settling.

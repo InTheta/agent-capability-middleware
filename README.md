@@ -6,12 +6,14 @@ Give an AI agent permission to buy **one exact x402 resource** under a bounded g
 
 > Developer preview. The protected buyer flow is implemented and tested on Base Sepolia. Seller and data-exchange helpers are experimental local previews; they do not settle payments or prove buyer demand.
 
+Current release: [`v0.1.0-preview.23`](docs/releases/v0.1.0-preview.23.md).
+
 ## 60-second no-spend check
 
 Requirements: Node.js 20+ and internet access. No clone, account, wallet, or private key is required.
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz doctor \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz doctor \
   > acm-no-spend-report.json
 ```
 
@@ -32,7 +34,7 @@ The check reads Coinbase's public x402 Bazaar catalog, confirms all nine canonic
 ## Five-minute local demo
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz demo buyer
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz demo buyer
 ```
 
 The deterministic demo creates a bounded grant, validates a fresh synthetic result, revokes the grant, and proves the next request is denied. Any `0xmock_...` receipt is deliberately not a chain transaction.
@@ -40,7 +42,7 @@ The deterministic demo creates a bounded grant, validates a fresh synthetic resu
 ## Install as a dependency
 
 ```bash
-npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.22
+npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.23
 ```
 
 ```ts
@@ -75,7 +77,7 @@ After an ACM operator provides a protected gateway URL and confirms its dedicate
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -126,9 +128,9 @@ MCP can carry tool calls, OAuth/OIDC can identify workloads and users, verifiabl
 ACM also explores the other side of the market: a developer can describe a paid API, and a user can offer a confirmed, minimized capability under **Free, Paid, Ask, or Deny** policy. These helpers are useful for product design and local testing, but they are not yet hosted settlement, fulfilment, an auction, or a production data marketplace.
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz demo developer-seller
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz demo user-seller
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.22.tar.gz demo exchange
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz demo developer-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz demo user-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.23.tar.gz demo exchange
 ```
 
 See [runnable examples](docs/examples.md) and the [user seller preview](docs/user-seller-agent.md).
