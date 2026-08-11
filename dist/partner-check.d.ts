@@ -24,7 +24,7 @@ export interface DesignPartnerCheckReport {
         listedRoutes: number;
         canonicalRoutes: string[];
         canonicalMarketRisk: {
-            amountUsdc: 0.003;
+            amountUsdc: 0.01;
             network: "eip155:84532";
             asset: string;
             payTo: string;

@@ -234,14 +234,14 @@ export interface OmniX402Recipe {
   label: string;
   resourceUrl: string;
   schema: string;
-  priceUsdc: 0.001 | 0.002 | 0.003;
+  priceUsdc: 0.001 | 0.003 | 0.005 | 0.01;
   category: "market_intelligence";
   purpose: string;
   method?: "GET" | "POST";
   headers?: Record<string, string>;
   body?: string;
   expectedPayment: {
-    amount: 0.001 | 0.002 | 0.003;
+    amount: 0.001 | 0.003 | 0.005 | 0.01;
     network: typeof OMNI_BASE_SEPOLIA_NETWORK;
     asset: typeof OMNI_BASE_SEPOLIA_USDC;
     payTo: typeof OMNI_X402_RECEIVER;
@@ -330,7 +330,7 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       url.searchParams.set("limit", String(boundedInteger(input.limit ?? 20, 1, 20, "limit")));
       label = "Public trader profile";
       schema = "trader_profile.v1";
-      priceUsdc = 0.002;
+      priceUsdc = 0.005;
       purpose = "evaluate_public_trader_profile";
       break;
     }
@@ -345,7 +345,7 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       if (input.side) url.searchParams.set("side", input.side);
       label = `${symbol} liquidation ${input.view ?? "summary"}`;
       schema = "hyperliquid_liquidation_map.v1";
-      priceUsdc = 0.002;
+      priceUsdc = 0.005;
       purpose = `evaluate_${symbol.toLowerCase()}_liquidation_risk`;
       break;
     }
@@ -358,7 +358,7 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       url.searchParams.set("limit", String(boundedInteger(input.limit ?? 10, 1, 20, "limit")));
       label = `${symbol} trader ranking: ${rank}`;
       schema = "hyperliquid_trader_leaderboard.v1";
-      priceUsdc = 0.002;
+      priceUsdc = 0.003;
       purpose = `rank_public_${symbol.toLowerCase()}_traders_by_${rank}`;
       break;
     }
@@ -370,7 +370,7 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       url.searchParams.set("limit", String(boundedInteger(input.limit ?? 5, 1, 10, "limit")));
       label = `${symbol} composite market risk`;
       schema = "market_risk_snapshot.v1";
-      priceUsdc = 0.003;
+      priceUsdc = 0.01;
       purpose = `build_current_${symbol.toLowerCase()}_risk_brief`;
       break;
     }
@@ -383,7 +383,7 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       url.searchParams.set("include_liquidations", String(input.includeLiquidations ?? true));
       label = `${symbol} market snapshot`;
       schema = "hyperliquid_market_snapshot.v1";
-      priceUsdc = 0.003;
+      priceUsdc = 0.005;
       purpose = `evaluate_${symbol.toLowerCase()}_price_and_liquidation_structure`;
       break;
     }
@@ -422,7 +422,7 @@ export function createOmniX402Recipe(input: OmniRecipeInput): OmniX402Recipe {
       url.pathname += `market-carry/${symbol}`;
       label = `${symbol} current market carry`;
       schema = "hyperliquid_market_carry.v1";
-      priceUsdc = 0.001;
+      priceUsdc = 0.003;
       purpose = `evaluate_current_${symbol.toLowerCase()}_market_carry`;
       note =
         "Current funding annualization is mechanical and is not a forecast or historical series.";

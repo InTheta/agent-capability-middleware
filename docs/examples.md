@@ -11,7 +11,7 @@ npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/ta
   > acm-no-spend-report.json
 ```
 
-This installs the pinned preview, reads Coinbase's public x402 Bazaar catalog, verifies all nine canonical Omni route templates and the `0.003` Base Sepolia USDC market-risk quote, then exits without signing or paying.
+This installs the pinned preview, reads Coinbase's public x402 Bazaar catalog, verifies all nine canonical Omni route templates and the current `0.010` Base Sepolia USDC market-risk quote, then exits without signing or paying.
 
 Expected fields:
 
@@ -52,7 +52,7 @@ unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 
 If that deployment requires a workload key, enter it separately through the hidden prompt documented in the [external developer checklist](design-partner-checklist.md).
 
-The flow binds one request to its resource, purpose, `0.003` USDC maximum, Base Sepolia network, USDC contract, Omni receiver, grant, and idempotency key. It accepts the result only when paid, receipted, fresh, and schema-matched. It then revokes the grant and proves another settlement cannot occur.
+The flow binds one request to its resource, purpose, `0.010` USDC maximum, Base Sepolia network, USDC contract, Omni receiver, grant, and idempotency key. It accepts the result only when paid, receipted, fresh, and schema-matched. It then revokes the grant and proves another settlement cannot occur.
 
 Required paid-report evidence:
 

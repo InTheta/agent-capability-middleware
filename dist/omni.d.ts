@@ -262,14 +262,14 @@ export interface OmniX402Recipe {
     label: string;
     resourceUrl: string;
     schema: string;
-    priceUsdc: 0.001 | 0.002 | 0.003;
+    priceUsdc: 0.001 | 0.003 | 0.005 | 0.01;
     category: "market_intelligence";
     purpose: string;
     method?: "GET" | "POST";
     headers?: Record<string, string>;
     body?: string;
     expectedPayment: {
-        amount: 0.001 | 0.002 | 0.003;
+        amount: 0.001 | 0.003 | 0.005 | 0.01;
         network: typeof OMNI_BASE_SEPOLIA_NETWORK;
         asset: typeof OMNI_BASE_SEPOLIA_USDC;
         payTo: typeof OMNI_X402_RECEIVER;

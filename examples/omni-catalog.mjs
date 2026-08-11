@@ -30,7 +30,7 @@ const grant = await client.createGrant({
   userId: process.env.ACM_USER_ID ?? "user_demo",
   agentId: agent.id,
   scopes: ["x402.pay"],
-  spendPolicy: { currency: "USDC", perRequestMax: 0.003, dailyMax: 0.05, approvalRequiredAbove: 0.003 },
+  spendPolicy: { currency: "USDC", perRequestMax: 0.01, dailyMax: 0.05, approvalRequiredAbove: 0.01 },
   resourcePolicy: { allowedDomains: [new URL(origin).hostname], allowedCategories: ["market_intelligence"] },
   expiresInSeconds: 900,
 });

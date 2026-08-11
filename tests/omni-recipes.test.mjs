@@ -29,7 +29,7 @@ test("maps screenshot-bot trader concepts to one bounded Bazaar route", () => {
     const recipe = createOmniX402Recipe({ kind: "traders", symbol: "btc", rank, limit: 5 });
     assert.equal(new URL(recipe.resourceUrl).pathname, "/api/x402/v1/traders/BTC");
     assert.equal(new URL(recipe.resourceUrl).searchParams.get("rank"), rank);
-    assert.equal(recipe.priceUsdc, 0.002);
+    assert.equal(recipe.priceUsdc, 0.003);
   }
 });
 
@@ -47,7 +47,7 @@ test("maps screenshot-bot chart and filtered news concepts to bounded routes", (
     "https://omniterminal.app/api/x402/v1/market-snapshot/BTC?interval=15m&limit=150&scope=aggregate&include_liquidations=true",
   );
   assert.equal(snapshot.schema, "hyperliquid_market_snapshot.v1");
-  assert.equal(snapshot.priceUsdc, 0.003);
+  assert.equal(snapshot.priceUsdc, 0.005);
 
   const news = createOmniX402Recipe({
     kind: "targeted_news",
@@ -69,8 +69,8 @@ test("builds exact payment intent and a least-privilege aggregate grant", () => 
     createOmniX402Recipe({ kind: "market_risk", symbol: "BTC" }),
   ];
   const grant = createOmniRecipeGrant("agent_test", recipes, { userId: "user_test" });
-  assert.equal(grant.spendPolicy.perRequestMax, 0.003);
-  assert.equal(grant.spendPolicy.dailyMax, 0.004);
+  assert.equal(grant.spendPolicy.perRequestMax, 0.01);
+  assert.equal(grant.spendPolicy.dailyMax, 0.011);
   assert.deepEqual(grant.resourcePolicy.allowedDomains, ["omniterminal.app"]);
   assert.deepEqual(grant.settlementPolicy.allowedNetworks, ["eip155:84532"]);
 
@@ -98,6 +98,7 @@ test("builds bounded 15-minute and 60-minute composite risk calls", () => {
   });
   assert.equal(new URL(hourly.resourceUrl).searchParams.get("event_window_minutes"), "60");
   assert.equal(new URL(hourly.resourceUrl).searchParams.get("limit"), "5");
+  assert.equal(hourly.priceUsdc, 0.01);
   assert.throws(
     () => createOmniX402Recipe({ kind: "market_risk", symbol: "BTC", limit: 11 }),
     /limit must be an integer from 1 to 10/,
@@ -144,7 +145,7 @@ test("builds bounded entity-resolution and market-carry requests", () => {
     "https://omniterminal.app/api/x402/v1/market-carry/BTC",
   );
   assert.equal(carry.schema, "hyperliquid_market_carry.v1");
-  assert.equal(carry.priceUsdc, 0.001);
+  assert.equal(carry.priceUsdc, 0.003);
 });
 
 test("rejects unbounded or malformed inputs before a payment request exists", () => {
