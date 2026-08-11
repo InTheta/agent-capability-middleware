@@ -29,7 +29,7 @@ Success means the report contains:
 }
 ```
 
-The check reads Coinbase's public x402 Bazaar catalog, confirms all nine canonical Omni routes, and validates the `0.003` Base Sepolia USDC quote. It creates no signature or payment.
+The check reads Coinbase's public x402 Bazaar catalog, confirms all nine canonical Omni routes, and validates the current `0.010` Base Sepolia USDC market-risk quote. It creates no signature or payment.
 
 ## Five-minute local demo
 

@@ -71,13 +71,13 @@ Omni Terminal currently exposes nine canonical Base Sepolia paid route forms:
 |---|---|---:|
 | AI News Pulse | `/api/x402/v1/news/{symbol}?limit=5` | `0.001` test USDC |
 | Market News Pulse | `/api/x402/v1/news` | `0.001` test USDC |
-| Public Trader Profile | `/api/x402/v1/trader-profile/{address}` | `0.002` test USDC |
-| Liquidation Map | `/api/x402/v1/liquidations/{symbol}` | `0.002` test USDC |
-| Trader Leaderboard | `/api/x402/v1/traders/{symbol}` | `0.002` test USDC |
-| Market Risk Snapshot | `/api/x402/v1/market-risk/{symbol}` | `0.003` test USDC |
-| Market Snapshot | `/api/x402/v1/market-snapshot/{symbol}` | `0.003` test USDC |
+| Public Trader Profile | `/api/x402/v1/trader-profile/{address}` | `0.005` USDC |
+| Liquidation Map | `/api/x402/v1/liquidations/{symbol}` | `0.005` USDC |
+| Trader Leaderboard | `/api/x402/v1/traders/{symbol}` | `0.003` USDC |
+| Market Risk Snapshot | `/api/x402/v1/market-risk/{symbol}` | `0.010` USDC |
+| Market Snapshot | `/api/x402/v1/market-snapshot/{symbol}` | `0.005` USDC |
 | Market Entity Resolution | `POST /api/x402/v1/symbols/resolve` | `0.001` test USDC |
-| Market Carry | `/api/x402/v1/market-carry/{symbol}` | `0.001` test USDC |
+| Market Carry | `/api/x402/v1/market-carry/{symbol}` | `0.003` USDC |
 
 Successful Omni responses expose `schema`, `generated_at`, `data_as_of`, and `freshness`. Consumers
 using a current route should fail closed unless `freshness.status` is `fresh`; an exact historical

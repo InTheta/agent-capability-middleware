@@ -44,8 +44,8 @@ export async function runDesignPartnerCheck(options = {}) {
     const quote = listing.accepts.find((accept) => accept.network === "eip155:84532");
     if (!quote)
         throw new DesignPartnerCheckError("catalog", "Canonical route has no Base Sepolia quote");
-    if (quote.amount !== "3000")
-        throw new DesignPartnerCheckError("catalog", `Expected 3000 atomic USDC; received ${quote.amount}`);
+    if (quote.amount !== "10000")
+        throw new DesignPartnerCheckError("catalog", `Expected 10000 atomic USDC; received ${quote.amount}`);
     if (quote.asset.toLowerCase() !== BASE_SEPOLIA_USDC.toLowerCase()) {
         throw new DesignPartnerCheckError("catalog", "Canonical route uses an unexpected Base Sepolia asset");
     }
@@ -57,7 +57,7 @@ export async function runDesignPartnerCheck(options = {}) {
         listedRoutes: resources.length,
         canonicalRoutes: [...CANONICAL_OMNI_ROUTES],
         canonicalMarketRisk: {
-            amountUsdc: 0.003,
+            amountUsdc: 0.01,
             network: "eip155:84532",
             asset: quote.asset,
             payTo: quote.payTo,
@@ -95,9 +95,9 @@ export async function runDesignPartnerCheck(options = {}) {
             deniedScopes: ["wallet.transfer", "trading.execute", "cookies.*"],
             spendPolicy: {
                 currency: "USDC",
-                perRequestMax: 0.003,
-                dailyMax: 0.003,
-                approvalRequiredAbove: 0.003,
+                perRequestMax: 0.01,
+                dailyMax: 0.01,
+                approvalRequiredAbove: 0.01,
             },
             resourcePolicy: {
                 allowedDomains: ["omniterminal.app"],
@@ -127,7 +127,7 @@ export async function runDesignPartnerCheck(options = {}) {
         purpose: "external_partner_market_risk_brief",
         idempotencyKey: globalThis.crypto.randomUUID(),
         expectedPayment: {
-            amount: 0.003,
+            amount: 0.01,
             network: "eip155:84532",
             asset: BASE_SEPOLIA_USDC,
             payTo: receiver,

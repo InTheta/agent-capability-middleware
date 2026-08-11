@@ -39,7 +39,7 @@ Open `acm-no-spend-report.json`. Success requires:
 ```
 
 The catalog section should name all nine canonical Omni route templates and show the canonical
-`0.003` Base Sepolia USDC market-risk quote. This
+current `0.010` Base Sepolia USDC market-risk quote. This
 step performs a read-only CDP Bazaar request and creates no signature or payment.
 
 Record the minutes from opening this page to the successful report.
@@ -75,7 +75,7 @@ The command creates one 15-minute grant restricted to:
 
 - scope `x402.pay`;
 - `omniterminal.app` and `market_intelligence`;
-- exactly `0.003` USDC on Base Sepolia;
+- exactly `0.010` USDC on Base Sepolia;
 - the canonical USDC contract and Omni receiver;
 - no wallet transfer, trading execution, or cookies.
 

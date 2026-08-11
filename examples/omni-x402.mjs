@@ -18,7 +18,7 @@ const marketRiskListing = discovery.resources.find((resource) =>
 if (!marketRiskListing) throw new Error("Canonical Omni market-risk route is not present in CDP Bazaar");
 const marketRiskQuote = marketRiskListing.accepts.find((accept) => accept.network === "eip155:84532");
 if (!marketRiskQuote) throw new Error("Canonical Omni market-risk route has no Base Sepolia quote");
-if (marketRiskQuote.amount !== "3000") throw new Error(`Expected 3000 atomic USDC, received ${marketRiskQuote.amount}`);
+if (marketRiskQuote.amount !== "10000") throw new Error(`Expected 10000 atomic USDC, received ${marketRiskQuote.amount}`);
 if (marketRiskQuote.asset.toLowerCase() !== "0x036cbd53842c5426634e7929541ec2318f3dcf7e") {
   throw new Error("Canonical Omni market-risk quote uses an unexpected asset");
 }
@@ -34,7 +34,7 @@ console.log(JSON.stringify({
   listedRoutes: discovery.resources.length,
   canonicalMarketRisk: {
     route: marketRiskListing.resource,
-    amountUsdc: 0.003,
+    amountUsdc: 0.01,
     network: marketRiskQuote.network,
     asset: marketRiskQuote.asset,
     payTo: marketRiskQuote.payTo,
@@ -51,7 +51,7 @@ if (process.env.ACM_CONFIRM_TESTNET_SPEND !== "yes") {
       source: "cdp_bazaar",
       listedRoutes: discovery.resources.length,
       canonicalMarketRisk: {
-        amountUsdc: 0.003,
+        amountUsdc: 0.01,
         network: marketRiskQuote.network,
         asset: marketRiskQuote.asset,
         payTo: marketRiskQuote.payTo,
@@ -81,9 +81,9 @@ const grant = await client.createGrant({
   scopes: ["x402.pay"],
   spendPolicy: {
     currency: "USDC",
-    perRequestMax: 0.003,
+    perRequestMax: 0.01,
     dailyMax: 0.05,
-    approvalRequiredAbove: 0.003,
+    approvalRequiredAbove: 0.01,
   },
   resourcePolicy: {
     allowedDomains: [new URL(resourceUrl).hostname],
@@ -110,7 +110,7 @@ const paymentRequest = {
   purpose: "summarize_current_market_intelligence",
   idempotencyKey: randomUUID(),
   expectedPayment: {
-    amount: 0.003,
+    amount: 0.01,
     network: "eip155:84532",
     asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     payTo: omniReceiver,
@@ -162,7 +162,7 @@ await writeReport({
   },
   payment: {
     resource: resourceUrl,
-    amountUsdc: 0.003,
+    amountUsdc: 0.01,
     network: marketRiskQuote.network,
     asset: marketRiskQuote.asset,
     payTo: marketRiskQuote.payTo,

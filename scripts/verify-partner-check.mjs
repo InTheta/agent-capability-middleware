@@ -9,7 +9,7 @@ const listing = {
   accepts: [{
     scheme: "exact",
     network: "eip155:84532",
-    amount: "3000",
+    amount: "10000",
     asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     payTo: receiver,
   }],
@@ -28,7 +28,7 @@ const noSpend = await runDesignPartnerCheck({
 });
 assert.equal(noSpend.mode, "no_spend");
 assert.deepEqual(noSpend.catalog.canonicalRoutes, CANONICAL_OMNI_ROUTES);
-assert.equal(noSpend.catalog.canonicalMarketRisk.amountUsdc, 0.003);
+assert.equal(noSpend.catalog.canonicalMarketRisk.amountUsdc, 0.01);
 assert.equal(noSpend.secretsIncluded, false);
 assert.equal("payment" in noSpend, false);
 

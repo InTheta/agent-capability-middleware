@@ -18,13 +18,13 @@ This command plans requests only. It does not create a grant, sign, or pay.
 | Give me the current broad crypto briefing | `hourly_market_briefing` | `/news` | `0.001` USDC |
 | What is the current market-wide context only? | `news_context` | `/news` | `0.001` USDC |
 | What happened during this exact historical window? | `historical_news` | `/news` or `/news/:symbol` | `0.001` USDC |
-| Where are the summary, buckets, clusters, cumulative flow, or nearest liquidation areas? | `liquidations` | `/liquidations/:symbol` | `0.002` USDC |
-| Which public wallets are best/worst by PnL, largest by value/size, largest wallets, closest, or most at risk? | `traders` | `/traders/:symbol` | `0.002` USDC |
-| What is known about this public wallet, its positions, or balances? | `trader_profile` | `/trader-profile/:address` | `0.002` USDC |
-| Give me one joined 15- or 60-minute news and liquidation risk input | `market_risk` | `/market-risk/:symbol` | `0.003` USDC |
-| Give me price structure plus liquidation levels | `market_snapshot` | `/market-snapshot/:symbol` | `0.003` USDC |
+| Where are the summary, buckets, clusters, cumulative flow, or nearest liquidation areas? | `liquidations` | `/liquidations/:symbol` | `0.005` USDC |
+| Which public wallets are best/worst by PnL, largest by value/size, largest wallets, closest, or most at risk? | `traders` | `/traders/:symbol` | `0.003` USDC |
+| What is known about this public wallet, its positions, or balances? | `trader_profile` | `/trader-profile/:address` | `0.005` USDC |
+| Give me one joined 15- or 60-minute news and liquidation risk input | `market_risk` | `/market-risk/:symbol` | `0.010` USDC |
+| Give me price structure plus liquidation levels | `market_snapshot` | `/market-snapshot/:symbol` | `0.005` USDC |
 | Resolve current market names or aliases into canonical instruments | `entity_resolution` | `POST /symbols/resolve` | `0.001` USDC |
-| Give me current funding, basis, open interest, and carry | `market_carry` | `/market-carry/:symbol` | `0.001` USDC |
+| Give me current funding, basis, open interest, and carry | `market_carry` | `/market-carry/:symbol` | `0.003` USDC |
 
 The 60-minute briefing is not a new LLM call. It combines events from the latest 60-minute slice
 with the existing market context refreshed every 15 minutes over a 24-hour source window. This
