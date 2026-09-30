@@ -8,6 +8,9 @@ Give an AI agent permission to buy **one exact x402 resource** under a bounded g
 
 Current release: [`v0.1.0-preview.24`](docs/releases/v0.1.0-preview.24.md).
 
+Public CLI/SDK access is not public gateway access. See the [availability and integration matrix](docs/availability.md)
+for package differences, current recipe coverage, and the private-dashboard boundary.
+
 ## Test ACM — no wallet required
 
 Start with the [short tester guide](docs/test-acm.md): check the live catalog, inspect a local

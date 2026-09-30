@@ -1,6 +1,6 @@
 # Real Omni agent recipes
 
-Omni Terminal exposes nine bounded x402 route templates. ACM recipes turn common agent questions
+This SDK covers nine bounded Omni x402 route templates. ACM recipes turn common agent questions
 into exact URLs, expected schemas, prices, and Base Sepolia payment constraints without putting a
 wallet key in agent code.
 
