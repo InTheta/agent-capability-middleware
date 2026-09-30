@@ -1,0 +1,68 @@
+name: Tester feedback
+description: Share a successful test, blocked setup, or confusing step. No paid test required.
+title: "[Tester feedback]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing ACM! Partial and failed attempts are useful.
+        Start with [the no-wallet guide](https://github.com/InTheta/agent-capability-middleware/blob/main/docs/test-acm.md).
+        This issue is PUBLIC. Never include credentials, .env files, shell history, private gateway URLs, paid response bodies, or personal data.
+        Do not attach full logs or reports. Send private-pilot evidence through your agreed operator channel.
+        For vulnerabilities, follow [SECURITY.md](https://github.com/InTheta/agent-capability-middleware/blob/main/SECURITY.md) instead.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, shell, Node and npm versions, and ACM release or command tag (if known).
+      placeholder: "Windows 11, PowerShell, Node 22, npm 10, preview.24"
+    validations:
+      required: true
+  - type: dropdown
+    id: progress
+    attributes:
+      label: Last step reached
+      options:
+        - Not started — instructions unclear
+        - Setup or download blocked
+        - Catalog check failed
+        - Catalog check passed
+        - Local buyer preview failed
+        - Local buyer preview passed
+        - Private pilot attempted (details shared privately)
+    validations:
+      required: true
+  - type: input
+    id: elapsed
+    attributes:
+      label: Approximate time spent
+      description: Time to first success or blocker; leave blank if not measured.
+      placeholder: "About 8 minutes to local preview; catalog blocked"
+  - type: textarea
+    id: experience
+    attributes:
+      label: What worked, broke, or was unclear?
+      description: Include the safe command name, expected/actual result, and first confusing step. Only manually reviewed, redacted error excerpts.
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: What would you use ACM for?
+      description: Optional agent framework, workflow, or paid API. Does this solve something you would otherwise build?
+  - type: dropdown
+    id: pilot
+    attributes:
+      label: Interested in a separately arranged private testnet pilot?
+      description: No automatic access, payment, or commitment. Do not post contact details or credentials here.
+      options:
+        - Not now
+        - Possibly — need more information
+        - Yes — interested in discussing an integration
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Public feedback safety check
+      options:
+        - label: I reviewed this issue and removed credentials, private URLs, personal data, paid response bodies, and unredacted logs.
+          required: true

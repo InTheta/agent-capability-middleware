@@ -8,7 +8,16 @@ Give an AI agent permission to buy **one exact x402 resource** under a bounded g
 
 Current release: [`v0.1.0-preview.24`](docs/releases/v0.1.0-preview.24.md).
 
-## 60-second no-spend check
+## Test ACM — no wallet required
+
+Start with the [short tester guide](docs/test-acm.md): check the live catalog, inspect a local
+synthetic buyer result, and tell us what worked or where you got stuck. No account or gateway
+access is needed. Commands work in PowerShell and Bash; allow time for the first download.
+
+[Send tester feedback](https://github.com/InTheta/agent-capability-middleware/issues/new?template=tester-feedback.yml).
+A private Base Sepolia pilot is optional and separately arranged with an operator.
+
+## No-spend catalog check
 
 Requirements: Node.js 20+ and internet access. No clone, account, wallet, or private key is required.
 
@@ -31,13 +40,13 @@ Success means the report contains:
 
 The check reads Coinbase's public x402 Bazaar catalog, confirms all nine canonical Omni routes, and validates the current `0.010` Base Sepolia USDC market-risk quote. It creates no signature or payment.
 
-## Five-minute local demo
+## Local synthetic buyer preview
 
 ```bash
 npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo buyer
 ```
 
-The deterministic demo creates a bounded grant, validates a fresh synthetic result, revokes the grant, and proves the next request is denied. Any `0xmock_...` receipt is deliberately not a chain transaction.
+The deterministic preview validates a fresh, schema-matched synthetic paid result. It does not create or revoke a real grant, contact a seller, or settle a payment. Any `0xmock_...` receipt is deliberately not a chain transaction. Grant creation, revocation, and denial are checked separately in the controlled paid test.
 
 ## Install as a dependency
 
@@ -70,25 +79,14 @@ const data = requireFreshPaidResult(result, { expectedSchema: recipe.schema });
 
 The gateway—not the SDK or agent—holds the payer key. It checks the grant, exact URL, purpose, amount, network, asset, payee, expiry, idempotency key, approval state, and revocation state before settlement.
 
-## Controlled paid test
+## Optional private testnet pilot
 
-After an ACM operator provides a protected gateway URL and confirms its dedicated testnet payer is funded:
-
-```bash
-export ACM_GATEWAY_URL='https://provided-gateway.example'
-export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz partner-check \
-  > acm-paid-report.json
-unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
-```
-
-If that deployment requires a workload key, enter it without placing it in shell history:
-
-```bash
-printf 'ACM API key: '; IFS= read -r -s ACM_API_KEY; printf '\n'; export ACM_API_KEY
-```
-
-The acceptance flow buys one current BTC market-risk result, requires a fresh schema-matched response and public receipt, revokes the grant, then proves a second settlement cannot occur. Return only the redacted report. See the [external developer checklist](docs/design-partner-checklist.md).
+This is not a public signup or part of the no-wallet test. Express interest through the tester
+feedback form; an operator must separately arrange protected access and confirm a dedicated
+Base Sepolia payer is ready. Only then follow the [private-pilot checklist](docs/design-partner-checklist.md).
+The pilot checks a real testnet purchase, fresh schema-matched response, receipt, revocation,
+and denial before a second settlement. Return reviewed reports privately to your operator.
+No mainnet funds or payer keys are needed from a tester.
 
 ## What you can build now
 
@@ -154,7 +152,8 @@ This repo contains the public SDK, request builders, local evidence minimizer, e
 
 ## Documentation
 
-- [Five-minute getting started](docs/getting-started.md)
+- [Test ACM — no wallet required](docs/test-acm.md)
+- [Getting started](docs/getting-started.md)
 - [Runnable examples](docs/examples.md)
 - [Omni agent recipes](docs/omni-agent-recipes.md)
 - [SDK API](docs/sdk-api.md)

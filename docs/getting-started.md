@@ -1,4 +1,7 @@
-# Five-minute getting started
+# Getting started
+
+Just testing? Start with [Test ACM — no wallet required](test-acm.md). Feedback is welcome even
+if you stop before integrating or trying a private testnet pilot.
 
 This guide follows one path: **discover → grant → pay → validate → revoke**.
 
@@ -27,20 +30,17 @@ Success requires:
 
 This checks Coinbase's public x402 Bazaar catalog, the nine canonical Omni route templates, and the exact Base Sepolia quote. It does not sign or settle a transaction.
 
-## 2. Run the buyer lifecycle locally
+## 2. Preview a synthetic buyer result locally
 
 ```bash
 npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo buyer
 ```
 
-Expected outcome:
-
-1. create a bounded grant;
-2. validate a fresh synthetic paid result;
-3. revoke the grant; and
-4. deny the next request without another receipt.
-
-The local `0xmock_...` receipt is not a blockchain transaction.
+Expected outcome: `ACM_BUYER_DEMO_OK`, with `spent: false` and
+`acceptedSchema: "market_risk_snapshot.v1"`. This validates a synthetic paid result; it does
+not create or revoke a real grant, contact a seller, or prove settlement. The local
+`0xmock_...` receipt is not a blockchain transaction. The optional controlled test checks
+the actual grant, payment, revocation, and denial flow.
 
 ## 3. Add ACM to an agent
 

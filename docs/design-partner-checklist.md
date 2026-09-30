@@ -1,5 +1,9 @@
 # External developer test script
 
+**Optional private Base Sepolia pilot.** For the public no-wallet test, use
+[Test ACM](test-acm.md) instead. Paid completion is not required to submit feedback.
+Do not continue to the paid step without individually assigned operator access.
+
 This test answers one question:
 
 > Can an external agent developer install ACM and complete discover → grant → pay → validate →

@@ -1,6 +1,11 @@
 # Design-partner feedback
 
-Please answer after completing the external developer test. Short, direct answers are preferred.
+Feedback is welcome after any step, including a failed install. Use the
+[tester feedback form](https://github.com/InTheta/agent-capability-middleware/issues/new?template=tester-feedback.yml)
+for non-sensitive feedback. Mark unattempted steps as "Not tried"; no paid test is required.
+
+For an operator-arranged private pilot, send reviewed reports through the private channel
+agreed with your operator, not a public issue. Short, direct answers are preferred.
 
 1. How many minutes did the no-spend check take from opening the instructions?
 2. How many minutes did the paid check take after receiving gateway access?

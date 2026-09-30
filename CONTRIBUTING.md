@@ -2,6 +2,13 @@
 
 Thank you for helping improve Agent Capability Middleware.
 
+## Try it without contributing code
+
+Follow [Test ACM — no wallet required](docs/test-acm.md), then use the
+[tester feedback form](https://github.com/InTheta/agent-capability-middleware/issues/new?template=tester-feedback.yml).
+You can report a blocked install or unclear instruction without completing a paid test.
+For vulnerabilities, follow [SECURITY.md](SECURITY.md), not the public feedback form.
+
 ## Development
 
 Requirements:
