@@ -151,3 +151,10 @@ The main and dev seller paths are public through a dedicated Cloudflare Access a
 - Treat denial, approval-required, and uncertain settlement as distinct states.
 - Do not automatically retry a payment with a new idempotency key.
 - Keep this example out of automated test and package lifecycle scripts.
+
+
+Source pricing update (15 October 2026): news recipes bind 0.010 USDC, and the
+typed MCP tool union includes `get_premarket_roundup` (0.100 USDC). These changes
+follow preview.24; its immutable archive still has the earlier news recipe price
+and four-tool union. Existing low-level public methods can send an explicitly
+pinned current price through a configured protected gateway. No key enters the SDK.

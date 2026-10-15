@@ -148,7 +148,7 @@ test("typed MCP consumption delegates only bounded tool metadata to the protecte
     purpose: "check_current_btc_carry",
     idempotencyKey: "mcp_carry_001",
     expectedPayment: {
-      amount: 0.001,
+      amount: 0.003,
       network: "eip155:84532",
       asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
       payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
@@ -275,3 +275,11 @@ for (const [name, result, expectedCode] of [
     );
   });
 }
+
+test("premarket MCP forwards exact bounded metadata at the reviewed price", async () => {
+  let captured;
+  const client=new AgentCapabilityClient("https://gateway.example.com",{fetch:async(input,init)=>{captured={url:String(input),body:JSON.parse(String(init.body))};return Response.json({decision:"paid",receiptId:"mock_only",resourceBody:{schema:"premarket_roundup.v1"}});}});
+  const request={grantId:"grant_test",serverUrl:"https://omniterminal.app/api/x402/mcp",toolName:"get_premarket_roundup",arguments:{limit:1},category:"market_intelligence",purpose:"research_published_premarket",idempotencyKey:"mock_premarket",expectedPayment:{amount:0.100,network:"eip155:84532",asset:"0x036CbD53842c5426634e7929541eC2318f3dCF7e",payTo:"0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457"}};
+  await client.consumeX402McpTestnet(request);
+  assert.equal(captured.url,"https://gateway.example.com/v1/pay/x402/mcp/testnet/quoted");assert.deepEqual(captured.body,request);
+});

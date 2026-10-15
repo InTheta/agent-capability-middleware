@@ -47,3 +47,8 @@
   package managers must not need to run an unapproved `prepare` script merely to expose the CLI.
 - Add a focused request-shape test for every public client method.
 - Update `README.md`, `docs/sdk-api.md`, relevant integration docs, examples, specs/status claims, and these rules whenever the public contract changes.
+
+
+Omni source pricing: news recipes use 0.010 USDC; preserve 0.001 for entity
+resolution. The bounded MCP union includes published premarket research at 0.100
+USDC. Keep immutable preview archive coverage separate from source updates.

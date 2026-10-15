@@ -123,3 +123,7 @@ directory.publish(createUserCapabilityOffer({
   projection: { category: "running_shoes" },
   terms: { policy: "ask" },
 }));
+
+// Compile-only proof that the fifth bounded seller tool is publicly typed.
+const premarketTool: import("../src/index.js").OmniX402McpToolName = "get_premarket_roundup";
+void premarketTool;

@@ -169,7 +169,7 @@ const paid = await client.consumeX402Testnet<{
   purpose: "build_current_risk_brief",
   idempotencyKey: crypto.randomUUID(),
   expectedPayment: {
-    amount: 0.003,
+    amount: 0.010,
     network: "eip155:84532",
     asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
@@ -186,8 +186,8 @@ The configured gateway owns payer custody, challenge validation, budget reservat
 ### Consume a paid MCP tool
 
 `consumeX402McpTestnet<T>` supports Omni's bounded
-`get_market_moving_events`, `get_market_risk_context`, `resolve_market_entities`, and
-`get_market_carry` tools. It sends no payer key. The gateway binds the exact endpoint, tool name,
+`get_market_moving_events`, `get_market_risk_context`, `resolve_market_entities`,
+`get_market_carry`, and `get_premarket_roundup` tools (the fifth tool is added in source after preview.24). It sends no payer key. The gateway binds the exact endpoint, tool name,
 arguments, `mcp://tool/...` resource, network, asset, amount, payee, grant, purpose, and
 idempotency key before signing.
 
@@ -204,7 +204,7 @@ const carry = await client.consumeX402McpTestnet<{
   purpose: "check_current_btc_carry",
   idempotencyKey: crypto.randomUUID(),
   expectedPayment: {
-    amount: 0.001,
+    amount: 0.003,
     network: "eip155:84532",
     asset: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     payTo: "0x733f40A4FA0cd13d59aBADE04b9eD2e9acAc6457",
@@ -225,3 +225,8 @@ Non-success HTTP responses throw `AgentCapabilityApiError` with:
 - `body` — parsed response body.
 
 The compatibility exports `AgentPermissionWalletClient` and `AgentPermissionWalletApiError` remain available during the preview line but new integrations should use the Agent Capability names.
+
+Reviewed Omni prices: news (every mode) 0.010 USDC; market risk 0.010;
+carry 0.003; published premarket research 0.100. Exact expected-payment matching
+remains mandatory. Source recipes now reflect these prices; pinned preview.24
+archives retain their historical recipe values and should not be used for funded news.

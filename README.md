@@ -167,3 +167,10 @@ This repo contains the public SDK, request builders, local evidence minimizer, e
 - [Roadmap](docs/roadmap.md)
 
 Apache-2.0 licensed.
+
+
+Source pricing update (15 October 2026): news recipes bind 0.010 USDC, and the
+typed MCP tool union includes `get_premarket_roundup` (0.100 USDC). These changes
+follow preview.24; its immutable archive still has the earlier news recipe price
+and four-tool union. Existing low-level public methods can send an explicitly
+pinned current price through a configured protected gateway. No key enters the SDK.

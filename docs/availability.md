@@ -32,3 +32,10 @@ Use [the recipe reference](omni-agent-recipes.md) and [SDK API](sdk-api.md) for 
 contract. Do not substitute the operator package's mainnet methods into this SDK. Paid tests
 need separate authorization; passing local tests is not proof of current live settlement,
 secure multi-user hosting, or production readiness.
+
+
+Source pricing update (15 October 2026): news recipes bind 0.010 USDC, and the
+typed MCP tool union includes `get_premarket_roundup` (0.100 USDC). These changes
+follow preview.24; its immutable archive still has the earlier news recipe price
+and four-tool union. Existing low-level public methods can send an explicitly
+pinned current price through a configured protected gateway. No key enters the SDK.

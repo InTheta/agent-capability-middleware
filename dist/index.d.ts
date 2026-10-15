@@ -331,7 +331,7 @@ export interface PayQuotedX402TestnetRequest {
 export interface PayQuotedX402Request extends PayQuotedX402TestnetRequest {
     approvalId?: string;
 }
-export type OmniX402McpToolName = "get_market_moving_events" | "get_market_risk_context" | "resolve_market_entities" | "get_market_carry";
+export type OmniX402McpToolName = "get_market_moving_events" | "get_market_risk_context" | "resolve_market_entities" | "get_market_carry" | "get_premarket_roundup";
 export interface PayQuotedX402McpTestnetRequest {
     grantId: string;
     serverUrl: string;

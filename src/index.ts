@@ -357,7 +357,8 @@ export type OmniX402McpToolName =
   | "get_market_moving_events"
   | "get_market_risk_context"
   | "resolve_market_entities"
-  | "get_market_carry";
+  | "get_market_carry"
+  | "get_premarket_roundup";
 
 export interface PayQuotedX402McpTestnetRequest {
   grantId: string;
