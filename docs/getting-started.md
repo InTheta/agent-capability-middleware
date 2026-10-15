@@ -12,7 +12,7 @@ Requirements: Node.js 20+ and npm. The first two steps require no account, walle
 Run the pinned preview from any empty directory:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz doctor \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz doctor \
   > acm-no-spend-report.json
 ```
 
@@ -33,7 +33,7 @@ This checks Coinbase's public x402 Bazaar catalog, the nine canonical Omni route
 ## 2. Preview a synthetic buyer result locally
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo buyer
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo buyer
 ```
 
 Expected outcome: `ACM_BUYER_DEMO_OK`, with `spent: false` and
@@ -47,7 +47,7 @@ the actual grant, payment, revocation, and denial flow.
 ```bash
 mkdir acm-example && cd acm-example
 npm init -y
-npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.24
+npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.25
 ```
 
 Create `buy-market-risk.mjs`:
@@ -86,7 +86,7 @@ Stop until an ACM operator provides a protected gateway URL and confirms its ded
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -121,9 +121,9 @@ The paid report must show a public receipt, an ACM audit event, fresh `market_ri
 These are local offer-policy helpers, not live settlement or marketplace claims:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo developer-seller
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo user-seller
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo exchange
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo developer-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo user-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo exchange
 ```
 
 See [runnable examples](examples.md) for their exact boundaries.

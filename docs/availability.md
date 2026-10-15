@@ -1,6 +1,6 @@
 # What is publicly usable?
 
-Checked 30 September 2026. ACM is a developer preview, not a public hosted wallet service.
+Contract reviewed 15 October 2026 for preview.25. ACM is a developer preview, not a public hosted wallet service.
 
 | Surface | Access | First step |
 |---|---|---|
@@ -13,7 +13,7 @@ Checked 30 September 2026. ACM is a developer preview, not a public hosted walle
 ## One-command start
 
 ```sh
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz doctor
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz doctor
 ```
 
 This reads the live catalog, makes no payment and does not start a dashboard. Installation
@@ -22,10 +22,10 @@ distribution is the pinned GitHub archive; do not assume an npm registry release
 
 ## Coverage is not the entire seller catalog
 
-The pinned public preview includes typed recipes for nine route templates and four bounded
+The pinned public preview includes typed recipes for nine HTTP route templates and five bounded
 paid MCP tools. The live Omni seller and private dashboard currently advertise thirteen HTTP
-templates and five paid MCP tools. The additional premarket and screenshot products are not
-typed public-preview recipes. A successful nine-route `doctor` result means the supported
+templates and five paid MCP tools. Premarket research is included in the paid MCP tool union; the premarket HTTP route
+and three screenshot routes are not typed public-preview HTTP recipes. A successful nine-route `doctor` result means the supported
 subset passed; it does not mean every seller endpoint or the private gateway was tested.
 
 Use [the recipe reference](omni-agent-recipes.md) and [SDK API](sdk-api.md) for the released
@@ -34,8 +34,8 @@ need separate authorization; passing local tests is not proof of current live se
 secure multi-user hosting, or production readiness.
 
 
-Source pricing update (15 October 2026): news recipes bind 0.010 USDC, and the
-typed MCP tool union includes `get_premarket_roundup` (0.100 USDC). These changes
-follow preview.24; its immutable archive still has the earlier news recipe price
-and four-tool union. Existing low-level public methods can send an explicitly
-pinned current price through a configured protected gateway. No key enters the SDK.
+Preview.25 binds news recipes to 0.010 USDC and includes
+`get_premarket_roundup` (0.100 USDC) in the five-tool paid MCP union. Preview.24
+remains immutable with its historical news price and four-tool union; upgrade
+before using the news recipe at the reviewed current price. Installation does
+not grant authority or enable spending. No key enters the SDK.

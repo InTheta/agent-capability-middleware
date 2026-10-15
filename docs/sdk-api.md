@@ -20,7 +20,7 @@ This is the complete reference. New integrations should begin with the
 Until npm publication, run the CLI directly from GitHub:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz inspect
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz inspect
 ```
 
 All `demo` commands are local, keyless, and non-settling.
@@ -187,7 +187,7 @@ The configured gateway owns payer custody, challenge validation, budget reservat
 
 `consumeX402McpTestnet<T>` supports Omni's bounded
 `get_market_moving_events`, `get_market_risk_context`, `resolve_market_entities`,
-`get_market_carry`, and `get_premarket_roundup` tools (the fifth tool is added in source after preview.24). It sends no payer key. The gateway binds the exact endpoint, tool name,
+`get_market_carry`, and `get_premarket_roundup` tools in preview.25. It sends no payer key. The gateway binds the exact endpoint, tool name,
 arguments, `mcp://tool/...` resource, network, asset, amount, payee, grant, purpose, and
 idempotency key before signing.
 
@@ -228,5 +228,5 @@ The compatibility exports `AgentPermissionWalletClient` and `AgentPermissionWall
 
 Reviewed Omni prices: news (every mode) 0.010 USDC; market risk 0.010;
 carry 0.003; published premarket research 0.100. Exact expected-payment matching
-remains mandatory. Source recipes now reflect these prices; pinned preview.24
+remains mandatory. Preview.25 recipes reflect these prices; immutable preview.24
 archives retain their historical recipe values and should not be used for funded news.

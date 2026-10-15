@@ -6,7 +6,8 @@ Give an AI agent permission to buy **one exact x402 resource** under a bounded g
 
 > Developer preview. The protected buyer flow is implemented and tested on Base Sepolia. Seller and data-exchange helpers are experimental local previews; they do not settle payments or prove buyer demand.
 
-Current release: [`v0.1.0-preview.24`](docs/releases/v0.1.0-preview.24.md).
+SDK preview: [`v0.1.0-preview.25`](docs/releases/v0.1.0-preview.25.md).
+The installation commands below require that immutable tag to be published.
 
 Public CLI/SDK access is not public gateway access. See the [availability and integration matrix](docs/availability.md)
 for package differences, current recipe coverage, and the private-dashboard boundary.
@@ -25,7 +26,7 @@ A private Base Sepolia pilot is optional and separately arranged with an operato
 Requirements: Node.js 20+ and internet access. No clone, account, wallet, or private key is required.
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz doctor \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz doctor \
   > acm-no-spend-report.json
 ```
 
@@ -46,7 +47,7 @@ The check reads Coinbase's public x402 Bazaar catalog, confirms all nine canonic
 ## Local synthetic buyer preview
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo buyer
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo buyer
 ```
 
 The deterministic preview validates a fresh, schema-matched synthetic paid result. It does not create or revoke a real grant, contact a seller, or settle a payment. Any `0xmock_...` receipt is deliberately not a chain transaction. Grant creation, revocation, and denial are checked separately in the controlled paid test.
@@ -54,7 +55,7 @@ The deterministic preview validates a fresh, schema-matched synthetic paid resul
 ## Install as a dependency
 
 ```bash
-npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.24
+npm install github:InTheta/agent-capability-middleware#v0.1.0-preview.25
 ```
 
 ```ts
@@ -122,16 +123,16 @@ flowchart LR
     G --> L["Receipt and audit"]
 ```
 
-MCP can carry tool calls, OAuth/OIDC can identify workloads and users, verifiable credentials can carry attestations, and x402 carries payment requirements and proofs. ACM composes existing standards rather than replacing them. The protected gateway now applies the same exact grant and payment binding to four bounded Omni MCP tools.
+MCP can carry tool calls, OAuth/OIDC can identify workloads and users, verifiable credentials can carry attestations, and x402 carries payment requirements and proofs. ACM composes existing standards rather than replacing them. The protected gateway now applies the same exact grant and payment binding to five bounded Omni MCP tools.
 
 ## Experimental seller previews
 
 ACM also explores the other side of the market: a developer can describe a paid API, and a user can offer a confirmed, minimized capability under **Free, Paid, Ask, or Deny** policy. These helpers are useful for product design and local testing, but they are not yet hosted settlement, fulfilment, an auction, or a production data marketplace.
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo developer-seller
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo user-seller
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo exchange
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo developer-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo user-seller
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo exchange
 ```
 
 See [runnable examples](docs/examples.md) and the [user seller preview](docs/user-seller-agent.md).
@@ -169,8 +170,8 @@ This repo contains the public SDK, request builders, local evidence minimizer, e
 Apache-2.0 licensed.
 
 
-Source pricing update (15 October 2026): news recipes bind 0.010 USDC, and the
-typed MCP tool union includes `get_premarket_roundup` (0.100 USDC). These changes
-follow preview.24; its immutable archive still has the earlier news recipe price
-and four-tool union. Existing low-level public methods can send an explicitly
-pinned current price through a configured protected gateway. No key enters the SDK.
+Preview.25 binds news recipes to 0.010 USDC and includes
+`get_premarket_roundup` (0.100 USDC) in the five-tool paid MCP union. Preview.24
+remains immutable with its historical news price and four-tool union; upgrade
+before using the news recipe at the reviewed current price. Installation does
+not grant authority or enable spending. No key enters the SDK.
