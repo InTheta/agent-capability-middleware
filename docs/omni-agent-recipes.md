@@ -14,10 +14,10 @@ This command plans requests only. It does not create a grant, sign, or pay.
 
 | Agent question | Recipe | Canonical route template | Price |
 |---|---|---|---:|
-| What changed for BTC in the last 15 or 60 minutes? | `targeted_news` | `/news/:symbol` | `0.001` USDC |
-| Give me the current broad crypto briefing | `hourly_market_briefing` | `/news` | `0.001` USDC |
-| What is the current market-wide context only? | `news_context` | `/news` | `0.001` USDC |
-| What happened during this exact historical window? | `historical_news` | `/news` or `/news/:symbol` | `0.001` USDC |
+| What changed for BTC in the last 15 or 60 minutes? | `targeted_news` | `/news/:symbol` | `0.010` USDC |
+| Give me the current broad crypto briefing | `hourly_market_briefing` | `/news` | `0.010` USDC |
+| What is the current market-wide context only? | `news_context` | `/news` | `0.010` USDC |
+| What happened during this exact historical window? | `historical_news` | `/news` or `/news/:symbol` | `0.010` USDC |
 | Where are the summary, buckets, clusters, cumulative flow, or nearest liquidation areas? | `liquidations` | `/liquidations/:symbol` | `0.005` USDC |
 | Which public wallets are best/worst by PnL, largest by value/size, largest wallets, closest, or most at risk? | `traders` | `/traders/:symbol` | `0.003` USDC |
 | What is known about this public wallet, its positions, or balances? | `trader_profile` | `/trader-profile/:address` | `0.005` USDC |

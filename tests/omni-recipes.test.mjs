@@ -19,7 +19,7 @@ test("builds the 60-minute briefing on the canonical market-news route", () => {
     recipe.resourceUrl,
     "https://omniterminal.app/api/x402/v1/news?market=crypto&mode=latest&event_window_minutes=60&limit=8&impact=high",
   );
-  assert.equal(recipe.priceUsdc, 0.001);
+  assert.equal(recipe.priceUsdc, 0.01);
   assert.equal(recipe.schema, "news_pulse.v1");
   assert.match(recipe.note, /24-hour source window/);
 });
@@ -70,7 +70,7 @@ test("builds exact payment intent and a least-privilege aggregate grant", () => 
   ];
   const grant = createOmniRecipeGrant("agent_test", recipes, { userId: "user_test" });
   assert.equal(grant.spendPolicy.perRequestMax, 0.01);
-  assert.equal(grant.spendPolicy.dailyMax, 0.011);
+  assert.equal(grant.spendPolicy.dailyMax, 0.020);
   assert.deepEqual(grant.resourcePolicy.allowedDomains, ["omniterminal.app"]);
   assert.deepEqual(grant.settlementPolicy.allowedNetworks, ["eip155:84532"]);
 
@@ -209,4 +209,10 @@ test("lists coherent recipes without creating new route templates", () => {
   );
   assert.equal(new Set(recipes.map((recipe) => new URL(recipe.resourceUrl).pathname.split("/").slice(0, 6).join("/"))).size > 0, true);
   assert.equal(recipes.every((recipe) => recipe.resourceUrl.startsWith("https://omniterminal.app/api/x402/v1/")), true);
+});
+
+test("every news mode binds the reviewed price while entity resolution stays unchanged", () => {
+  const inputs=[{kind:"targeted_news",symbol:"BTC"},{kind:"market_news",market:"equities"},{kind:"hourly_market_briefing"},{kind:"news_context"},{kind:"historical_news",fromTimestamp:1800000000000,toTimestamp:1800003600000}];
+  for(const input of inputs){const recipe=createOmniX402Recipe(input);assert.equal(recipe.priceUsdc,0.010);assert.equal(recipe.expectedPayment.amount,0.010);}
+  assert.equal(createOmniX402Recipe({kind:"entity_resolution",mentions:["bitcoin"]}).expectedPayment.amount,0.001);
 });

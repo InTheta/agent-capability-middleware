@@ -21,7 +21,7 @@ export function createOmniX402Recipe(input) {
             addNewsQuery(url, input, "latest", input.eventWindowMinutes ?? 60);
             label = `${symbol} targeted news`;
             schema = "news_pulse.v1";
-            priceUsdc = 0.001;
+            priceUsdc = 0.01;
             purpose = `research_current_${symbol.toLowerCase()}_news`;
             break;
         }
@@ -32,7 +32,7 @@ export function createOmniX402Recipe(input) {
             addNewsQuery(url, input, "latest", input.eventWindowMinutes ?? 60);
             label = `${market} market news`;
             schema = "news_pulse.v1";
-            priceUsdc = 0.001;
+            priceUsdc = 0.01;
             purpose = `research_current_${market}_news`;
             break;
         }
@@ -43,7 +43,7 @@ export function createOmniX402Recipe(input) {
             addNewsQuery(url, input, "latest", 60);
             label = `${market} 60-minute agent briefing`;
             schema = "news_pulse.v1";
-            priceUsdc = 0.001;
+            priceUsdc = 0.01;
             purpose = `build_${market}_hourly_briefing`;
             note = "Combines a 60-minute event slice with market context refreshed every 15 minutes over a 24-hour source window.";
             break;
@@ -55,7 +55,7 @@ export function createOmniX402Recipe(input) {
             url.searchParams.set("mode", "context");
             label = input.symbol ? `${normalizedSymbol(input.symbol)} market context` : `${input.market ?? "crypto"} market context`;
             schema = "news_pulse.v1";
-            priceUsdc = 0.001;
+            priceUsdc = 0.01;
             purpose = "load_current_market_context";
             break;
         }
@@ -70,7 +70,7 @@ export function createOmniX402Recipe(input) {
             addNewsFilters(url, input);
             label = `${input.symbol ? normalizedSymbol(input.symbol) : input.market ?? "crypto"} historical news window`;
             schema = "news_pulse.v1";
-            priceUsdc = 0.001;
+            priceUsdc = 0.01;
             purpose = "research_exact_historical_news_window";
             note = "Historical windows may correctly return freshness.status=historical rather than fresh.";
             break;
