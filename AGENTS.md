@@ -49,6 +49,6 @@
 - Update `README.md`, `docs/sdk-api.md`, relevant integration docs, examples, specs/status claims, and these rules whenever the public contract changes.
 
 
-Omni source pricing: news recipes use 0.010 USDC; preserve 0.001 for entity
+Omni preview.25 pricing: news recipes use 0.010 USDC; preserve 0.001 for entity
 resolution. The bounded MCP union includes published premarket research at 0.100
-USDC. Keep immutable preview archive coverage separate from source updates.
+USDC. Keep historical immutable preview coverage separate from the current versioned package contract.

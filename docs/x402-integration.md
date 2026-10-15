@@ -89,7 +89,7 @@ The installed acceptance runner creates a 15-minute grant restricted to `x402.pa
 phase first:
 
 ```bash
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz partner-check \
   > acm-no-spend-report.json
 ```
 
@@ -99,7 +99,7 @@ payer is ready, explicitly arm one paid acceptance:
 ```bash
 export ACM_GATEWAY_URL='https://provided-gateway.example'
 export ACM_CONFIRM_TESTNET_SPEND=yes
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz partner-check \
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz partner-check \
   > acm-paid-report.json
 unset ACM_API_KEY ACM_CONFIRM_TESTNET_SPEND
 ```
@@ -153,8 +153,8 @@ The main and dev seller paths are public through a dedicated Cloudflare Access a
 - Keep this example out of automated test and package lifecycle scripts.
 
 
-Source pricing update (15 October 2026): news recipes bind 0.010 USDC, and the
-typed MCP tool union includes `get_premarket_roundup` (0.100 USDC). These changes
-follow preview.24; its immutable archive still has the earlier news recipe price
-and four-tool union. Existing low-level public methods can send an explicitly
-pinned current price through a configured protected gateway. No key enters the SDK.
+Preview.25 binds news recipes to 0.010 USDC and includes
+`get_premarket_roundup` (0.100 USDC) in the five-tool paid MCP union. Preview.24
+remains immutable with its historical news price and four-tool union; upgrade
+before using the news recipe at the reviewed current price. Installation does
+not grant authority or enable spending. No key enters the SDK.

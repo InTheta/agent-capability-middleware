@@ -11,7 +11,7 @@ Start a timer if you can. These single-line commands work in PowerShell and Bash
 ```sh
 node --version
 npm --version
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz doctor
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz doctor
 ```
 
 The first run downloads the pinned CLI. The doctor makes read-only requests to the public
@@ -21,7 +21,7 @@ Bazaar catalog. Success includes `ok: true`, `mode: "live_no_spend"`, `canonical
 ## 2. Try the local synthetic buyer preview
 
 ```sh
-npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.24.tar.gz demo buyer
+npx --yes https://github.com/InTheta/agent-capability-middleware/archive/refs/tags/v0.1.0-preview.25.tar.gz demo buyer
 ```
 
 Look for `ACM_BUYER_DEMO_OK`, `spent: false`, and

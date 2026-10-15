@@ -7,7 +7,7 @@
 - protected-payer quoted testnet settlement with no SDK-held key;
 - exact amount, network, asset, payee, domain, category and idempotency binding;
 - typed paid-response consumption and freshness validation;
-- typed paid MCP consumption for four bounded Omni tools through the protected payer;
+- typed paid MCP consumption for five bounded Omni tools through the protected payer;
 - packaged `requireFreshPaidResult` validation for payment, receipt, body, freshness and schema;
 - read-only CDP Bazaar discovery and a real nine-template Omni external-service catalog;
 - one-command external package install, no-spend catalog preflight and redacted partner report;
